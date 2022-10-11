@@ -1,0 +1,6 @@
+Metadata-Version: 2.1
+Name: ThoughtSpace
+Version: 0.0.1
+Summary: Package of functions to run and visualize PCA on ESQ data, and project between datasets.
+Author: Bronte Mckeown & Will Strawson
+Author-email: bronte.mckeown@gmail.com

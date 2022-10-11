@@ -1,4 +1,4 @@
-# pca_and_projection
+# ThoughtSpace
 Python-based pipeline for Principal Components Analysis (PCA) and projecting between datasets. 
 
 ## Prerequisite 
@@ -18,19 +18,19 @@ source env/bin/activate #activate this virtual environment
 pip list #list the packages installed in this virtual env
 pip install -r requirements.txt #install packages in this text file 
 pip list #see how there's now more?
-pip install . #this uses setup.py to install our package 'pca_and_projection'
+pip install . #this uses setup.py to install our package 'ThoughtSpace'
 ```
 
 ## Repository structure 
 
-### `pca_and_projection/`
-- In here are the necessary functions that make up the package 'pca_and_projection'. 
-- These are called by scripts in bin/ when you 'import pca_and_projection' in your scripts. 
+### `ThoughtSpace/`
+- In here are the necessary functions that make up the package 'ThoughtSpace'. 
+- These are called by scripts in bin/ when you 'import ThoughtSpace' in your scripts. 
 - No need to edit anything in here - unless, of course, you want to contribute a function. In which case, submit a Pull Request. 
 
 ### `bin/`
 - Bin = binary, which is kind of synonymous with 'executable' i.e. an executable script.
-- Here is where you will store scripts that call functions in pca_and_projection to perform the analysis. 
+- Here is where you will store scripts that call functions in ThoughtSpace to perform the analysis. 
 - Please save a copy of the '...example.py' script from the main branch into your own analysis-specific branch and edit accordingly for your own analysis.
 
 ### `scratch/`
