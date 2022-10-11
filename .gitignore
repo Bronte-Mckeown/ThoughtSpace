@@ -1,0 +1,6 @@
+.DS_Store
+env/*
+env
+*.pdf
+pca_and_projection.egg-info
+build

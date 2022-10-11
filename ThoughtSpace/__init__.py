@@ -1,0 +1,1 @@
+# from <scriptname> import <function name>
