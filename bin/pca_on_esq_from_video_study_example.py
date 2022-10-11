@@ -8,7 +8,7 @@ Input: Per-observation ESQ dataframe (.csv)
 Output: Dataframe with PCA scores and plots per group all in one PDF.
 """
 
-from pca_and_projection import pca_plots
+from ThoughtSpace import pca_plots
 import os
 import pandas as pd
 from collections import OrderedDict
