@@ -19,6 +19,10 @@ from wordcloud import WordCloud
 import matplotlib.cm as cm
 import matplotlib.colors as mcolor
 
+# TO DO:
+    # Add KMO + Bartletts as function
+    # Add stuff for different rotation types
+
 
 def create_observation_id(df, idno_col):
     """
