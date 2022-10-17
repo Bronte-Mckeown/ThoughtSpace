@@ -21,6 +21,7 @@ import matplotlib.colors as mcolor
 
 # TO DO:
     # Add KMO + Bartletts as function
+    # Add PCA extraction and rotation as function
     # Add stuff for different rotation types
 
 
@@ -143,7 +144,7 @@ def append_scores(score_dict, source_dict):
             print ("Number of rows are not the same.")
     return new_dict
 
-def merge_dataframes(input_dict, master_df, data_path, results_id, varimax_on, n_components, n_components_dict):
+def merge_dataframes(input_dict, master_df, data_path, results_id, rotation_on, n_components, n_components_dict):
 
     """
     Function to add ALL the dataframes with PCA scores to OG DF
@@ -178,9 +179,10 @@ def merge_dataframes(input_dict, master_df, data_path, results_id, varimax_on, n
     # TODO move saving data to out of function
     # TODO This fucks up if extension isn't .csv 
     # TODO this shouldn't output to the parent directory 
-    output_name = data_path.split('.csv')[0] + ('_{results_id}_{vari}_ncomponents={ncomp}'.format(
+    # TODO want to save WHICH rotation has been applied in filename
+    output_name = data_path.split('.csv')[0] + ('_{results_id}_{rotation}_ncomponents={ncomp}'.format(
         results_id = results_id,
-        vari=('varimax-on' if varimax_on else 'varimax-off'),
+        rotation=('rotation-on' if rotation_on else 'rotation-off'),
         # For number components, create list of all values in n_compoentns dictionary to show all possible number of compoennets enetered nby user  
         ncomp=(list(n_components_dict.values()) if n_components else 'EV>1'))) + '.csv'
 
@@ -189,13 +191,13 @@ def merge_dataframes(input_dict, master_df, data_path, results_id, varimax_on, n
     return outputdf
 
 
-def page_of_plots(pca_dict,loadings_dict, masking_num, results_id, varimax_on, n_components, n_components_dict, display):
+def page_of_plots(pca_dict,loadings_dict, masking_num, results_id, rotation_on, n_components, n_components_dict, display):
     """
     Function to create PDF of all figures for all groups
     """
-    out_pdf = 'scratch/results/figures_{results_id}_{vari}_ncomponents={ncomp}.pdf'.format(
+    out_pdf = 'scratch/results/figures_{results_id}_{rotation}_ncomponents={ncomp}.pdf'.format(
         results_id = results_id,
-        vari=('varimax-on' if varimax_on else 'varimax-off'),
+        rotation=('rotation-on' if rotation_on else 'rotation-off'),
         ncomp=(list(n_components_dict.values()) if n_components else 'EV>1')
     )
 
@@ -279,6 +281,7 @@ esq_Zstart, esq_Zend):
     return projected_scores
 
 #%%  Saving info for wordcloud script (temporary solution)
+# TO DO: need to make saving out more flexible (add as argument?)
 def wordclouder(component_loading_dict, display, savefile=False):
     """
     Function to return 1) wordclouds.pngs (saved by default) 2) .csvs containg colour codes & weightings used to make wordclouds 
