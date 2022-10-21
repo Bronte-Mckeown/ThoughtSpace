@@ -137,9 +137,6 @@ display = [
 df_N70 = df.loc[df["sample"] == "N70"].copy()  # just select N70 sample
 df_N49 = df.loc[df["sample"] == "N49"].copy()  # just select N49 sample
 
-# Add any info you want about specific analysis run for result file names
-# in this example, I've included the samples and how I've z-scored them
-results_id = "N70_N49_zscored_by_sample"
 
 # create ordered dict of dataframes which you want to apply PCA to
 # key: name of the dataframe, value: dataframe
@@ -160,6 +157,11 @@ n_components_dict = OrderedDict(
        
     ]
 )
+
+# Add any info you want about specific analysis run for result file names
+# in this example, I've included the samples and how I've z-scored them
+results_id = "N70_N49_zscored_by_sample"
+
 # create empty dict to store esq columns from each dataframe stored in df_dict
 esq_dict = OrderedDict()
 # create empty dict to store display labels from each dataframe stored in df_dict
@@ -346,7 +348,7 @@ else:
 
 # %% Project patterns between samples
 
-# TODO: use projection function in example script!
+# TODO: include example using projection function!
 
 # if not needed for your analysis, just comment out this section!
 
