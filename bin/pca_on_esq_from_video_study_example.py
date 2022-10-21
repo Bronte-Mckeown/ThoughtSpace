@@ -17,7 +17,8 @@ as wordclouds for each PCA for each sample.
 
 """
 
-from ThoughtSpace import pca_plots # import pca_plot functions from ThoughtSpace
+
+from ThoughtSpace import pca_plots
 import os
 import pandas as pd
 from collections import OrderedDict
