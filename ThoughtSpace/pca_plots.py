@@ -19,6 +19,9 @@ from wordcloud import WordCloud
 import matplotlib.cm as cm
 import matplotlib.colors as mcolor
 
+from factor_analyzer.factor_analyzer import calculate_bartlett_sphericity
+from factor_analyzer.factor_analyzer import calculate_kmo
+
 # TO DO:
     # Add KMO + Bartletts as function
     # Add PCA extraction and rotation as function
@@ -340,3 +343,21 @@ def wordclouder(component_loading_dict, display, savefile=False):
             wc = wc.generate_from_frequencies(freq_dict)
             wc.to_file('scratch/results/{}_wordcloud_factor_{}.png'.format(key, col_index+1))
 
+
+def kmo_bartlett(esq_dict):
+    """
+    Input: 
+    Return Chi squared and p value (bartlett) and KMO for each pca solution in a dictionary 
+    """
+    kmo_bartlett_dict = {} # store values here
+
+    for k, v in esq_dict.items():
+        chi_square_value,p_value=calculate_bartlett_sphericity(v)
+        #print ("Chi-square value:", chi_square_value, "P-value:", p_value)
+        kmo_all,kmo_model=calculate_kmo(v)
+        #print ("KMO:", kmo_model)
+        kmo_bartlett_dict[k] = {
+            'chi_square_value':chi_square_value,
+            'chi_squared_p':p_value,
+            'KMO':kmo_model}
+    return kmo_bartlett_dict

@@ -24,8 +24,7 @@ import pandas as pd
 from collections import OrderedDict
 import numpy as np
 
-from factor_analyzer.factor_analyzer import calculate_bartlett_sphericity
-from factor_analyzer.factor_analyzer import calculate_kmo
+
 from factor_analyzer import Rotator
 
 ## FOR YOUR OWN ANALYSIS, EDIT A NEW COPY OF ME :) ##
@@ -78,7 +77,7 @@ person_col = "idno"  # input id number column if z-scoring by id
 # data_path = os.path.join(current_path, data_path)
 # print("Input data path: ", data_path, "\n")
 
-data_path = '//mnt//c//Users//bront//Documents//PhD//Projects//lab_to_realworld//data//lab//temp_data//temp_data_N119//0.1_combined_esq_N119_74_cols.csv'
+data_path = '/Users/willstrawson/Documents/PhD/repos/ThoughtSpace/scratch/data/0.1_combined_esq_N119_74_cols.csv'
 
 # read in ESQ data as a csv or tsv file
 # Remember to specify the separtor if not a csv file (e.g. '\t' if not .csv)
@@ -173,6 +172,7 @@ rotation_dict = OrderedDict()
     # assign esq cols to esq_dict
     # assign display labels to display_dict
     # assign rotation dict
+
 for index, (key, i)  in enumerate(df_dict.items()):
     i = i.iloc[:,col_start:col_end] # should be z-scored ESQ questions
     i = i.apply(pd.to_numeric, errors="coerce") # make sure numeric
@@ -184,15 +184,12 @@ for index, (key, i)  in enumerate(df_dict.items()):
     # display_dict[key] = [x.replace("Z", "") for x in i.columns.tolist()]
     rotation_dict[key] = rotation[index] # set rotation dict
 
-#%% run naive PCA on all dataframes stored in esq_dict
 
+#%% run naive PCA on all dataframes stored in esq_dict
 # first check KMO and Bartlett's test of sphericiity
-# TODO: this needs wrapping into a function
-for k, v in esq_dict.items():
-    chi_square_value,p_value=calculate_bartlett_sphericity(v)
-    print ("Chi-square value:", chi_square_value, "P-value:", p_value)
-    kmo_all,kmo_model=calculate_kmo(v)
-    print ("KMO:", kmo_model)
+
+kmo_bartlett_dict = pca_plots.kmo_bartlett(esq_dict)
+print(kmo_bartlett_dict)
 
 # svd = full, meaning it calculates as many components as there are items
 pca_dict = pca_plots.naive_pca(esq_dict)
@@ -383,5 +380,5 @@ lab_projected_df = pd.DataFrame.from_dict(lab_projected_scores_dict)
 output_df_with_projection = pd.concat([output_df, lab_projected_df], axis=1)
 
 # save output_df_with_projection as csv to data folder
-output_df_with_projection.to_csv("//mnt//c//Users//bront//Documents//PhD//Projects//lab_to_realworld//data//lab//with_pca//0.1_combined_esq_N119_74_cols_N70_N50_all_vid_rotation-on_ncomponents=3_with_projected.csv", index = False)
+#output_df_with_projection.to_csv("//mnt//c//Users//bront//Documents//PhD//Projects//lab_to_realworld//data//lab//with_pca//0.1_combined_esq_N119_74_cols_N70_N50_all_vid_rotation-on_ncomponents=3_with_projected.csv", index = False)
 
