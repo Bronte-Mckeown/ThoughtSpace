@@ -26,9 +26,9 @@ from factor_analyzer import Rotator
 
 
 # TO DO:
-    # Add KMO + Bartletts as function
-    # Add PCA extraction and rotation as function
-    # Add stuff for different rotation types
+    # Add KMO + Bartletts as function [x]
+    # Add PCA extraction and rotation as function [x]
+    # Add stuff for different rotation types 
 
 
 def create_observation_id(df, idno_col):
