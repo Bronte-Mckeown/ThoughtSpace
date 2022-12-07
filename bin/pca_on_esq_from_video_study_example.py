@@ -25,7 +25,6 @@ from collections import OrderedDict
 import numpy as np
 
 
-from factor_analyzer import Rotator
 
 ## FOR YOUR OWN ANALYSIS, EDIT A NEW COPY OF ME :) ##
 
@@ -187,122 +186,22 @@ for index, (key, i)  in enumerate(df_dict.items()):
 
 #%% run naive PCA on all dataframes stored in esq_dict
 # first check KMO and Bartlett's test of sphericiity
-
 kmo_bartlett_dict = pca_plots.kmo_bartlett(esq_dict)
 print(kmo_bartlett_dict)
 
 # svd = full, meaning it calculates as many components as there are items
 pca_dict = pca_plots.naive_pca(esq_dict)
 
-#%% extract pca scores and component loadings from pca_dict
+#%% extract pca scores (refined_scores) and component loadings (refined_loadings) from pca_dict
+refined_scores, refined_loadings = pca_plots.refine_pca(pca_dict, esq_dict, n_components_dict, rotation_dict, n_components, ev_extraction, rotation_on)
 
-# TODO: this needs wrapping into a function
-
-# create empty ordered dictionaries for storing un-rotated & rotated scores, loadings and n components
-unrotated_scores = OrderedDict()
-unrotated_loadings = OrderedDict()
-unrotated_n_components = OrderedDict()
-unrotated_percent_variance = OrderedDict()
-unrotated_cum_percent_variance = OrderedDict()
-
-rotated_scores = OrderedDict()
-rotated_loadings = OrderedDict()
-rotated_n_components = OrderedDict()
-rotated_percent_variance = OrderedDict()
-rotated_cum_percent_variance = OrderedDict()
-
-# loop over dataframes sroted in 'esq_dict'
-# in this example, this is a df for N = 70 & a df for N = 49
-for k in esq_dict:
-    # If you have set n_components to True:
-    if n_components:
-        # Generate per-observation scores for each factor
-        scores = pca_dict[k].transform(esq_dict[k])[:, : n_components_dict[k]]
-        # Generate per-item factor loadings
-        pc = pca_dict[k].components_[: n_components_dict[k], :]
-        
-        # Generate % variance explained for each factor
-        explained = pca_dict[k].explained_variance_ratio_
-        print  ("Variance explained by each factor:", explained)
-        # Generate cumalitive variance explained
-        cum_explained = pca_dict[k].explained_variance_ratio_.cumsum()
-        print ("Cumalitive variance explained:", cum_explained)
-
-        # Store factor scores
-        unrotated_scores[k] = scores
-        # Store factor loadings
-        unrotated_loadings[k] = pc
-        # Store number of components
-        unrotated_n_components[k] = n_components_dict[k]
-        # Store % variance explained
-        unrotated_percent_variance[k] = explained
-        # Store cumaltitive % variance explained
-        unrotated_cum_percent_variance[k] = cum_explained
-        print("Shape of 'scores' dataframe (i.e. n_components):", scores.shape)
-    # if you have set extraction based on eigevalues to be True:
-    elif ev_extraction:
-        evs = [i for i in pca_dict[k].explained_variance_ if i > 1]
-        n_components = len(evs)
-        # Generate per-observation scores for each factor
-        scores = pca_dict[k].transform(esq_dict[k])[:, :n_components]
-        # Generate per-item factor loadings
-        pc = pca_dict[k].components_[:n_components, :]
-        # Store factor scores
-        unrotated_scores[k] = scores
-        # Store factor loadings
-        unrotated_loadings[k] = pc
-        # Store number of components
-        unrotated_n_components[k] = n_components
-        # reset n_components to None
-        #n_components = None
-
-    else:
-        scores = pca_dict[k].transform(esq_dict[k])
-        pc = pca_dict[k].components_
-        unrotated_scores[k] = scores
-        unrotated_loadings[k] = pc
-        unrotated_n_components[k] = scores.shape[-1]
-        print("Shape of 'scores' dataframe (i.e. n_components):", scores.shape)
-        
-    if rotation_on: 
-    
-        ## Apply rotation
-            
-        # print type of rotation for sanity checking
-        print ('Rotation:', rotation_dict[k])
-        
-        # set up rotator object with method selected from rotation dictionary
-        rotator = Rotator(method = rotation_dict[k])
-        
-        # Generate per-item component loadings (i.e., component loadings table)
-        # rotator function wants component loadings table to be transposed
-        # then, we want to re-transpose it when saving as variable
-        rotated_pc = rotator.fit_transform(pc.T).T
-        # add component loadings to dictionary
-        rotated_loadings[k] = rotated_pc
-        
-        # print out shape of rotated component loading table
-        print (rotated_pc.shape)
-        
-        # Generate per-observation scores for each component
-        # need to transpose rotated_pc
-        rotated_score = np.dot(esq_dict[k], rotated_pc.T)
-        # add scores to dictionary
-        rotated_scores[k] = rotated_score
-        
-        # print shape of scores dataframe
-        rotated_n_components[k] = rotated_scores[k].shape[-1]
-        print( "[{} rotated] shape of 'scores' dataframe (i.e., n_components".format(rotation_dict[k]), rotated_scores[k].shape)
 
 #%% Add PCA scores to master df
-
 # adds pca scores to esq_dict dataframes for merging
-if rotation_on:
-    esq_dict_with_scores = pca_plots.append_scores(rotated_scores, esq_dict)
-    print("Added rotated scores")
-else:
-    esq_dict_with_scores = pca_plots.append_scores(unrotated_scores, esq_dict)
-    print("Added non-rotated scores")
+
+esq_dict_with_scores = pca_plots.append_scores(refined_scores, esq_dict)
+print("Added refined scores")
+
     
 # merge all and save
 output_df = pca_plots.merge_dataframes(
@@ -318,30 +217,19 @@ output_df = pca_plots.merge_dataframes(
 #%% Plots & word clouds for PCA solutions for each group (saves out PDF)
 # set mask threshold for heatmaps
 mask_threshold = 0
-if rotation_on:
-    pca_plots.page_of_plots(
-        pca_dict,
-        rotated_loadings,
-        mask_threshold,
-        results_id,
-        rotation_on,
-        n_components,
-        n_components_dict,
-        display_dict,
-    )
-    pca_plots.wordclouder(rotated_loadings, display_dict, savefile=True)
-else:
-    pca_plots.page_of_plots(
-        pca_dict,
-        unrotated_loadings,
-        mask_threshold,
-        results_id,
-        rotation_on,
-        n_components,
-        n_components_dict,
-        display_dict,
-    )
-    pca_plots.wordclouder(unrotated_loadings, display_dict, savefile=True)
+
+pca_plots.page_of_plots(
+    pca_dict,
+    refined_loadings,
+    mask_threshold,
+    results_id,
+    rotation_on,
+    n_components,
+    n_components_dict,
+    display_dict,
+)
+pca_plots.wordclouder(refined_loadings, display_dict, savefile=True)
+
 
 # %% Project patterns between samples
 
@@ -353,7 +241,7 @@ else:
 lab_projected_scores_dict = OrderedDict()
 
 # loop over keys and values of varimax rotated component loadings
-for key, loadings in rotated_loadings.items():
+for key, loadings in refined_loadings.items():
     # loop over each pattern in loadings
     idx = 0
     for pattern in loadings:

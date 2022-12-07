@@ -22,6 +22,9 @@ import matplotlib.colors as mcolor
 from factor_analyzer.factor_analyzer import calculate_bartlett_sphericity
 from factor_analyzer.factor_analyzer import calculate_kmo
 
+from factor_analyzer import Rotator
+
+
 # TO DO:
     # Add KMO + Bartletts as function
     # Add PCA extraction and rotation as function
@@ -361,3 +364,110 @@ def kmo_bartlett(esq_dict):
             'chi_squared_p':p_value,
             'KMO':kmo_model}
     return kmo_bartlett_dict
+
+
+def refine_pca(pca_dict, esq_dict, n_components_dict, rotation_dict, n_components, ev_extraction, rotation_on):
+    """
+    Reduce components and rotate solution of naive pca 
+    Input: pca_dict (dict of dfs), esq_dict (dict of dfs), n_components (int), ev_extraction (True/False)
+    """
+    # create empty ordered dictionaries for storing un-rotated & rotated scores, loadings and n components
+    unrotated_scores = OrderedDict()
+    unrotated_loadings = OrderedDict()
+    unrotated_n_components = OrderedDict()
+    unrotated_percent_variance = OrderedDict()
+    unrotated_cum_percent_variance = OrderedDict()
+
+    rotated_scores = OrderedDict()
+    rotated_loadings = OrderedDict()
+    rotated_n_components = OrderedDict()
+    rotated_percent_variance = OrderedDict()
+    rotated_cum_percent_variance = OrderedDict()
+
+    # loop over dataframes sroted in 'esq_dict'
+    # in the example, this is a df for N = 70 & a df for N = 49
+    for k in esq_dict:
+        # If you have set n_components to True:
+        if n_components:
+            # Generate per-observation scores for each factor
+            scores = pca_dict[k].transform(esq_dict[k])[:, : n_components_dict[k]]
+            # Generate per-item factor loadings
+            pc = pca_dict[k].components_[: n_components_dict[k], :]
+            
+            # Generate % variance explained for each factor
+            explained = pca_dict[k].explained_variance_ratio_
+            print  ("Variance explained by each factor:", explained)
+            # Generate cumalitive variance explained
+            cum_explained = pca_dict[k].explained_variance_ratio_.cumsum()
+            print ("Cumalitive variance explained:", cum_explained)
+
+            # Store factor scores
+            unrotated_scores[k] = scores
+            # Store factor loadings
+            unrotated_loadings[k] = pc
+            # Store number of components
+            unrotated_n_components[k] = n_components_dict[k]
+            # Store % variance explained
+            unrotated_percent_variance[k] = explained
+            # Store cumaltitive % variance explained
+            unrotated_cum_percent_variance[k] = cum_explained
+            print("Shape of 'scores' dataframe (i.e. n_components):", scores.shape)
+
+        # if you have set extraction based on eigevalues to be True:
+        elif ev_extraction:
+            evs = [i for i in pca_dict[k].explained_variance_ if i > 1]
+            n_components = len(evs)
+            # Generate per-observation scores for each factor
+            scores = pca_dict[k].transform(esq_dict[k])[:, :n_components]
+            # Generate per-item factor loadings
+            pc = pca_dict[k].components_[:n_components, :]
+            # Store factor scores
+            unrotated_scores[k] = scores
+            # Store factor loadings
+            unrotated_loadings[k] = pc
+            # Store number of components
+            unrotated_n_components[k] = n_components
+            # reset n_components to None
+            #n_components = None
+
+        else:
+            scores = pca_dict[k].transform(esq_dict[k])
+            pc = pca_dict[k].components_
+            unrotated_scores[k] = scores
+            unrotated_loadings[k] = pc
+            unrotated_n_components[k] = scores.shape[-1]
+            print("Shape of 'scores' dataframe (i.e. n_components):", scores.shape)
+
+        if rotation_on: 
+    
+            ## Apply rotation
+            # print type of rotation for sanity checking
+            print('Rotation:', rotation_dict[k])
+            # set up rotator object with method selected from rotation dictionary
+            rotator = Rotator(method = rotation_dict[k])
+            
+            # Generate per-item component loadings (i.e., component loadings table)
+            # rotator function wants component loadings table to be transposed
+            # then, we want to re-transpose it when saving as variable
+            rotated_pc = rotator.fit_transform(pc.T).T
+            # add component loadings to dictionary
+            rotated_loadings[k] = rotated_pc
+            
+            # print out shape of rotated component loading table
+            print (rotated_pc.shape)
+            
+            # Generate per-observation scores for each component
+            # need to transpose rotated_pc
+            rotated_score = np.dot(esq_dict[k], rotated_pc.T)
+            # add scores to dictionary
+            rotated_scores[k] = rotated_score
+            
+            # print shape of scores dataframe
+            rotated_n_components[k] = rotated_scores[k].shape[-1]
+            print("[{} rotated] shape of 'scores' dataframe (i.e., n_components".format(rotation_dict[k]), rotated_scores[k].shape)
+
+    if rotation_on:
+        return rotated_scores, rotated_loadings
+
+    else:
+        return unrotated_scores, unrotated_loadings
