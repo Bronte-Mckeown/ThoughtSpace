@@ -346,7 +346,7 @@ def wordclouder(component_loading_dict, display, savefile=False):
 
 def kmo_bartlett(esq_dict):
     """
-    Input: 
+    Input: esq_dict (key: dataset name, value: scores for each esq)
     Return Chi squared and p value (bartlett) and KMO for each pca solution in a dictionary 
     """
     kmo_bartlett_dict = {} # store values here
