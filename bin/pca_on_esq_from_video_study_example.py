@@ -18,6 +18,7 @@ as wordclouds for each PCA for each sample.
 """
 
 
+
 from ThoughtSpace import pca_plots
 import os
 import pandas as pd
@@ -54,7 +55,7 @@ rotation_on = True
 rotation = ['varimax', 'varimax']
 
 # if you want to z-score ESQ by sample (e.g., N70 only or N49 only), set to True
-by_sample = True  
+by_sample = True
 sample_col = "sample"  # input sample column name if z-scoring by sample
 
 by_condition = False  # if you want to z-score by condition (e.g.,control, action, suspense)
@@ -62,6 +63,10 @@ condition_col = "condition"  # input condition column name if z-scoring by condi
 
 by_person = False  # if you want to z-score by person
 person_col = "idno"  # input id number column if z-scoring by id
+
+
+first_last_esq_colZ = ("Zfocus", "Zsource")
+first_last_esq_col = ("focus", "source")
 
 
 # set path of ESQ data
@@ -88,7 +93,7 @@ df = pca_plots.create_observation_id(df, "idno")
 
 # To find index of the start and end of ESQ columns in master dataframe (df),
 # provide strings of start and end ESQ column names
-col_start, col_end = pca_plots.esq_cols(df, "focus", "source")
+col_start, col_end = pca_plots.esq_cols(df, first_last_esq_col[0], first_last_esq_col[1])
 
 # This calls the z_score function to zscore ESQ columns identified above 
 # using esq_cols function
@@ -107,7 +112,7 @@ df = pca_plots.z_score(
 
 # Use function again to find index of Z scored ESQ columns by providing strings 
 # of s-scored start and end cols
-col_start, col_end = pca_plots.esq_cols(df, "Zfocus", "Zsource")
+col_start, col_end = pca_plots.esq_cols(df, first_last_esq_colZ[0],first_last_esq_colZ[1])
 
 # Here, user should enter esq labels for display on plots & word clouds
 # Labels need to be written in the same order as they appear in the columns
@@ -152,7 +157,7 @@ n_components_dict = OrderedDict(
     [
         ("df_N70", 3),
         ("df_N49", 3)
-       
+
     ]
 )
 
@@ -166,11 +171,6 @@ esq_dict = OrderedDict()
 display_dict = OrderedDict()
 # create empty OrderedDict for storing rotation type
 rotation_dict = OrderedDict()
-
-# loop over df_dict to:
-    # assign esq cols to esq_dict
-    # assign display labels to display_dict
-    # assign rotation dict
 
 for index, (key, i)  in enumerate(df_dict.items()):
     i = i.iloc[:,col_start:col_end] # should be z-scored ESQ questions
@@ -202,7 +202,7 @@ refined_scores, refined_loadings = pca_plots.refine_pca(pca_dict, esq_dict, n_co
 esq_dict_with_scores = pca_plots.append_scores(refined_scores, esq_dict)
 print("Added refined scores")
 
-    
+
 # merge all and save
 output_df = pca_plots.merge_dataframes(
     esq_dict_with_scores,
@@ -248,18 +248,18 @@ for key, loadings in refined_loadings.items():
         # select columns to project on in lab data
         if "N70" in key:
             idx = idx +1
-            cols_to_project_on = output_df.loc[output_df["sample"] == "N49", "Zfocus":"Zsource"]
+            cols_to_project_on = output_df.loc[output_df["sample"] == "N49", first_last_esq_colZ[0]:first_last_esq_colZ[1]]
             # compute dot product 
             projected_pattern = cols_to_project_on.dot(pattern.T)
             # add to projected scores dict
-            lab_projected_scores_dict["projected_N70_to_N49_fac{}".format(idx)] = projected_pattern
+            lab_projected_scores_dict[f"projected_N70_to_N49_fac{idx}"] = projected_pattern
         elif "N49" in key:
             idx = idx +1
-            cols_to_project_on = output_df.loc[output_df["sample"] == "N70", "Zfocus":"Zsource"]
+            cols_to_project_on = output_df.loc[output_df["sample"] == "N70", first_last_esq_colZ[0]:first_last_esq_colZ[1]]
             # compute dot product 
             projected_pattern = cols_to_project_on.dot(pattern.T)
             # add to projected scores dict
-            lab_projected_scores_dict["projected_N49_to_N70_fac{}".format(idx)] = projected_pattern
+            lab_projected_scores_dict[f"projected_N49_to_N70_fac{idx}"] = projected_pattern
 
 # covert dictionary to dataframe
 lab_projected_df = pd.DataFrame.from_dict(lab_projected_scores_dict)
