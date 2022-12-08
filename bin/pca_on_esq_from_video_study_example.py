@@ -80,8 +80,8 @@ first_last_esq_col = ("focus", "source")
 # join git repo parent to relative path to data
 # data_path = os.path.join(current_path, data_path)
 # print("Input data path: ", data_path, "\n")
-
-data_path = '/Users/willstrawson/Documents/PhD/repos/ThoughtSpace/scratch/data/0.1_combined_esq_N119_74_cols.csv'
+repo_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) 
+data_path = os.path.join(repo_path,'scratch/data/0.1_combined_esq_N119_74_cols.csv')
 
 # read in ESQ data as a csv or tsv file
 # Remember to specify the separtor if not a csv file (e.g. '\t' if not .csv)
@@ -234,6 +234,12 @@ pca_plots.wordclouder(refined_loadings, display_dict, savefile=True)
 # %% Project patterns between samples
 
 # TODO: include example using projection function!
+'''
+pca_plots.project_patterns(
+    refined_loadings,
+    output_df,
+    refined_loadings.keys()[0],
+    "n70")
 
 # if not needed for your analysis, just comment out this section!
 
@@ -269,4 +275,4 @@ output_df_with_projection = pd.concat([output_df, lab_projected_df], axis=1)
 
 # save output_df_with_projection as csv to data folder
 #output_df_with_projection.to_csv("//mnt//c//Users//bront//Documents//PhD//Projects//lab_to_realworld//data//lab//with_pca//0.1_combined_esq_N119_74_cols_N70_N50_all_vid_rotation-on_ncomponents=3_with_projected.csv", index = False)
-
+'''
