@@ -245,11 +245,17 @@ def page_of_plots(pca_dict,loadings_dict, masking_num, results_id, rotation_on, 
         # add subplot for heatmap 
         mask = (loadings_dict[k].T < masking_num) & (loadings_dict[k].T > -masking_num)
         heatmp= sns.heatmap(ax=axes[1,1],data=loadings_dict[k].T, cmap="RdBu_r", vmax=0.7, vmin=-0.7, mask = mask)
-        heatmp.set_xticks(np.arange(n_components_dict[k])+0.5)
-        heatmp.set_xticklabels(range(1, n_components_dict[k] + 1))
+        
+        if n_components == True:
+            heatmp.set_xticks(np.arange(n_components_dict[k])+0.5)
+            heatmp.set_xticklabels(range(1, n_components_dict[k] + 1))
+        elif n_components == False:
+            heatmp.set_xticks(np.arange(len(loadings_dict))+0.5)
+            heatmp.set_xticklabels(range(1, len(loadings_dict) + 1))
+            
         heatmp.set_yticks(np.arange(len(display[k]))+0.5)
         heatmp.set_yticklabels(display[k], rotation = 360)
-        heatmp.set_title("Principle components")
+        heatmp.set_title("Principal components")
 
         fig.tight_layout()
         # save PDF
