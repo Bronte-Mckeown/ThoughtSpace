@@ -250,6 +250,7 @@ def page_of_plots(pca_dict,loadings_dict, masking_num, results_id, rotation_on, 
             heatmp.set_xticks(np.arange(n_components_dict[k])+0.5)
             heatmp.set_xticklabels(range(1, n_components_dict[k] + 1))
         elif n_components == False:
+            # TO DO: fix this
             heatmp.set_xticks(np.arange(len(loadings_dict))+0.5)
             heatmp.set_xticklabels(range(1, len(loadings_dict) + 1))
             
