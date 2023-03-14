@@ -32,12 +32,12 @@ pip install -r requirements.txt #install packages in this text file (including T
 ### `ThoughtSpace/`
 
 - In here are the necessary functions that make up the package 'ThoughtSpace'.
-- These are called by scripts in bin/ when you 'import ThoughtSpace' in your scripts.
+- These are called by your scripts when you 'import ThoughtSpace' in your scripts.
 - No need to edit anything in here - unless, of course, you want to contribute a function. In which case, submit a Pull Request.
 
 ### `bin/`
 
-- Here is where you will store scripts that call functions in ThoughtSpace to perform the analysis.
+- Here is the example script that calls functions in ThoughtSpace to perform the analysis.
 - Save a copy of the '...example.py' script from the main branch into your own analysis-specific directory and edit accordingly for your own analysis.
 
 ### `scratch/`

@@ -25,11 +25,6 @@ from factor_analyzer.factor_analyzer import calculate_kmo
 from factor_analyzer import Rotator
 
 
-# TO DO:
-    # Add KMO + Bartletts as function [x]
-    # Add PCA extraction and rotation as function [x]
-    # Add stuff for different rotation types 
-
 
 def create_observation_id(df, idno_col):
     """
@@ -76,24 +71,29 @@ def z_score(df, col_start, col_end, by_sample = False, sample_col = None,
     """
     # store column names which you want Z scoring
     cols = df.columns.tolist()[col_start:col_end]
-    
+
     for c in cols:
         df[c] = pd.to_numeric(df[c], errors = 'coerce')
-        
-        # if by_condition and by_sample set to true, apply z-score by condition and sample 
+
+        # if by_condition and by_sample set to true, apply z-score by condition and sample
         if by_condition and by_sample:
-            df['Z{}'.format(c)] = df.groupby([condition_col, sample_col])[c].transform(lambda x: zscore(x, ddof=1, nan_policy='omit'))
-        # if by_condition set to true and by_sample set to false, apply z-score by condition only to all samples
-        elif by_condition and not by_sample:
-            df['Z{}'.format(c)] = df.groupby(condition_col)[c].transform(lambda x: zscore(x, ddof=1, nan_policy='omit'))
-        # if by_sample set to true and by_condition set to false, apply z-score by sample only to all conditions
-        elif by_sample and not by_condition:
-            df['Z{}'.format(c)] = df.groupby(sample_col)[c].transform(lambda x: zscore(x, ddof=1, nan_policy='omit'))
-        # if both set to false, apply Z-score to all 
+            df[f'Z{c}'] = df.groupby([condition_col, sample_col])[c].transform(
+                lambda x: zscore(x, ddof=1, nan_policy='omit')
+            )
+        elif by_condition:
+            df[f'Z{c}'] = df.groupby(condition_col)[c].transform(
+                lambda x: zscore(x, ddof=1, nan_policy='omit')
+            )
+        elif by_sample:
+            df[f'Z{c}'] = df.groupby(sample_col)[c].transform(
+                lambda x: zscore(x, ddof=1, nan_policy='omit')
+            )
         elif by_person:
-            df['Z{}'.format(c)] = df.groupby([person_col])[c].transform(lambda x: zscore(x, ddof=1, nan_policy='omit'))
+            df[f'Z{c}'] = df.groupby([person_col])[c].transform(
+                lambda x: zscore(x, ddof=1, nan_policy='omit')
+            )
         else:
-            df['Z{}'.format(c)] = zscore(df[c], nan_policy='omit')
+            df[f'Z{c}'] = zscore(df[c], nan_policy='omit')
     return df 
 
 def naive_pca(input_dict):
@@ -132,16 +132,16 @@ def append_scores(score_dict, source_dict):
     Function to add per-observation factor scores to original dataframes.
     This returns a new dataframe. 
     """
-    new_dict = OrderedDict() 
+    new_dict = OrderedDict()
     # Loop through keys (group/condition splits)
     for k in source_dict:
         # Get default indexing for concat to work
-        source_dict[k] = source_dict[k].reset_index() 
+        source_dict[k] = source_dict[k].reset_index()
         # Convert source dict from np array to pd dataframe
         score_dict[k] = pd.DataFrame(score_dict[k])
         # rename columns from '0','1' etc to Factor number and group/condition name
         for idx, i in enumerate(score_dict[k].columns.tolist()):
-            score_dict[k] = score_dict[k].rename(columns={i:'{}_fac{}'.format(k ,idx+1)})
+            score_dict[k] = score_dict[k].rename(columns={i: f'{k}_fac{idx + 1}'})
         # Only join dataframes if number of rows (observations) are the same
         if len(score_dict) == len(source_dict):
             df_conc = pd.concat([source_dict[k], score_dict[k]], axis=1)
@@ -155,22 +155,15 @@ def merge_dataframes(input_dict, master_df, data_path, results_id, rotation_on, 
     """
     Function to add ALL the dataframes with PCA scores to OG DF
     """
-    idx = 0 
-    # loop through dicionary, ignoring first entry 
-    for k,v in input_dict.items():
-        idx += 1
+    # loop through dicionary, ignoring first entry
+    for idx, (k, v) in enumerate(input_dict.items(), start=1):
+        print ('idx:', idx)
+        # Merge
+        print ('Merging:',k)
         if idx == 1: 
-            print ('idx:', idx)
-            # Merge
-            print ('Merging:',k)
             cols_to_use = input_dict[k].columns.difference(master_df.columns)
             merged_df = master_df.merge(input_dict[k][cols_to_use], on='observation_id', how='outer')
-            print ('Shape of merged df:', merged_df.shape)
         else:
-            print ('idx:', idx)
-            print ('Merging:',k)
-
-
             # get only those columns who don't appearin both dataframes (otherwise '_x' and '_y' is added)
             cols_to_use = input_dict[k].columns.difference(merged_df.columns)
 
@@ -179,11 +172,9 @@ def merge_dataframes(input_dict, master_df, data_path, results_id, rotation_on, 
 
             #print ('INPUT COLS TO USE:', cols_to_use)
             merged_df = merged_df.merge(input_dict[k][cols_to_use], on='observation_id', how='outer')
-            print ('Shape of merged df:', merged_df.shape)
-
-    outputdf = merged_df 
+        print ('Shape of merged df:', merged_df.shape)
+    outputdf = merged_df
     # TODO move saving data to out of function
-    # TODO This fucks up if extension isn't .csv 
     # TODO this shouldn't output to the parent directory 
     # TODO want to save WHICH rotation has been applied in filename
     output_name = data_path.split('.csv')[0] + ('_{results_id}_{rotation}_ncomponents={ncomp}'.format(
@@ -417,7 +408,7 @@ def refine_pca(pca_dict, esq_dict, n_components_dict, rotation_dict, n_component
             scores = pca_dict[k].transform(esq_dict[k])[:, : n_components_dict[k]]
             # Generate per-item factor loadings
             pc = pca_dict[k].components_[: n_components_dict[k], :]
-            
+
             # Generate % variance explained for each factor
             explained = pca_dict[k].explained_variance_ratio_
             print  ("Variance explained by each factor:", explained)
@@ -463,32 +454,35 @@ def refine_pca(pca_dict, esq_dict, n_components_dict, rotation_dict, n_component
             print("Shape of 'scores' dataframe (i.e. n_components):", scores.shape)
 
         if rotation_on: 
-    
+            
             ## Apply rotation
             # print type of rotation for sanity checking
             print('Rotation:', rotation_dict[k])
             # set up rotator object with method selected from rotation dictionary
             rotator = Rotator(method = rotation_dict[k])
-            
+
             # Generate per-item component loadings (i.e., component loadings table)
             # rotator function wants component loadings table to be transposed
             # then, we want to re-transpose it when saving as variable
             rotated_pc = rotator.fit_transform(pc.T).T
             # add component loadings to dictionary
             rotated_loadings[k] = rotated_pc
-            
+
             # print out shape of rotated component loading table
             print (rotated_pc.shape)
-            
+
             # Generate per-observation scores for each component
             # need to transpose rotated_pc
             rotated_score = np.dot(esq_dict[k], rotated_pc.T)
             # add scores to dictionary
             rotated_scores[k] = rotated_score
-            
+
             # print shape of scores dataframe
             rotated_n_components[k] = rotated_scores[k].shape[-1]
-            print("[{} rotated] shape of 'scores' dataframe (i.e., n_components".format(rotation_dict[k]), rotated_scores[k].shape)
+            print(
+                f"[{rotation_dict[k]} rotated] shape of 'scores' dataframe (i.e., n_components",
+                rotated_scores[k].shape,
+            )
 
     if rotation_on:
         return rotated_scores, rotated_loadings
