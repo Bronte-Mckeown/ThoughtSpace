@@ -4,16 +4,22 @@ Python-based pipeline for flexible Principal Components Analysis (PCA) and proje
 
 ## Prerequisite
 
-First thing to do is to ensure you have 1) forked this repository, and then 2) cloned the forked repository.
+There are a couple of ways you can implement ThoughtSpace in your own analysis. Pick the one that makes the most sense to you.
 
-Forking creates your very own remote version of this repository, while cloning creates a local version of that repository on your computer. If unsure, please google 'how to clone github repository'.
+Option 1. You can simply add the following to your requirements.txt file in the directory where you'll be running the analysis: git+https://github.com/Bronte-Mckeown/ThoughtSpace
 
-Once you've cloned this repo, you'll want to add it to the requirements.txt file in the directory where you'll be running the analysis.
-You can do this by either adding an absolute path to ThoughtSpace to requirements.txt, or by adding a link to the github repo.
+- If you do not know what a requirements.txt file is, see this link for help: https://www.javatpoint.com/how-to-create-requirements-txt-file-in-python#:~:text=In%20Python%20requirement.,Typically%20this%20file%20%22requirement.
 
-## Set-up your environment
+Option 2. Fork this ThoughtSpace repository, and then 2) clone the forked repository.
 
-First, you'll need to set up an environment. This can be done using the terminal/command-prompt.
+- Forking creates your very own remote version of this repository and cloning creates a local version of that repository on your computer. If unsure, please google 'how to clone github repository'.
+
+- Once you've cloned your forked version of this repository, you'll want to add it to the requirements.txt file in the directory where you'll be running the analysis.
+You can do this by either adding an absolute path to your local copy of ThoughtSpace to requirements.txt, or by adding a link to your own forked version of this github repo.
+
+## Set-up your virtual environment
+
+First, you'll need to set up a virtual environment. This can be done using the terminal/command-prompt.
 We will be using the language Bash. This is the default language in a terminal shell for both Mac and Linux. To use on Windows, use the Ubuntu app (if this is confusing, google 'how to use Bash on windows').
 
 In your terminal, enter the following commands (line-by-line):
@@ -28,6 +34,8 @@ pip install -r requirements.txt #install packages in this text file (including T
 ```
 
 ## Repository structure
+
+* Please note that ThoughtSpace is currently undergoing significant developments which will make it much more user-friendly so sit tight! *
 
 ### `ThoughtSpace/`
 
@@ -51,7 +59,7 @@ pip install -r requirements.txt #install packages in this text file (including T
 
 ## How to run the PCA analysis (using `bin/...example.py`)
 
-#### Aim: 1) To caluculate per-observation PCA for each componant of each PCA across different group splits 2) To produce screeplots, cumulative variance plots, heatmaps and wordclouds for each
+#### Aim: 1) To caluculate per-observation PCA for each component of each PCA across different group splits (if you have group splits) 2) To produce screeplots, cumulative variance plots, heatmaps and wordclouds for each
 
 _Open the example.py script in bin/, and save a copy. Edit this copy only. Keep the example.py script for reference._
 _This example script is specific to a particular dataset so variables will need editing_
@@ -89,4 +97,4 @@ _Note: Not every line in the example.py script is needed to run this analysis - 
     - In scratch/ you should have 1) word clouds 2) loadings of each thought item on each component (if `savefile==True` in `wordclouder` function) 3) a PDF summary and 4) a new version of your original dataframe with PCA scores appended
 13. Option projection of patterns
     - Currrently, this is just done using a for loop in the example script but there is also a function available in ThoughtSpace/pca_plots that does this more flexibly
-    - Will update soon
+    - Will update soon as improvements are coming!
