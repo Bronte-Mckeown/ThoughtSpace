@@ -17,8 +17,6 @@ as wordclouds for each PCA for each sample.
 
 """
 
-
-
 from ThoughtSpace import pca_plots
 import os
 import pandas as pd
@@ -70,16 +68,8 @@ first_last_esq_col = ("focus", "source")
 
 
 # set path of ESQ data
-# commented out code below can be used to direct to data stored in current repo
-# however, for this example, the data path is hard coded
 
 # current path should = parent repo directory
-# current_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-# data_name = "0.1_combined_esq_N119_74_cols.csv"
-# data_path = "scratch/data/" + data_name
-# join git repo parent to relative path to data
-# data_path = os.path.join(current_path, data_path)
-# print("Input data path: ", data_path, "\n")
 repo_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) 
 data_path = os.path.join(repo_path,'scratch/data/0.1_combined_esq_N119_74_cols.csv')
 
@@ -227,7 +217,9 @@ pca_plots.page_of_plots(
     n_components,
     n_components_dict,
     display_dict,
+    kmo_bartlett_dict
 )
+
 pca_plots.wordclouder(refined_loadings, display_dict, savefile=True)
 
 
