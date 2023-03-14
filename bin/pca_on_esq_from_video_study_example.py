@@ -17,8 +17,6 @@ as wordclouds for each PCA for each sample.
 
 """
 
-
-
 from ThoughtSpace import pca_plots
 import os
 import pandas as pd
@@ -227,7 +225,9 @@ pca_plots.page_of_plots(
     n_components,
     n_components_dict,
     display_dict,
+    kmo_bartlett_dict
 )
+
 pca_plots.wordclouder(refined_loadings, display_dict, savefile=True)
 
 

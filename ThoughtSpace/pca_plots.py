@@ -197,7 +197,7 @@ def merge_dataframes(input_dict, master_df, data_path, results_id, rotation_on, 
     return outputdf
 
 
-def page_of_plots(pca_dict,loadings_dict, masking_num, results_id, rotation_on, n_components, n_components_dict, display):
+def page_of_plots(pca_dict,loadings_dict, masking_num, results_id, rotation_on, n_components, n_components_dict, display, kmo_bartlett_dict):
     """
     Function to create PDF of all figures for all groups
     """
@@ -235,7 +235,7 @@ def page_of_plots(pca_dict,loadings_dict, masking_num, results_id, rotation_on, 
         loadplt.set_xlabel("PC 1")
         loadplt.set_ylabel("PC 2")
         loadplt.set_title("Loading plot")
-        
+
         x = loadings_dict[k][0, :]
         y = loadings_dict[k][1, :]
 
@@ -245,7 +245,7 @@ def page_of_plots(pca_dict,loadings_dict, masking_num, results_id, rotation_on, 
         # add subplot for heatmap 
         mask = (loadings_dict[k].T < masking_num) & (loadings_dict[k].T > -masking_num)
         heatmp= sns.heatmap(ax=axes[1,1],data=loadings_dict[k].T, cmap="RdBu_r", vmax=0.7, vmin=-0.7, mask = mask)
-        
+
         if n_components == True:
             heatmp.set_xticks(np.arange(n_components_dict[k])+0.5)
             heatmp.set_xticklabels(range(1, n_components_dict[k] + 1))
@@ -253,7 +253,7 @@ def page_of_plots(pca_dict,loadings_dict, masking_num, results_id, rotation_on, 
             # TO DO: fix this
             heatmp.set_xticks(np.arange(len(loadings_dict))+0.5)
             heatmp.set_xticklabels(range(1, len(loadings_dict) + 1))
-            
+
         heatmp.set_yticks(np.arange(len(display[k]))+0.5)
         heatmp.set_yticklabels(display[k], rotation = 360)
         heatmp.set_title("Principal components")
@@ -261,6 +261,23 @@ def page_of_plots(pca_dict,loadings_dict, masking_num, results_id, rotation_on, 
         fig.tight_layout()
         # save PDF
         pdf.savefig(fig)
+
+    # create second figure (for page 2) to house kmo and bartlett info
+    fig2 = plt.figure()
+    for key, sub_dict in kmo_bartlett_dict.items():
+        for sub_key, value in sub_dict.items():
+            sub_dict[sub_key] = round(value, 4)
+
+
+    text = "".join(
+        key + ": " + str(value) + "\n"
+        for key, value in kmo_bartlett_dict.items()
+    )
+
+    print(text)
+    fig2.text(0.05, 0.9, text, fontsize=10) # 10% across the figure, 90% up
+    pdf.savefig(fig2)
+
     pdf.close()
 
 def project_patterns(component_loadings_dict, master_df_with_scores, component_loadings_dict_key, \
