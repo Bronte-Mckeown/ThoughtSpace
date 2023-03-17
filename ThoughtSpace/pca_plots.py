@@ -308,7 +308,6 @@ def wordclouder(component_loading_dict, display, savefile=False):
     Function to return 1) wordclouds.pngs (saved by default) 2) .csvs containg colour codes & weightings used to make wordclouds 
     """
     for key, value in component_loading_dict.items(): # Loop over loading dictionaries - 1 dataframe per iteration
-        print('DISPLAY:',list(display.values())[0])
         df = pd.DataFrame(value.T) # transpose
         output_name = "scratch/results/{}_component_loadings_for_wordclouds.csv".format(key)
         if savefile:
