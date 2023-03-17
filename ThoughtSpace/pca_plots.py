@@ -381,10 +381,11 @@ def kmo_bartlett(esq_dict):
     return kmo_bartlett_dict
 
 
-def refine_pca(pca_dict, esq_dict, n_components_dict, rotation_dict, n_components, ev_extraction, rotation_on):
+def refine_pca(pca_dict, esq_dict, n_components_dict, rotation_dict, n_components, ev_extraction, rotation_on, FlipComponents=False):
     """
     Reduce components and rotate solution of naive pca 
     Input: pca_dict (dict of dfs), esq_dict (dict of dfs), n_components (int), ev_extraction (True/False)
+    FlipComponents: Needs 
     """
     # create empty ordered dictionaries for storing un-rotated & rotated scores, loadings and n components
     unrotated_scores = OrderedDict()
@@ -465,11 +466,21 @@ def refine_pca(pca_dict, esq_dict, n_components_dict, rotation_dict, n_component
             # rotator function wants component loadings table to be transposed
             # then, we want to re-transpose it when saving as variable
             rotated_pc = rotator.fit_transform(pc.T).T
+
             # add component loadings to dictionary
             rotated_loadings[k] = rotated_pc
 
             # print out shape of rotated component loading table
             print (rotated_pc.shape)
+
+            if FlipComponents:
+                assert type(FlipComponents)==list 
+
+                # Flip component 1 (negative memories)
+                for i in FlipComponents:
+                    print(f'Flipping component {i}...')
+                    rotated_pc.T[:,i]=rotated_pc.T[:,i]*-1
+
 
             # Generate per-observation scores for each component
             # need to transpose rotated_pc
