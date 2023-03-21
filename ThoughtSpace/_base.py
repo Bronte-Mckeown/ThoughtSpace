@@ -1,10 +1,10 @@
+from typing import Tuple
 import numpy as np
 import pandas as pd
 from factor_analyzer import Rotator, calculate_bartlett_sphericity, calculate_kmo
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
-from typing import Tuple
 
 
 class basePCA(TransformerMixin, BaseEstimator):
@@ -14,10 +14,8 @@ class basePCA(TransformerMixin, BaseEstimator):
     def check_stats(self, df: pd.DataFrame) -> None:
         """
         This function checks the KMO and Bartlett Sphericity of the dataframe.
-
         Args:
             df: The dataframe to check.
-
         Returns:
             None
         """
@@ -62,49 +60,49 @@ class basePCA(TransformerMixin, BaseEstimator):
                 % k
             )
 
-    def check_inputs(self, df: pd.DataFrame, fit: bool = False) -> pd.DataFrame:
+    def check_inputs(
+        self, df: pd.DataFrame, fit: bool = False, project: bool = False
+    ) -> pd.DataFrame:
         """
         Check the inputs of the function.
-
         Args:
             df: The input dataframe.
             fit: Whether the function is in fit mode.
-
         Returns:
             The processed dataframe.
         """
         if fit:
             self.extra_columns = df.copy()
+        if project:
+            self.project_columns = df.copy()
         dtypes = df.dtypes
         for col in dtypes.index:
             if fit and dtypes[col] in [np.int64, np.float64, np.int32, np.float32]:
                 self.extra_columns.drop(col, axis=1, inplace=True)
+            if project and dtypes[col] in [np.int64, np.float64, np.int32, np.float32]:
+                self.project_columns.drop(col, axis=1, inplace=True)
             if dtypes[col] not in [np.int64, np.float64, np.int32, np.float32]:
                 df.drop(col, axis=1, inplace=True)
         if fit:
             self.items = df.columns.tolist()
         return df
 
-    def z_score(self, df: pd.DataFrame) -> pd.DataFrame:
+    def z_score(self, df: pd.DataFrame) -> np.ndarray:
         """
         This function returns the z-score of the dataframe.
-
         Args:
             df: The dataframe to be scaled.
-
         Returns:
             The z-score of the dataframe.
         """
         self.scaler = StandardScaler()
         return self.scaler.fit_transform(df)
 
-    def naive_pca(self, df: pd.DataFrame) -> Tuple[PCA, pd.DataFrame]:
+    def naive_pca(self, df: pd.DataFrame) -> Tuple[PCA, pd.DataFrame]:  # type: ignore
         """
         This is a multi-line Google style docstring.
-
         Args:
             df (pd.DataFrame): The dataframe to be used for PCA.
-
         Returns:
             Tuple[PCA, pd.DataFrame]: The PCA object and the loadings dataframe.
         """
@@ -121,28 +119,32 @@ class basePCA(TransformerMixin, BaseEstimator):
         )
         return pca, loadings
 
-    def fit(self, df: pd.DataFrame, y=None, **kwargs) -> "PCA":
+    def fit(self, df: pd.DataFrame, y=None, scale: bool = True, **kwargs) -> "PCA":
         """
         Fit the PCA model.
-
         Args:
             df: The input dataframe.
             y: The target variable.
             **kwargs: The keyword arguments.
-
         Returns:
             The fitted PCA model.
         """
         df = self.check_inputs(df, fit=True)
         self.check_stats(df)
-        df_z = self.z_score(df)
-        self.pca, self.loadings = self.naive_pca(df_z)
+        if scale:
+            df = self.z_score(df)
+        self.pca, self.loadings = self.naive_pca(df)
         return self
 
-    def transform(self, df: pd.DataFrame) -> pd.DataFrame:
+    def transform(
+        self,
+        df: pd.DataFrame,
+        scale=True,
+    ) -> pd.DataFrame:
         df = self.check_inputs(df)
-        zdf = self.scaler.transform(df)
-        output_ = np.dot(zdf, self.loadings).T
+        if scale:
+            df = self.scaler.transform(df)
+        output_ = np.dot(df, self.loadings).T
         for x in range(self.n_components):
             self.extra_columns[f"PCA_{x}"] = output_[x, :]
         return self.extra_columns.copy()
@@ -152,3 +154,92 @@ class basePCA(TransformerMixin, BaseEstimator):
 
     def fit_project(self, df: pd.DataFrame) -> pd.DataFrame:
         return self.fit(df).project(df)
+
+
+class groupedPCA(basePCA):
+    def __init__(self, grouping_col=None, n_components="infer", **kwargs):
+        """
+        Initialize the class.
+
+        Args:
+            grouping_col: The column to group by.
+            n_components: The number of components to use.
+            kwargs: Additional keyword arguments.
+        """
+        super().__init__(n_components)
+        self.grouping_col = grouping_col
+        if grouping_col is None:
+            raise ValueError("Must specify a grouping column.")
+
+    def z_score_byitem(self, df_dict) -> pd.DataFrame:
+        """
+        This function is used to calculate the z-score of the dataframe.
+
+        Args:
+            df_dict (dict): Dictionary of dataframes.
+
+        Returns:
+            pd.DataFrame: Dataframe with z-score.
+        """
+        self.scalerdict = {}
+        outdict = []
+        for key, value in df_dict.items():
+            scaler = StandardScaler()
+            value_ = self.check_inputs(value, fit=True)
+            value_scaled = scaler.fit_transform(value_)
+            extcol = self.extra_columns.copy().assign(
+                **dict(zip(self.items, value_scaled.T))
+            )
+            self.scalerdict[key] = scaler
+            outdict.append(extcol)
+        return pd.concat(outdict, axis=0)
+
+    def z_score_byitem_project(self, df_dict) -> pd.DataFrame:
+        """
+        This function takes a dictionary of dataframes and returns a dataframe with z-scored values.
+
+        Args:
+            df_dict (dict): A dictionary of dataframes.
+
+        Returns:
+            pd.DataFrame: A dataframe with z-scored values.
+        """
+        outdict = []
+        for key, value in df_dict.items():
+            value_ = self.check_inputs(value, project=True)
+            try:
+                scaler = self.scalerdict[key]
+            except Exception:
+                print(
+                    f"Encountered a group in the data that wasn't seen while fitting: {key}. New group will be zscored individually."
+                )
+                scaler = StandardScaler()
+                scaler.fit(value_)
+            value_scaled = scaler.transform(value_)
+            extcol = self.project_columns.copy().assign(
+                **dict(zip(self.items, value_scaled.T))
+            )
+            outdict.append(extcol)
+        return pd.concat(outdict, axis=0)
+
+    def fit(self, df: pd.DataFrame, y=None, **kwargs):
+        """
+        This is a multi-line Google style docstring.
+
+        Args:
+            df (pd.DataFrame): The dataframe to fit.
+            y (pd.Series): The target variable.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            self
+        """
+        d = dict(tuple(df.groupby(self.grouping_col)))
+        zdf = self.z_score_byitem(d)
+        super().fit(zdf, y=y, scale=False, **kwargs)
+        return self
+
+    def transform(self, df: pd.DataFrame) -> pd.DataFrame:
+        d = dict(tuple(df.groupby(self.grouping_col)))
+        zdf = self.z_score_byitem_project(d)
+        return super().transform(zdf, scale=False)
