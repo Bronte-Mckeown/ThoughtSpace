@@ -309,11 +309,11 @@ def wordclouder(component_loading_dict, display, savefile=False):
     """
     for key, value in component_loading_dict.items(): # Loop over loading dictionaries - 1 dataframe per iteration
         df = pd.DataFrame(value.T) # transpose
-        output_name = "scratch/results/{}_component_loadings_for_wordclouds.csv".format(key) 
+        output_name = "scratch/results/{}_component_loadings_for_wordclouds.csv".format(key)
         if savefile:
-            df.to_csv(output_name, index = False, header = False)
-        else:
-            pass
+            dftosave = df.assign(labels=list(display.values())[0])
+            dftosave=dftosave.set_index('labels')
+            dftosave.to_csv(output_name)
         # could easily put the following into a function:
         principle_vector = np.array(df, dtype =float) # turn df into array
         pv_in_hex= []
@@ -325,25 +325,20 @@ def wordclouder(component_loading_dict, display, savefile=False):
             for c in cm.RdBu_r(rescale): 
                 colors_hex.append(mcolor.to_hex(c)) # adds colour codes (hex) to list
             pv_in_hex.append(colors_hex) # add all colour codes for each item on all components 
-        colors_hex = np.array(pv_in_hex ).T 
+        colors_hex = np.array(pv_in_hex ).T
         df_v_color = pd.DataFrame(colors_hex)
         if savefile:
             df_v_color.to_csv("scratch/results/{}_colour_codes_for_wordclouds.csv".format(key), index = False, header = False)
-        else:
-            pass
         # loops over compoentn loadings
         for col_index in df:
             absolute = df[col_index].abs() # make absolute 
             integer = 100 * absolute # make interger 
-            integer = integer.astype(int) 
+            integer = integer.astype(int)
             concat = pd.concat([integer, df_v_color[col_index]], axis=1) # concatanate loadings and colours 
             concat.columns = ['freq', 'colours']
             concat.insert(1, 'labels', display[key]) # add labels (items) from display list 
             if savefile:
                 concat.to_csv("scratch/results/{}_loadings_and_colour_codes_factor_{}.csv".format(key, col_index+1), index = False, header = True)
-            else:
-                pass
-
             freq_dict = dict(zip(concat.labels, concat.freq)) # where key: item and value: weighting
             colour_dict = dict(zip(concat.labels, concat.colours))# where key: itemm and value: colour
             def color_func(word, *args, **kwargs): #colour function to supply to wordcloud function.. don't ask !
@@ -352,6 +347,7 @@ def wordclouder(component_loading_dict, display, savefile=False):
                 except KeyError:
                     color = '#000000' # black
                 return color
+
             # create wordcloud object
             wc = WordCloud(background_color="white", color_func=color_func, 
                         width=400, height=400, prefer_horizontal=1, 
@@ -381,10 +377,11 @@ def kmo_bartlett(esq_dict):
     return kmo_bartlett_dict
 
 
-def refine_pca(pca_dict, esq_dict, n_components_dict, rotation_dict, n_components, ev_extraction, rotation_on):
+def refine_pca(pca_dict, esq_dict, n_components_dict, rotation_dict, n_components, ev_extraction, rotation_on, FlipComponents=False):
     """
     Reduce components and rotate solution of naive pca 
     Input: pca_dict (dict of dfs), esq_dict (dict of dfs), n_components (int), ev_extraction (True/False)
+    FlipComponents: Needs 
     """
     # create empty ordered dictionaries for storing un-rotated & rotated scores, loadings and n components
     unrotated_scores = OrderedDict()
@@ -465,11 +462,21 @@ def refine_pca(pca_dict, esq_dict, n_components_dict, rotation_dict, n_component
             # rotator function wants component loadings table to be transposed
             # then, we want to re-transpose it when saving as variable
             rotated_pc = rotator.fit_transform(pc.T).T
+
             # add component loadings to dictionary
             rotated_loadings[k] = rotated_pc
 
             # print out shape of rotated component loading table
             print (rotated_pc.shape)
+
+            if FlipComponents:
+                assert type(FlipComponents)==list 
+
+                # Flip component 1 (negative memories)
+                for i in FlipComponents:
+                    print(f'Flipping component {i}...')
+                    rotated_pc.T[:,i]=rotated_pc.T[:,i]*-1
+
 
             # Generate per-observation scores for each component
             # need to transpose rotated_pc
