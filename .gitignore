@@ -4,5 +4,3 @@ env
 *.pdf
 pca_and_projection.egg-info
 build
-*.png
-*.csv
