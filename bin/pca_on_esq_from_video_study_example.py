@@ -4,8 +4,17 @@ Created on Wed Mar 31 12:16:08 2021
 @author: Bronte Mckeown & Will Strawson
 
 Created to apply PCAs to different combinations of ESQ dataframes.
+
+In this example, there are two independent samples:
+    1) N = 70 PS
+    2) N = 49 PS
+    
+This example script runs a PCA with varimax rotation on each sample separately.
+
 Input: Per-observation ESQ dataframe (.csv)
-Output: Dataframe with PCA scores and plots per group all in one PDF.
+Output: Dataframe with PCA scores and plots per sample all in one PDF as well
+as wordclouds for each PCA for each sample.
+
 """
 
 from ThoughtSpace import pca_plots
@@ -14,53 +23,71 @@ import pandas as pd
 from collections import OrderedDict
 import numpy as np
 
-## EDIT A NEW COPY OF ME :) ##
+
+
+## FOR YOUR OWN ANALYSIS, EDIT A NEW COPY OF ME :) ##
 
 # TODO: make it so if it crashes during saving it closes the file
 # TODO: potentially move saving csv file out of merging function
 # TODO: potentially migrate results out of scratch folder
-# TODO: improve generalizability of projection section (functions?)
+# TODO: improve generalizability of projection section (implement function)
 # TODO: figure out why factor column moves when adding scores to datasheet
+# TODO: make function for applying PCA and rotation
 
 #%% load data & basic cleaning/prep
-# user variables
-n_components = True  # if you know how many components you want to extract, insert True, otherwise false
-# Specific number components can be defined for each solution in n_component_dict
-ev_extraction = (
-    False  # set to true if you want to extract components based on eigenvalue >1
-)
-varimax_on = True  # set to true if you want to apply varimax rotation
 
-by_sample = True  # if you want to z-score ESQ by sample (e.g., N70 only or N49 only)
-sample_col = "sample"  # set sample column name if z-scoring by sample
+## Set user variables:
+
+# if you know how many components you want to extract, insert True, otherwise false
+# If True,  n components can be defined for each sample in n_component_dict below
+n_components = True  
+
+# set to true if you want to extract components based on eigenvalue >1
+# otherwise, set to False
+ev_extraction = False  
+
+# set to true if you want to apply rotation
+rotation_on = True
+# set rotation you want to apply to each sample's PCA
+# in this example, we want varimax applied to both
+rotation = ['varimax', 'varimax']
+
+# if you want to z-score ESQ by sample (e.g., N70 only or N49 only), set to True
+by_sample = True
+sample_col = "sample"  # input sample column name if z-scoring by sample
 
 by_condition = False  # if you want to z-score by condition (e.g.,control, action, suspense)
-condition_col = "condition"  # condition column name if z-scoring by condition
+condition_col = "condition"  # input condition column name if z-scoring by condition
 
 by_person = False  # if you want to z-score by person
-person_col = "idno"  # set id number column
+person_col = "idno"  # input id number column if z-scoring by id
+
+
+first_last_esq_colZ = ("Zfocus", "Zsource")
+first_last_esq_col = ("focus", "source")
 
 
 # set path of ESQ data
+
 # current path should = parent repo directory
-current_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-data_name = "0.1_combined_esq_N119_74_cols.csv"
-data_path = "scratch/data/" + data_name
-# join git repo parent to relative path to data
-data_path = os.path.join(current_path, data_path)
-print("Input data path: ", data_path, "\n")
+repo_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) 
+data_path = os.path.join(repo_path,'scratch/data/0.1_combined_esq_N119_74_cols.csv')
 
-# read in ESQ data
-df = pd.read_csv(data_path)  # Remember to specify the separtor (e.g. '\t' if not .csv)
+# read in ESQ data as a csv or tsv file
+# Remember to specify the separtor if not a csv file (e.g. '\t' if not .csv)
+df = pd.read_csv(data_path)
 
-# create join key for merging PCA results at the end- 'observation_id'
+# To create join key for merging PCA results at the end- 'observation_id',
+# provide name of participant identifier column
 df = pca_plots.create_observation_id(df, "idno")
 
-# find index of start and end of ESQ columns in master dataframe (df)
+# To find index of the start and end of ESQ columns in master dataframe (df),
 # provide strings of start and end ESQ column names
-col_start, col_end = pca_plots.esq_cols(df, "focus", "source")
+col_start, col_end = pca_plots.esq_cols(df, first_last_esq_col[0], first_last_esq_col[1])
 
-# zscore ESQ columns identified above using esq_cols function
+# This calls the z_score function to zscore ESQ columns identified above 
+# using esq_cols function
+# Nothing should need editing here! It's all set up above
 df = pca_plots.z_score(
     df,
     col_start,
@@ -73,10 +100,11 @@ df = pca_plots.z_score(
     person_col=person_col,
 )
 
-# find index of Z scored ESQ columns by providing strings of start and end cols
-col_start, col_end = pca_plots.esq_cols(df, "Zfocus", "Zsource")
+# Use function again to find index of Z scored ESQ columns by providing strings 
+# of s-scored start and end cols
+col_start, col_end = pca_plots.esq_cols(df, first_last_esq_colZ[0],first_last_esq_colZ[1])
 
-# user should enter esq labels for display on plots & word clouds
+# Here, user should enter esq labels for display on plots & word clouds
 # Labels need to be written in the same order as they appear in the columns
 display = [
     "Task",
@@ -96,15 +124,16 @@ display = [
 
 #%% select groups for applying PCA
 
-df_N70 = df.loc[df["sample"] == "N70"].copy()  # just select N70 sample
-df_N49 = df.loc[df["sample"] == "N49"].copy()  # just select N70 sample
+# In this example, we are applying PCA with varimax rotation to two samples
+# separately (n = 70 & n = 49)
 
-# add info to file name outputs about specific analysis run
-results_id = "N70_N49_zscored_by_sample"
+df_N70 = df.loc[df["sample"] == "N70"].copy()  # just select N70 sample
+df_N49 = df.loc[df["sample"] == "N49"].copy()  # just select N49 sample
+
 
 # create ordered dict of dataframes which you want to apply PCA to
 # key: name of the dataframe, value: dataframe
-# If no group splits (i.e. one PCA on all data), simply create one entry in this dictionary
+# If no group splits (i.e. one PCA on all data), simply create one entry in this dictionary!
 
 df_dict = OrderedDict(
     [
@@ -118,107 +147,51 @@ n_components_dict = OrderedDict(
     [
         ("df_N70", 3),
         ("df_N49", 3)
-       
+
     ]
 )
+
+# Add any info you want about specific analysis run for result file names
+# in this example, I've included the samples and how I've z-scored them
+results_id = "N70_N49_zscored_by_sample"
+
 # create empty dict to store esq columns from each dataframe stored in df_dict
 esq_dict = OrderedDict()
 # create empty dict to store display labels from each dataframe stored in df_dict
 display_dict = OrderedDict()
+# create empty OrderedDict for storing rotation type
+rotation_dict = OrderedDict()
 
-# loop over df_dict to assign esq cols to esq_dict & labels to labels_dict
-for key, i in df_dict.items():
-    i = i.iloc[:, col_start:col_end]  # should be z-scored ESQ questions
+for index, (key, i)  in enumerate(df_dict.items()):
+    i = i.iloc[:,col_start:col_end] # should be z-scored ESQ questions
     i = i.apply(pd.to_numeric, errors="coerce") # make sure numeric
-    i = i.dropna()  # drop rows with nan values
+    i = i.dropna() # drop rows with nan values
     esq_dict[key] = i
-    # let display be a dictionary where values are display (list above)
-    display_dict[key] = display
+    display_dict[key] = display # dictionary where values are display (list above)
     # if different solutions have different display items, here is where they can be specified
     # remove Z from z scored column names for display
     # display_dict[key] = [x.replace("Z", "") for x in i.columns.tolist()]
+    rotation_dict[key] = rotation[index] # set rotation dict
+
 
 #%% run naive PCA on all dataframes stored in esq_dict
+# first check KMO and Bartlett's test of sphericiity
+kmo_bartlett_dict = pca_plots.kmo_bartlett(esq_dict)
+print(kmo_bartlett_dict)
 
 # svd = full, meaning it calculates as many components as there are items
 pca_dict = pca_plots.naive_pca(esq_dict)
 
-#%% extract pca scores and component loadings from pca_dict
+#%% extract pca scores (refined_scores) and component loadings (refined_loadings) from pca_dict
+refined_scores, refined_loadings = pca_plots.refine_pca(pca_dict, esq_dict, n_components_dict, rotation_dict, n_components, ev_extraction, rotation_on)
 
-# create empty ordered dictionaries for storing un-rotated & rotated scores, loadings and n components
-pca_scores = OrderedDict()
-pca_component_loadings = OrderedDict()
-pca_n_components = OrderedDict()
-
-vari_pca_scores = OrderedDict()
-vari_component_loadings = OrderedDict()
-vari_n_components = OrderedDict()
-
-for k in esq_dict:
-    # if number of components is set to TRUE at start of script
-    if n_components:
-        # Generate per-observation scores for each factor
-        scores = pca_dict[k].transform(esq_dict[k])[:, : n_components_dict[k]]
-        # Generate per-item factor loadings
-        pc = pca_dict[k].components_[: n_components_dict[k], :]
-
-        # Store factor scores
-        pca_scores[k] = scores
-        # Store factor loadings
-        pca_component_loadings[k] = pc
-        # Store number of components
-        pca_n_components[k] = n_components_dict[k]
-        print("Shape of 'scores' dataframe (i.e. n_components):", scores.shape)
-    
-    # if ev_extraction is set to TRUE at start of script
-    elif ev_extraction:
-        evs = [i for i in pca_dict[k].explained_variance_ if i > 1]
-        n_components = len(evs)
-        # Generate per-observation scores for each factor
-        scores = pca_dict[k].transform(esq_dict[k])[:, :n_components]
-        # Generate per-item factor loadings
-        pc = pca_dict[k].components_[:n_components, :]
-        # Store factor scores
-        pca_scores[k] = scores
-        # Store factor loadings
-        pca_component_loadings[k] = pc
-        # Store number of components
-        pca_n_components[k] = n_components
-        print("Shape of 'scores' dataframe (i.e. n_components):", scores.shape)
-        # reset n_components to None
-        n_components = None
-
-    else:
-        scores = pca_dict[k].transform(esq_dict[k])
-        pc = pca_dict[k].components_
-        pca_scores[k] = scores
-        pca_component_loadings[k] = pc
-        pca_n_components[k] = scores.shape[-1]
-        print("Shape of 'scores' dataframe (i.e. n_components):", scores.shape)
-    
-    # if varimax rotation is set to TRUE at start of script
-    if varimax_on:
-        # Generate per-item factor loadings
-        vari_pc = pca_plots.varimax(pc.T).T  # what does pc =?
-        # Generate per-observation scores for each factor
-        vari_scores = np.dot(esq_dict[k], vari_pc.T)
-        pca_varimax = "; varimax"
-        vari_pca_scores[k] = vari_scores
-        vari_component_loadings[k] = vari_pc
-        vari_n_components[k] = scores.shape[-1]
-        print(
-            "[varimax] Shape of 'scores' dataframe (i.e. n_components):", scores.shape
-        )
 
 #%% Add PCA scores to master df
-
 # adds pca scores to esq_dict dataframes for merging
-if varimax_on:
-    esq_dict_with_scores = pca_plots.append_scores(vari_pca_scores, esq_dict)
-    print("Added varimax scores")
-else:
-    esq_dict_with_scores = pca_plots.append_scores(pca_scores, esq_dict)
-    print("Added non-rotated scores")
+
+esq_dict_with_scores = pca_plots.append_scores(refined_scores, esq_dict)
+print("Added refined scores")
+
 
 # merge all and save
 output_df = pca_plots.merge_dataframes(
@@ -226,40 +199,39 @@ output_df = pca_plots.merge_dataframes(
     df,
     data_path,
     results_id,
-    varimax_on,
+    rotation_on,
     n_components,
     n_components_dict,
-)  
+)
 
 #%% Plots & word clouds for PCA solutions for each group (saves out PDF)
 # set mask threshold for heatmaps
 mask_threshold = 0
-if varimax_on:
-    pca_plots.page_of_plots(
-        pca_dict,
-        vari_component_loadings,
-        mask_threshold,
-        results_id,
-        varimax_on,
-        n_components,
-        n_components_dict,
-        display_dict,
-    )
-    pca_plots.wordclouder(vari_component_loadings, display_dict, savefile=False)
-else:
-    pca_plots.page_of_plots(
-        pca_dict,
-        pca_component_loadings,
-        mask_threshold,
-        results_id,
-        varimax_on,
-        n_components,
-        n_components_dict,
-        display_dict,
-    )
-    pca_plots.wordclouder(pca_component_loadings, display_dict, savefile=False)
+
+pca_plots.page_of_plots(
+    pca_dict,
+    refined_loadings,
+    mask_threshold,
+    results_id,
+    rotation_on,
+    n_components,
+    n_components_dict,
+    display_dict,
+    kmo_bartlett_dict
+)
+
+pca_plots.wordclouder(refined_loadings, display_dict, savefile=True)
+
 
 # %% Project patterns between samples
+
+# TODO: include example using projection function!
+'''
+pca_plots.project_patterns(
+    refined_loadings,
+    output_df,
+    refined_loadings.keys()[0],
+    "n70")
 
 # if not needed for your analysis, just comment out this section!
 
@@ -267,25 +239,25 @@ else:
 lab_projected_scores_dict = OrderedDict()
 
 # loop over keys and values of varimax rotated component loadings
-for key, loadings in vari_component_loadings.items():
+for key, loadings in refined_loadings.items():
     # loop over each pattern in loadings
     idx = 0
     for pattern in loadings:
         # select columns to project on in lab data
         if "N70" in key:
             idx = idx +1
-            cols_to_project_on = output_df.loc[output_df["sample"] == "N49", "Zfocus":"Zsource"]
+            cols_to_project_on = output_df.loc[output_df["sample"] == "N49", first_last_esq_colZ[0]:first_last_esq_colZ[1]]
             # compute dot product 
             projected_pattern = cols_to_project_on.dot(pattern.T)
             # add to projected scores dict
-            lab_projected_scores_dict["projected_N70_to_N49_fac{}".format(idx)] = projected_pattern
+            lab_projected_scores_dict[f"projected_N70_to_N49_fac{idx}"] = projected_pattern
         elif "N49" in key:
             idx = idx +1
-            cols_to_project_on = output_df.loc[output_df["sample"] == "N70", "Zfocus":"Zsource"]
+            cols_to_project_on = output_df.loc[output_df["sample"] == "N70", first_last_esq_colZ[0]:first_last_esq_colZ[1]]
             # compute dot product 
             projected_pattern = cols_to_project_on.dot(pattern.T)
             # add to projected scores dict
-            lab_projected_scores_dict["projected_N49_to_N70_fac{}".format(idx)] = projected_pattern
+            lab_projected_scores_dict[f"projected_N49_to_N70_fac{idx}"] = projected_pattern
 
 # covert dictionary to dataframe
 lab_projected_df = pd.DataFrame.from_dict(lab_projected_scores_dict)
@@ -294,5 +266,5 @@ lab_projected_df = pd.DataFrame.from_dict(lab_projected_scores_dict)
 output_df_with_projection = pd.concat([output_df, lab_projected_df], axis=1)
 
 # save output_df_with_projection as csv to data folder
-output_df_with_projection.to_csv("//mnt//c//Users//bront//Documents//PhD//Projects//lab_to_realworld//pca_baby//scratch//data//lab//0.1_combined_esq_N119_74_cols_N70_N50_all_vid_varimax-on_ncomponents=3_with_projected.csv", index = False)
-
+#output_df_with_projection.to_csv("//mnt//c//Users//bront//Documents//PhD//Projects//lab_to_realworld//data//lab//with_pca//0.1_combined_esq_N119_74_cols_N70_N50_all_vid_rotation-on_ncomponents=3_with_projected.csv", index = False)
+'''
