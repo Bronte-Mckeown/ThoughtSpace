@@ -5,7 +5,7 @@ from factor_analyzer import Rotator, calculate_bartlett_sphericity, calculate_km
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
-
+from ThoughtSpace.plotting import save_wordclouds
 
 class basePCA(TransformerMixin, BaseEstimator):
     def __init__(self, n_components="infer"):
@@ -154,6 +154,9 @@ class basePCA(TransformerMixin, BaseEstimator):
 
     def fit_project(self, df: pd.DataFrame) -> pd.DataFrame:
         return self.fit(df).project(df)
+    
+    def save(self, path: str) -> None:
+        save_wordclouds(self.loadings,path)
 
 
 class groupedPCA(basePCA):
