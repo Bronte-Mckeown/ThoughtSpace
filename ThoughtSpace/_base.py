@@ -5,12 +5,18 @@ from factor_analyzer import Rotator, calculate_bartlett_sphericity, calculate_km
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
-from ThoughtSpace.plotting import save_wordclouds
+from ThoughtSpace.plotting import save_wordclouds, plot_scree
+from ThoughtSpace.utils import setupanalysis
+import os
+
+
+
 
 class basePCA(TransformerMixin, BaseEstimator):
     def __init__(self, n_components="infer"):
         self.n_components = n_components
-
+        self.path = None
+        self.ogdf = None
     def check_stats(self, df: pd.DataFrame) -> None:
         """
         This function checks the KMO and Bartlett Sphericity of the dataframe.
@@ -107,9 +113,11 @@ class basePCA(TransformerMixin, BaseEstimator):
             Tuple[PCA, pd.DataFrame]: The PCA object and the loadings dataframe.
         """
         if self.n_components == "infer":
-            pca = PCA().fit(df)
-            self.n_components = len([x for x in pca.explained_variance_ if x >= 1])
+            self.fullpca = PCA().fit(df)
+            self.n_components = len([x for x in self.fullpca.explained_variance_ if x >= 1])
             print(f"Inferred number of components: {self.n_components}")
+        else:
+            self.fullpca = PCA().fit(df)
         pca = PCA(n_components=self.n_components).fit(df)
         loadings = Rotator().fit_transform(pca.components_.T)
         loadings = pd.DataFrame(
@@ -129,6 +137,8 @@ class basePCA(TransformerMixin, BaseEstimator):
         Returns:
             The fitted PCA model.
         """
+        if self.ogdf is None:
+            self.ogdf = df.copy()
         df = self.check_inputs(df, fit=True)
         self.check_stats(df)
         if scale:
@@ -155,8 +165,33 @@ class basePCA(TransformerMixin, BaseEstimator):
     def fit_project(self, df: pd.DataFrame) -> pd.DataFrame:
         return self.fit(df).project(df)
     
-    def save(self, path: str) -> None:
-        save_wordclouds(self.loadings,path)
+    def save(self,group=None,path=None,pathprefix="analysis",includetime=True) -> None:
+        if self.path is None:
+
+            self.path = setupanalysis(path,pathprefix,includetime)
+        if group is None:
+            os.makedirs(os.path.join(self.path,"wordclouds"),exist_ok=True)
+            os.makedirs(os.path.join(self.path,"csvdata"),exist_ok=True)
+            os.makedirs(os.path.join(self.path,"screeplots"),exist_ok=True)
+            
+            save_wordclouds(self.loadings,os.path.join(self.path,"wordclouds"))
+            self.extra_columns.to_csv(os.path.join(self.path,"csvdata","pca_scores.csv"))
+            self.loadings.to_csv(os.path.join(self.path,"csvdata","pca_loadings.csv"))
+            pd.concat([self.ogdf, self.check_inputs(self.extra_columns)], axis=1).to_csv(os.path.join(self.path,"csvdata","pca_scores_original_format.csv"))
+            plot_scree(self.fullpca,os.path.join(self.path, "screeplots", "scree"))
+        
+        else:
+            os.makedirs(os.path.join(self.path,f"wordclouds_{group}"),exist_ok=True)
+            os.makedirs(os.path.join(self.path,f"csvdata_{group}"),exist_ok=True)
+            os.makedirs(os.path.join(self.path,"screeplots"),exist_ok=True)
+
+            save_wordclouds(self.loadings,os.path.join(self.path,f"wordclouds_{group}"))
+            self.extra_columns.to_csv(os.path.join(self.path,f"csvdata_{group}","pca_scores.csv"))
+            self.loadings.to_csv(os.path.join(self.path,f"csvdata_{group}","pca_loadings.csv"))
+            pd.concat([self.ogdf, self.check_inputs(self.extra_columns)], axis=1).to_csv(os.path.join(self.path,f"csvdata_{group}","pca_scores_original_format.csv"))
+            plot_scree(self.fullpca,os.path.join(self.path, "screeplots", f"scree_{group}"))
+        
+        print(f"Saving done. Results have been saved to {self.path}")
 
 
 class groupedPCA(basePCA):
@@ -195,6 +230,7 @@ class groupedPCA(basePCA):
             )
             self.scalerdict[key] = scaler
             outdict.append(extcol)
+            
         return pd.concat(outdict, axis=0)
 
     def z_score_byitem_project(self, df_dict) -> pd.DataFrame:
@@ -237,6 +273,7 @@ class groupedPCA(basePCA):
         Returns:
             self
         """
+        self.ogdf = df.copy()
         d = dict(tuple(df.groupby(self.grouping_col)))
         zdf = self.z_score_byitem(d)
         super().fit(zdf, y=y, scale=False, **kwargs)
@@ -246,3 +283,11 @@ class groupedPCA(basePCA):
         d = dict(tuple(df.groupby(self.grouping_col)))
         zdf = self.z_score_byitem_project(d)
         return super().transform(zdf, scale=False)
+    
+    def save(self,savebygroup=False,path=None,pathprefix="analysis",includetime=True):
+        self.path = setupanalysis(path,"grouped_"+pathprefix,includetime)
+        if savebygroup:
+            raise NotImplementedError("Saving by group is not yet implemented.")
+            
+        else:
+            super().save()
