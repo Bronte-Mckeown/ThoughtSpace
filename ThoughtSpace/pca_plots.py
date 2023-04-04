@@ -192,10 +192,10 @@ def page_of_plots(pca_dict,loadings_dict, masking_num, results_id, rotation_on, 
     """
     Function to create PDF of all figures for all groups
     """
-    out_pdf = 'scratch/results/figures_{results_id}_{rotation}_ncomponents={ncomp}.pdf'.format(
+    out_pdf = 'scratch/results/figures_{results_id}_{rotation}_ncomponents{ncomp}.pdf'.format(
         results_id = results_id,
         rotation=('rotation-on' if rotation_on else 'rotation-off'),
-        ncomp=(list(n_components_dict.values()) if n_components else 'EV>1')
+        ncomp=(list(n_components_dict.values()) if n_components else 'EV')
     )
 
     pdf = matplotlib.backends.backend_pdf.PdfPages(out_pdf)
