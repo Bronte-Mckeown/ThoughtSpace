@@ -177,11 +177,11 @@ def merge_dataframes(input_dict, master_df, data_path, results_id, rotation_on, 
     # TODO move saving data to out of function
     # TODO this shouldn't output to the parent directory 
     # TODO want to save WHICH rotation has been applied in filename
-    output_name = data_path.split('.csv')[0] + ('_{results_id}_{rotation}_ncomponents={ncomp}'.format(
+    output_name = data_path.split('.csv')[0] + ('_{results_id}_{rotation}_ncomponents{ncomp}'.format(
         results_id = results_id,
         rotation=('rotation-on' if rotation_on else 'rotation-off'),
         # For number components, create list of all values in n_compoentns dictionary to show all possible number of compoennets enetered nby user  
-        ncomp=(list(n_components_dict.values()) if n_components else 'EV>1'))) + '.csv'
+        ncomp=(list(n_components_dict.values()) if n_components else 'EV'))) + '.csv'
 
     # TODO make this save line more robust - breaks for Will due to paths
     outputdf.to_csv(output_name, index = False)
