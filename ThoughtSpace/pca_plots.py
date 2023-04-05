@@ -7,7 +7,10 @@ import numpy as np
 
 from sklearn.decomposition import PCA
 
-from scipy.stats import zscore
+# from scipy.stats import StandardScaler().fit_transform
+
+from sklearn.preprocessing import StandardScaler
+
 import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib.backends.backend_pdf
@@ -78,22 +81,22 @@ def z_score(df, col_start, col_end, by_sample = False, sample_col = None,
         # if by_condition and by_sample set to true, apply z-score by condition and sample
         if by_condition and by_sample:
             df[f'Z{c}'] = df.groupby([condition_col, sample_col])[c].transform(
-                lambda x: zscore(x, ddof=1, nan_policy='omit')
+                lambda x: StandardScaler().fit_transform(x.reshape(-1,1))
             )
         elif by_condition:
             df[f'Z{c}'] = df.groupby(condition_col)[c].transform(
-                lambda x: zscore(x, ddof=1, nan_policy='omit')
+                lambda x: StandardScaler().fit_transform(x.reshape(-1,1))
             )
         elif by_sample:
             df[f'Z{c}'] = df.groupby(sample_col)[c].transform(
-                lambda x: zscore(x, ddof=1, nan_policy='omit')
+                lambda x: StandardScaler().fit_transform(x.reshape(-1,1))
             )
         elif by_person:
             df[f'Z{c}'] = df.groupby([person_col])[c].transform(
-                lambda x: zscore(x, ddof=1, nan_policy='omit')
+                lambda x: StandardScaler().fit_transform(x.reshape(-1,1))
             )
         else:
-            df[f'Z{c}'] = zscore(df[c], nan_policy='omit')
+            df[f'Z{c}'] = StandardScaler().fit_transform(df[c].values.reshape(-1,1))
     return df 
 
 def naive_pca(input_dict):
