@@ -13,8 +13,9 @@ import os
 
 
 class basePCA(TransformerMixin, BaseEstimator):
-    def __init__(self, n_components="infer"):
+    def __init__(self, n_components="infer",verbosity=1):
         self.n_components = n_components
+        self.verbosity = verbosity
         self.path = None
         self.ogdf = None
     def check_stats(self, df: pd.DataFrame) -> None:
@@ -25,46 +26,47 @@ class basePCA(TransformerMixin, BaseEstimator):
         Returns:
             None
         """
-        bart = calculate_bartlett_sphericity(df)
-        if bart[1] < 0.05:
-            print("Bartlett Sphericity is acceptable. The p-value is %.3f" % bart[1])
-        else:
-            print(
-                "Bartlett Sphericity is unacceptable. Something is very wrong with your data. The p-value is %.3f"
-                % bart[1]
-            )
-        kmo = calculate_kmo(df)
-        k = kmo[1]
-        if k < 0.5:
-            print(
-                "KMO score is unacceptable. The value is %.3f, you should not trust your data."
-                % k
-            )
-        if 0.6 > k > 0.5:
-            print(
-                "KMO score is miserable. The value is %.3f, you should consider resampling or continuing data collection."
-                % k
-            )
-        if 0.7 > k > 0.6:
-            print(
-                "KMO score is mediocre. The value is %.3f, you should consider continuing data collection, or use the data as is."
-                % k
-            )
-        if 0.8 > k > 0.7:
-            print(
-                "KMO score is middling. The value is %.3f, your data is perfectly acceptable, but could benefit from more sampling."
-                % k
-            )
-        if 0.9 > k > 0.8:
-            print(
-                "KMO score is meritous. The value is %.3f, your data is perfectly acceptable."
-                % k
-            )
-        if k > 0.9:
-            print(
-                "KMO score is marvelous. The value is %.3f, what demon have you sold your soul to to collect this data? Please email me."
-                % k
-            )
+        if self.verbosity > 0:
+            bart = calculate_bartlett_sphericity(df)
+            if bart[1] < 0.05:
+                print("Bartlett Sphericity is acceptable. The p-value is %.3f" % bart[1])
+            else:
+                print(
+                    "Bartlett Sphericity is unacceptable. Something is very wrong with your data. The p-value is %.3f"
+                    % bart[1]
+                )
+            kmo = calculate_kmo(df)
+            k = kmo[1]
+            if k < 0.5:
+                print(
+                    "KMO score is unacceptable. The value is %.3f, you should not trust your data."
+                    % k
+                )
+            if 0.6 > k > 0.5:
+                print(
+                    "KMO score is miserable. The value is %.3f, you should consider resampling or continuing data collection."
+                    % k
+                )
+            if 0.7 > k > 0.6:
+                print(
+                    "KMO score is mediocre. The value is %.3f, you should consider continuing data collection, or use the data as is."
+                    % k
+                )
+            if 0.8 > k > 0.7:
+                print(
+                    "KMO score is middling. The value is %.3f, your data is perfectly acceptable, but could benefit from more sampling."
+                    % k
+                )
+            if 0.9 > k > 0.8:
+                print(
+                    "KMO score is meritous. The value is %.3f, your data is perfectly acceptable."
+                    % k
+                )
+            if k > 0.9:
+                print(
+                    "KMO score is marvelous. The value is %.3f, what demon have you sold your soul to to collect this data? Please email me."
+                    % k
+                )
 
     def check_inputs(
         self, df: pd.DataFrame, fit: bool = False, project: bool = False
@@ -81,16 +83,20 @@ class basePCA(TransformerMixin, BaseEstimator):
             self.extra_columns = df.copy()
         if project:
             self.project_columns = df.copy()
-        dtypes = df.dtypes
-        for col in dtypes.index:
-            if fit and dtypes[col] in [np.int64, np.float64, np.int32, np.float32]:
-                self.extra_columns.drop(col, axis=1, inplace=True)
-            if project and dtypes[col] in [np.int64, np.float64, np.int32, np.float32]:
-                self.project_columns.drop(col, axis=1, inplace=True)
-            if dtypes[col] not in [np.int64, np.float64, np.int32, np.float32]:
-                df.drop(col, axis=1, inplace=True)
-        if fit:
-            self.items = df.columns.tolist()
+        if isinstance(df, pd.DataFrame):
+            dtypes = df.dtypes
+            for col in dtypes.index:
+                if fit and dtypes[col] in [np.int64, np.float64, np.int32, np.float32]:
+                    self.extra_columns.drop(col, axis=1, inplace=True)
+                if project and dtypes[col] in [np.int64, np.float64, np.int32, np.float32]:
+                    self.project_columns.drop(col, axis=1, inplace=True)
+                if dtypes[col] not in [np.int64, np.float64, np.int32, np.float32]:
+                    df.drop(col, axis=1, inplace=True)
+            if fit:
+                self.items = df.columns.tolist()
+        else:
+            self.items = [f"item_{x}" for x in range(df.shape[1])]
+            self.extra_columns = pd.DataFrame()
         return df
 
     def z_score(self, df: pd.DataFrame) -> np.ndarray:
@@ -115,7 +121,8 @@ class basePCA(TransformerMixin, BaseEstimator):
         if self.n_components == "infer":
             self.fullpca = PCA().fit(df)
             self.n_components = len([x for x in self.fullpca.explained_variance_ if x >= 1])
-            print(f"Inferred number of components: {self.n_components}")
+            if self.verbosity > 0:
+                print(f"Inferred number of components: {self.n_components}")
         else:
             self.fullpca = PCA().fit(df)
         pca = PCA(n_components=self.n_components).fit(df)
