@@ -130,9 +130,14 @@ class basePCA(TransformerMixin, BaseEstimator):
         loadings = pd.DataFrame(
             loadings,
             index=self.items,
-            columns=[f"PC{x}" for x in range(self.n_components)],
+            columns=[f"PC{x+1}" for x in range(self.n_components)],
         )
-        return pca, loadings
+        averages = loadings.mean(axis=0).to_dict()
+        for col in averages:
+            if averages[col] < 0:
+                print(f"Component {col} has mostly negative loadings, flipping component")
+                loadings[col] = loadings[col] * -1
+        return loadings
 
     def fit(self, df: pd.DataFrame, y=None, scale: bool = True, **kwargs) -> "PCA":
         """
@@ -150,7 +155,7 @@ class basePCA(TransformerMixin, BaseEstimator):
         self.check_stats(df)
         if scale:
             df = self.z_score(df)
-        self.pca, self.loadings = self.naive_pca(df)
+        self.loadings = self.naive_pca(df)
         return self
 
     def transform(
