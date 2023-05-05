@@ -164,13 +164,14 @@ class basePCA(TransformerMixin, BaseEstimator):
         df: pd.DataFrame,
         scale=True,
     ) -> pd.DataFrame:
-        df = self.check_inputs(df)
+        df = self.check_inputs(df,project=True)
+        
         if scale:
             df = self.scaler.transform(df)
         output_ = np.dot(df, self.loadings).T
         for x in range(self.n_components):
-            self.extra_columns[f"PCA_{x}"] = output_[x, :]
-        return self.extra_columns.copy()
+            self.project_columns[f"PCA_{x}"] = output_[x, :]
+        return self.project_columns.copy()
 
     def project(self, df: pd.DataFrame) -> pd.DataFrame:
         return self.transform(df.copy())
