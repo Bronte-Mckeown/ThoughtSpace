@@ -197,7 +197,7 @@ class basePCA(TransformerMixin, BaseEstimator):
             save_wordclouds(self.loadings,os.path.join(self.path,"wordclouds"))
             self.project_columns.to_csv(os.path.join(self.path,"csvdata","pca_scores.csv"))
             self.loadings.to_csv(os.path.join(self.path,"csvdata","pca_loadings.csv"))
-            pd.concat([self.ogdf, self.check_inputs(self.project_columns)], axis=1).to_csv(os.path.join(self.path,"csvdata","pca_scores_original_format.csv"))
+            #pd.concat([self.ogdf, self.check_inputs(self.project_columns)], axis=1).to_csv(os.path.join(self.path,"csvdata","pca_scores_original_format.csv"))
             plot_scree(self.fullpca,os.path.join(self.path, "screeplots", "scree"))
         
         else:
@@ -208,7 +208,7 @@ class basePCA(TransformerMixin, BaseEstimator):
             save_wordclouds(self.loadings,os.path.join(self.path,f"wordclouds_{group}"))
             self.project_columns.to_csv(os.path.join(self.path,f"csvdata_{group}","pca_scores.csv"))
             self.loadings.to_csv(os.path.join(self.path,f"csvdata_{group}","pca_loadings.csv"))
-            pd.concat([self.ogdf, self.check_inputs(self.project_columns)], axis=1).to_csv(os.path.join(self.path,f"csvdata_{group}","pca_scores_original_format.csv"))
+            #pd.concat([self.ogdf, self.check_inputs(self.project_columns)], axis=1).to_csv(os.path.join(self.path,f"csvdata_{group}","pca_scores_original_format.csv"))
             plot_scree(self.fullpca,os.path.join(self.path, "screeplots", f"scree_{group}"))
         
         print(f"Saving done. Results have been saved to {self.path}")
