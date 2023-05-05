@@ -149,13 +149,14 @@ class basePCA(TransformerMixin, BaseEstimator):
         Returns:
             The fitted PCA model.
         """
+        _df = df.copy()
         if self.ogdf is None:
-            self.ogdf = df.copy()
-        df = self.check_inputs(df, fit=True)
-        self.check_stats(df)
+            self.ogdf = _df.copy()
+        _df = self.check_inputs(_df, fit=True)
+        self.check_stats(_df)
         if scale:
-            df = self.z_score(df)
-        self.loadings = self.naive_pca(df)
+            _df = self.z_score(_df)
+        self.loadings = self.naive_pca(_df)
         return self
 
     def transform(
@@ -172,7 +173,7 @@ class basePCA(TransformerMixin, BaseEstimator):
         return self.extra_columns.copy()
 
     def project(self, df: pd.DataFrame) -> pd.DataFrame:
-        return self.transform(df)
+        return self.transform(df.copy())
 
     def fit_project(self, df: pd.DataFrame) -> pd.DataFrame:
         return self.fit(df).project(df)
