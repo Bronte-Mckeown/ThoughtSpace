@@ -135,7 +135,8 @@ class basePCA(TransformerMixin, BaseEstimator):
         averages = loadings.mean(axis=0).to_dict()
         for col in averages:
             if averages[col] < 0:
-                print(f"Component {col} has mostly negative loadings, flipping component")
+                if self.verbosity > 1:
+                    print(f"Component {col} has mostly negative loadings, flipping component")
                 loadings[col] = loadings[col] * -1
         return loadings
 
@@ -169,8 +170,13 @@ class basePCA(TransformerMixin, BaseEstimator):
         if scale:
             df = self.scaler.transform(df)
         output_ = np.dot(df, self.loadings).T
-        for x in range(self.n_components):
-            self.project_columns[f"PCA_{x}"] = output_[x, :]
+        if isinstance(self.project_columns, pd.DataFrame):
+            for x in range(self.n_components):
+                self.project_columns[f"PCA_{x}"] = output_[x, :]
+        else:
+            self.project_columns = output_.T
+            # for x in range(self.n_components):
+            #     self.project_columns[f"PCA_{x}"] = output_[x, :]    
         return self.project_columns.copy()
 
     def project(self, df: pd.DataFrame) -> pd.DataFrame:
