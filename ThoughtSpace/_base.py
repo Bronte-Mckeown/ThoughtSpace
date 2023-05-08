@@ -135,7 +135,8 @@ class basePCA(TransformerMixin, BaseEstimator):
         averages = loadings.mean(axis=0).to_dict()
         for col in averages:
             if averages[col] < 0:
-                print(f"Component {col} has mostly negative loadings, flipping component")
+                if self.verbosity > 0:
+                    print(f"Component {col} has mostly negative loadings, flipping component")
                 loadings[col] = loadings[col] * -1
         return loadings
 
