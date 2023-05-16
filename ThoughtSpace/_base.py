@@ -151,16 +151,19 @@ class basePCA(TransformerMixin, BaseEstimator):
             The fitted PCA model.
         """
         _df = df.copy()
-        cols = _df.columns
-        outcols = []
-        for col in cols:
-            if "focus" in col.lower():
-                col = col.lower().replace("focus","Task")
-            if "other" in col.lower():
-                col = col.lower().replace("other","People")
-            outcols.append(col)
-        mapper = {cols[x]:outcols[x] for x in range(len(outcols))}
-        _df = _df.rename(mapper,axis=1)
+        try:
+            cols = _df.columns
+            outcols = []
+            for col in cols:
+                if "focus" in col.lower():
+                    col = col.lower().replace("focus","Task")
+                if "other" in col.lower():
+                    col = col.lower().replace("other","People")
+                outcols.append(col)
+            mapper = {cols[x]:outcols[x] for x in range(len(outcols))}
+            _df = _df.rename(mapper,axis=1)
+        except:
+            pass
         if self.ogdf is None:
             self.ogdf = _df.copy()
         _df = self.check_inputs(_df, fit=True)
@@ -179,16 +182,19 @@ class basePCA(TransformerMixin, BaseEstimator):
         scale=True,
     ) -> pd.DataFrame:
         _df = df.copy()
-        cols = _df.columns
-        outcols = []
-        for col in cols:
-            if "focus" in col.lower():
-                col = col.lower().replace("focus","Task")
-            if "other" in col.lower():
-                col = col.lower().replace("other","People")
-            outcols.append(col)
-        mapper = {cols[x]:outcols[x] for x in range(len(outcols))}
-        _df = _df.rename(mapper,axis=1)
+        try:
+            cols = _df.columns
+            outcols = []
+            for col in cols:
+                if "focus" in col.lower():
+                    col = col.lower().replace("focus","Task")
+                if "other" in col.lower():
+                    col = col.lower().replace("other","People")
+                outcols.append(col)
+            mapper = {cols[x]:outcols[x] for x in range(len(outcols))}
+            _df = _df.rename(mapper,axis=1)
+        except:
+            pass
         _df = self.check_inputs(_df,project=True)
         
         if scale:
