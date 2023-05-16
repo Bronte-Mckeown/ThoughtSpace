@@ -119,13 +119,13 @@ class basePCA(TransformerMixin, BaseEstimator):
             Tuple[PCA, pd.DataFrame]: The PCA object and the loadings dataframe.
         """
         if self.n_components == "infer":
-            self.fullpca = PCA().fit(df)
+            self.fullpca = PCA(svd_solver="full").fit(df)
             self.n_components = len([x for x in self.fullpca.explained_variance_ if x >= 1])
             if self.verbosity > 0:
                 print(f"Inferred number of components: {self.n_components}")
         else:
-            self.fullpca = PCA().fit(df)
-        pca = PCA(n_components=self.n_components).fit(df)
+            self.fullpca = PCA(svd_solver="full").fit(df)
+        pca = PCA(n_components=self.n_components,svd_solver="full").fit(df)
         loadings = Rotator().fit_transform(pca.components_.T)
         loadings = pd.DataFrame(
             loadings,
@@ -135,7 +135,7 @@ class basePCA(TransformerMixin, BaseEstimator):
         averages = loadings.mean(axis=0).to_dict()
         for col in averages:
             if averages[col] < 0:
-                if self.verbosity > 0:
+                if self.verbosity > 1:
                     print(f"Component {col} has mostly negative loadings, flipping component")
                 loadings[col] = loadings[col] * -1
         return loadings
@@ -151,6 +151,16 @@ class basePCA(TransformerMixin, BaseEstimator):
             The fitted PCA model.
         """
         _df = df.copy()
+        cols = _df.columns
+        outcols = []
+        for col in cols:
+            if "focus" in col.lower():
+                col = col.lower().replace("focus","Task")
+            if "other" in col.lower():
+                col = col.lower().replace("other","People")
+            outcols.append(col)
+        mapper = {cols[x]:outcols[x] for x in range(len(outcols))}
+        _df = _df.rename(mapper,axis=1)
         if self.ogdf is None:
             self.ogdf = _df.copy()
         _df = self.check_inputs(_df, fit=True)
@@ -158,6 +168,9 @@ class basePCA(TransformerMixin, BaseEstimator):
         if scale:
             _df = self.z_score(_df)
         self.loadings = self.naive_pca(_df)
+        indivloadings = np.dot(_df,self.loadings).T
+        for x in range(self.n_components):
+            self.extra_columns[f"PCA_{x}"] = indivloadings[x, :]
         return self
 
     def transform(
@@ -165,13 +178,29 @@ class basePCA(TransformerMixin, BaseEstimator):
         df: pd.DataFrame,
         scale=True,
     ) -> pd.DataFrame:
-        df = self.check_inputs(df,project=True)
+        _df = df.copy()
+        cols = _df.columns
+        outcols = []
+        for col in cols:
+            if "focus" in col.lower():
+                col = col.lower().replace("focus","Task")
+            if "other" in col.lower():
+                col = col.lower().replace("other","People")
+            outcols.append(col)
+        mapper = {cols[x]:outcols[x] for x in range(len(outcols))}
+        _df = _df.rename(mapper,axis=1)
+        _df = self.check_inputs(_df,project=True)
         
         if scale:
-            df = self.scaler.transform(df)
-        output_ = np.dot(df, self.loadings).T
-        for x in range(self.n_components):
-            self.project_columns[f"PCA_{x}"] = output_[x, :]
+            _df = self.scaler.transform(_df)
+        output_ = np.dot(_df, self.loadings).T
+        if isinstance(self.project_columns, pd.DataFrame):
+            for x in range(self.n_components):
+                self.project_columns[f"PCA_{x}"] = output_[x, :]
+        else:
+            self.project_columns = output_.T
+            # for x in range(self.n_components):
+            #     self.project_columns[f"PCA_{x}"] = output_[x, :]    
         return self.project_columns.copy()
 
     def project(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -190,7 +219,13 @@ class basePCA(TransformerMixin, BaseEstimator):
             os.makedirs(os.path.join(self.path,"screeplots"),exist_ok=True)
             
             save_wordclouds(self.loadings,os.path.join(self.path,"wordclouds"))
-            self.extra_columns.to_csv(os.path.join(self.path,"csvdata","pca_scores.csv"))
+            self.project_columns.to_csv(os.path.join(self.path,"csvdata","projected_pca_scores.csv"))
+            self.extra_columns.to_csv(os.path.join(self.path, "csvdata","fitted_pca_scores.csv"))
+            if not np.array_equal(self.extra_columns.values, self.project_columns.values):
+                self.full_columns = pd.concat([self.extra_columns,self.project_columns])
+            else:
+                self.full_columns = self.project_columns
+            self.full_columns.to_csv(os.path.join(self.path, "csvdata","full_pca_scores.csv"))
             self.loadings.to_csv(os.path.join(self.path,"csvdata","pca_loadings.csv"))
             pd.concat([self.ogdf, self.check_inputs(self.extra_columns)], axis=1).to_csv(os.path.join(self.path,"csvdata","pca_scores_original_format.csv"))
             plot_scree(self.fullpca,os.path.join(self.path, "screeplots", "scree"))
@@ -201,7 +236,13 @@ class basePCA(TransformerMixin, BaseEstimator):
             os.makedirs(os.path.join(self.path,"screeplots"),exist_ok=True)
 
             save_wordclouds(self.loadings,os.path.join(self.path,f"wordclouds_{group}"))
-            self.extra_columns.to_csv(os.path.join(self.path,f"csvdata_{group}","pca_scores.csv"))
+            self.project_columns.to_csv(os.path.join(self.path,f"csvdata_{group}","projected_pca_scores.csv"))
+            self.extra_columns.to_csv(os.path.join(self.path, f"csvdata_{group}","fitted_pca_scores.csv"))
+            if not np.array_equal(self.extra_columns.values, self.project_columns.values):
+                self.full_columns = pd.concat([self.extra_columns,self.project_columns])
+            else:
+                self.full_columns = self.project_columns
+            self.full_columns.to_csv(os.path.join(self.path, f"csvdata_{group}","full_pca_scores.csv"))
             self.loadings.to_csv(os.path.join(self.path,f"csvdata_{group}","pca_loadings.csv"))
             pd.concat([self.ogdf, self.check_inputs(self.extra_columns)], axis=1).to_csv(os.path.join(self.path,f"csvdata_{group}","pca_scores_original_format.csv"))
             plot_scree(self.fullpca,os.path.join(self.path, "screeplots", f"scree_{group}"))
