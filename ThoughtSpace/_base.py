@@ -233,7 +233,7 @@ class basePCA(TransformerMixin, BaseEstimator):
             self.extra_columns.to_csv(os.path.join(self.path, "csvdata","fitted_pca_scores.csv"))
             if not self.extra_columns.index.equals(self.project_columns.index):
                 newidx = self.project_columns.index.difference(self.extra_columns.index)
-                self.full_columns = pd.concat([self.extra_columns,self.project_columns.iloc[newidx]])
+                self.full_columns = pd.concat([self.extra_columns,self.project_columns.loc[newidx]])
             else:
                 self.full_columns = self.project_columns
             self.full_columns.to_csv(os.path.join(self.path, "csvdata","full_pca_scores.csv"))
@@ -251,7 +251,7 @@ class basePCA(TransformerMixin, BaseEstimator):
             self.extra_columns.to_csv(os.path.join(self.path, f"csvdata_{group}","fitted_pca_scores.csv"))
             if not self.extra_columns.index.equals(self.project_columns.index):
                 newidx = self.project_columns.index.difference(self.extra_columns.index)
-                self.full_columns = pd.concat([self.extra_columns,self.project_columns.iloc[newidx]])
+                self.full_columns = pd.concat([self.extra_columns,self.project_columns.loc[newidx]])
             else:
                 self.full_columns = self.project_columns
             self.full_columns.to_csv(os.path.join(self.path, f"csvdata_{group}","full_pca_scores.csv"))
