@@ -151,6 +151,7 @@ class basePCA(TransformerMixin, BaseEstimator):
             The fitted PCA model.
         """
         _df = df.copy()
+        dfidx = _df.index
         try:
             cols = _df.columns
             outcols = []
@@ -174,6 +175,7 @@ class basePCA(TransformerMixin, BaseEstimator):
         indivloadings = np.dot(_df,self.loadings).T
         for x in range(self.n_components):
             self.extra_columns[f"PCA_{x}"] = indivloadings[x, :]
+        self.extra_columns.index = dfidx
         return self
 
     def transform(
@@ -182,6 +184,7 @@ class basePCA(TransformerMixin, BaseEstimator):
         scale=True,
     ) -> pd.DataFrame:
         _df = df.copy()
+        newdfidx = _df.index
         try:
             cols = _df.columns
             outcols = []
@@ -207,6 +210,7 @@ class basePCA(TransformerMixin, BaseEstimator):
             self.project_columns = output_.T
             # for x in range(self.n_components):
             #     self.project_columns[f"PCA_{x}"] = output_[x, :]    
+        self.project_columns.index = newdfidx
         return self.project_columns.copy()
 
     def project(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -227,8 +231,9 @@ class basePCA(TransformerMixin, BaseEstimator):
             save_wordclouds(self.loadings,os.path.join(self.path,"wordclouds"))
             self.project_columns.to_csv(os.path.join(self.path,"csvdata","projected_pca_scores.csv"))
             self.extra_columns.to_csv(os.path.join(self.path, "csvdata","fitted_pca_scores.csv"))
-            if not np.array_equal(self.extra_columns.values, self.project_columns.values):
-                self.full_columns = pd.concat([self.extra_columns,self.project_columns])
+            if not self.extra_columns.index.equals(self.project_columns.index):
+                newidx = self.project_columns.index.difference(self.extra_columns.index)
+                self.full_columns = pd.concat([self.extra_columns,self.project_columns.iloc[newidx]])
             else:
                 self.full_columns = self.project_columns
             self.full_columns.to_csv(os.path.join(self.path, "csvdata","full_pca_scores.csv"))
@@ -244,8 +249,9 @@ class basePCA(TransformerMixin, BaseEstimator):
             save_wordclouds(self.loadings,os.path.join(self.path,f"wordclouds_{group}"))
             self.project_columns.to_csv(os.path.join(self.path,f"csvdata_{group}","projected_pca_scores.csv"))
             self.extra_columns.to_csv(os.path.join(self.path, f"csvdata_{group}","fitted_pca_scores.csv"))
-            if not np.array_equal(self.extra_columns.values, self.project_columns.values):
-                self.full_columns = pd.concat([self.extra_columns,self.project_columns])
+            if not self.extra_columns.index.equals(self.project_columns.index):
+                newidx = self.project_columns.index.difference(self.extra_columns.index)
+                self.full_columns = pd.concat([self.extra_columns,self.project_columns.iloc[newidx]])
             else:
                 self.full_columns = self.project_columns
             self.full_columns.to_csv(os.path.join(self.path, f"csvdata_{group}","full_pca_scores.csv"))
