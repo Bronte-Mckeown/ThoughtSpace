@@ -13,9 +13,10 @@ import os
 
 
 class basePCA(TransformerMixin, BaseEstimator):
-    def __init__(self, n_components="infer",verbosity=1):
+    def __init__(self, n_components="infer",verbosity=1,rotation="varimax"):
         self.n_components = n_components
         self.verbosity = verbosity
+        self.rotation = rotation
         self.path = None
         self.ogdf = None
     def check_stats(self, df: pd.DataFrame) -> None:
@@ -126,7 +127,13 @@ class basePCA(TransformerMixin, BaseEstimator):
         else:
             self.fullpca = PCA(svd_solver="full").fit(df)
         pca = PCA(n_components=self.n_components,svd_solver="full").fit(df)
-        loadings = Rotator().fit_transform(pca.components_.T)
+        if self.rotation == "varimax":
+            loadings = Rotator().fit_transform(pca.components_.T)
+        elif self.rotation == False:
+            loadings = pca.components_.T
+        else:
+            raise "Rotation type is not supported"
+        
         loadings = pd.DataFrame(
             loadings,
             index=self.items,
@@ -266,14 +273,25 @@ class basePCA(TransformerMixin, BaseEstimator):
             save_wordclouds(self.loadings,os.path.join(self.path,f"wordclouds_{group}"))
             self.project_columns.to_csv(os.path.join(self.path,f"csvdata_{group}","projected_pca_scores.csv"))
             self.extra_columns.to_csv(os.path.join(self.path, f"csvdata_{group}","fitted_pca_scores.csv"))
+
             if not self.extra_columns.index.equals(self.project_columns.index):
                 newidx = self.project_columns.index.difference(self.extra_columns.index)
                 self.full_columns = pd.concat([self.extra_columns,self.project_columns.loc[newidx]])
             else:
                 self.full_columns = self.project_columns
+
+            if not self._raw_fitted.index.equals(self._raw_project.index):
+                newidx = self._raw_project.index.difference(self._raw_fitted.index)
+                self._raw_full = pd.concat([self._raw_fitted,self._raw_project.loc[newidx]])
+            else:
+                self._raw_full = self._raw_project
+
             self.full_columns.to_csv(os.path.join(self.path, f"csvdata_{group}","full_pca_scores.csv"))
             self.loadings.to_csv(os.path.join(self.path,f"csvdata_{group}","pca_loadings.csv"))
             pd.concat([self.ogdf, self.check_inputs(self.extra_columns)], axis=1).to_csv(os.path.join(self.path,f"csvdata_{group}","pca_scores_original_format.csv"))
+            plot_stats(self._raw_fitted,os.path.join(self.path, "descriptives", f"fitted_{group}"))
+            plot_stats(self._raw_project,os.path.join(self.path, "descriptives", f"projected_{group}"))
+            plot_stats(self._raw_full,os.path.join(self.path, "descriptives", f"full_{group}"))
             plot_scree(self.fullpca,os.path.join(self.path, "screeplots", f"scree_{group}"))
         
         print(f"Saving done. Results have been saved to {self.path}")
