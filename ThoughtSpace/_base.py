@@ -5,7 +5,7 @@ from factor_analyzer import Rotator, calculate_bartlett_sphericity, calculate_km
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
-from ThoughtSpace.plotting import save_wordclouds, plot_scree
+from ThoughtSpace.plotting import save_wordclouds, plot_scree,plot_stats
 from ThoughtSpace.utils import setupanalysis
 import os
 
@@ -169,9 +169,11 @@ class basePCA(TransformerMixin, BaseEstimator):
             self.ogdf = _df.copy()
         _df = self.check_inputs(_df, fit=True)
         self.check_stats(_df)
+        self._raw_fitted = _df
         if scale:
             _df = self.z_score(_df)
         self.loadings = self.naive_pca(_df)
+       
         indivloadings = np.dot(_df,self.loadings).T
         for x in range(self.n_components):
             self.extra_columns[f"PCA_{x}"] = indivloadings[x, :]
@@ -199,9 +201,10 @@ class basePCA(TransformerMixin, BaseEstimator):
         except:
             pass
         _df = self.check_inputs(_df,project=True)
-        
+        self._raw_project = _df
         if scale:
             _df = self.scaler.transform(_df)
+        
         output_ = np.dot(_df, self.loadings).T
         if isinstance(self.project_columns, pd.DataFrame):
             for x in range(self.n_components):
@@ -227,18 +230,32 @@ class basePCA(TransformerMixin, BaseEstimator):
             os.makedirs(os.path.join(self.path,"wordclouds"),exist_ok=True)
             os.makedirs(os.path.join(self.path,"csvdata"),exist_ok=True)
             os.makedirs(os.path.join(self.path,"screeplots"),exist_ok=True)
+            os.makedirs(os.path.join(self.path, "descriptives"),exist_ok=True)
             
             save_wordclouds(self.loadings,os.path.join(self.path,"wordclouds"))
             self.project_columns.to_csv(os.path.join(self.path,"csvdata","projected_pca_scores.csv"))
             self.extra_columns.to_csv(os.path.join(self.path, "csvdata","fitted_pca_scores.csv"))
+            
+            
             if not self.extra_columns.index.equals(self.project_columns.index):
                 newidx = self.project_columns.index.difference(self.extra_columns.index)
                 self.full_columns = pd.concat([self.extra_columns,self.project_columns.loc[newidx]])
             else:
                 self.full_columns = self.project_columns
+                
+            if not self._raw_fitted.index.equals(self._raw_project.index):
+                newidx = self._raw_project.index.difference(self._raw_fitted.index)
+                self._raw_full = pd.concat([self._raw_fitted,self._raw_project.loc[newidx]])
+            else:
+                self._raw_full = self._raw_project
+                  
+                
             self.full_columns.to_csv(os.path.join(self.path, "csvdata","full_pca_scores.csv"))
             self.loadings.to_csv(os.path.join(self.path,"csvdata","pca_loadings.csv"))
             pd.concat([self.ogdf, self.check_inputs(self.extra_columns)], axis=1).to_csv(os.path.join(self.path,"csvdata","pca_scores_original_format.csv"))
+            plot_stats(self._raw_fitted,os.path.join(self.path, "descriptives", "fitted"))
+            plot_stats(self._raw_project,os.path.join(self.path, "descriptives", "projected"))
+            plot_stats(self._raw_full,os.path.join(self.path, "descriptives", "full"))
             plot_scree(self.fullpca,os.path.join(self.path, "screeplots", "scree"))
         
         else:
