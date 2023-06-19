@@ -127,10 +127,11 @@ class basePCA(TransformerMixin, BaseEstimator):
         else:
             self.fullpca = PCA(svd_solver="full").fit(df)
         pca = PCA(n_components=self.n_components,svd_solver="full").fit(df)
-        if self.rotation == "varimax":
-            loadings = Rotator().fit_transform(pca.components_.T)
-        elif self.rotation == False:
+        
+        if self.rotation == False:
             loadings = pca.components_.T
+        elif self.rotation in ["varimax","promax","oblimin","oblimax","quartimin","quartimax","equamax"]:
+            loadings = Rotator(method=self.rotation).fit_transform(pca.components_.T)
         else:
             raise "Rotation type is not supported"
         
