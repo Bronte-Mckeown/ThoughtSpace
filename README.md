@@ -2,6 +2,8 @@
 
 Python-based pipeline for flexible Principal Components Analysis (PCA) and projecting between datasets.
 
+Please note: the 'class-version' branch is preferable for analysis and will soon become the main branch. The following instructions relate to the current main branch and will be updated to work with the class-version branch once it becomes the main.
+
 ## Prerequisite
 
 There are a couple of ways you can implement ThoughtSpace in your own analysis. Pick the one that makes the most sense to you.
