@@ -7,6 +7,26 @@ from ThoughtSpace.utils import clean_substrings, returnhighest
 from wordcloud import WordCloud
 import pandas as pd
 
+def plot_stats(df, path: str):
+    means = df.mean()
+    stds = df.std()
+    question_names = means.index.tolist()
+    max_subst = clean_substrings(question_names)
+    if max_subst is not None:
+        question_names = [x.replace(max_subst, "") for x in question_names]
+        
+    plt.bar(question_names,means,yerr=stds)
+    plt.title("Average responses")
+    plt.xlabel("Item")
+    plt.ylabel("Average response")
+    plt.xticks(rotation = 45, ha='right')
+    plt.tight_layout()
+    plt.savefig(path + "_responses.png")
+    plt.close()
+    print('e')
+    pass
+    
+
 def plot_scree(pca, path: str):
     """
     Plot the scree plot of the PCA.
