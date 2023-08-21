@@ -148,7 +148,7 @@ class basePCA(TransformerMixin, BaseEstimator):
                 loadings[col] = loadings[col] * -1
         return loadings
 
-    def fit(self, df: pd.DataFrame, y=None, scale: bool = True, **kwargs) -> "PCA":
+    def fit(self, df, y=None, scale: bool = True, **kwargs) -> "PCA":
         """
         Fit the PCA model.
         Args:
@@ -159,7 +159,10 @@ class basePCA(TransformerMixin, BaseEstimator):
             The fitted PCA model.
         """
         _df = df.copy()
-        dfidx = _df.index
+        if isinstance(df,pd.DataFrame):
+            dfidx = _df.index
+        else:
+            dfidx = list(range(len(_df)))
         try:
             cols = _df.columns
             outcols = []
@@ -194,7 +197,10 @@ class basePCA(TransformerMixin, BaseEstimator):
         scale=True,
     ) -> pd.DataFrame:
         _df = df.copy()
-        newdfidx = _df.index
+        if isinstance(_df, pd.DataFrame):
+            newdfidx = _df.index
+        else:
+            newdfidx = list(range(len(_df)))
         try:
             cols = _df.columns
             outcols = []
@@ -220,8 +226,9 @@ class basePCA(TransformerMixin, BaseEstimator):
         else:
             self.project_columns = output_.T
             # for x in range(self.n_components):
-            #     self.project_columns[f"PCA_{x}"] = output_[x, :]    
-        self.project_columns.index = newdfidx
+            #     self.project_columns[f"PCA_{x}"] = output_[x, :]  
+        if isinstance(self.project_columns, pd.DataFrame) : 
+            self.project_columns.index = newdfidx
         return self.project_columns.copy()
 
     def project(self, df: pd.DataFrame) -> pd.DataFrame:
