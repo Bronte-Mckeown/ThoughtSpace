@@ -7,7 +7,10 @@ import numpy as np
 
 from sklearn.decomposition import PCA
 
-from scipy.stats import zscore
+# from scipy.stats import StandardScaler().fit_transform
+
+from sklearn.preprocessing import StandardScaler
+
 import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib.backends.backend_pdf
@@ -78,22 +81,22 @@ def z_score(df, col_start, col_end, by_sample = False, sample_col = None,
         # if by_condition and by_sample set to true, apply z-score by condition and sample
         if by_condition and by_sample:
             df[f'Z{c}'] = df.groupby([condition_col, sample_col])[c].transform(
-                lambda x: zscore(x, ddof=1, nan_policy='omit')
+                lambda x: StandardScaler().fit_transform(x.reshape(-1,1))
             )
         elif by_condition:
             df[f'Z{c}'] = df.groupby(condition_col)[c].transform(
-                lambda x: zscore(x, ddof=1, nan_policy='omit')
+                lambda x: StandardScaler().fit_transform(x.reshape(-1,1))
             )
         elif by_sample:
             df[f'Z{c}'] = df.groupby(sample_col)[c].transform(
-                lambda x: zscore(x, ddof=1, nan_policy='omit')
+                lambda x: StandardScaler().fit_transform(x.reshape(-1,1))
             )
         elif by_person:
             df[f'Z{c}'] = df.groupby([person_col])[c].transform(
-                lambda x: zscore(x, ddof=1, nan_policy='omit')
+                lambda x: StandardScaler().fit_transform(x.reshape(-1,1))
             )
         else:
-            df[f'Z{c}'] = zscore(df[c], nan_policy='omit')
+            df[f'Z{c}'] = StandardScaler().fit_transform(df[c].values.reshape(-1,1))
     return df 
 
 def naive_pca(input_dict):
@@ -177,11 +180,11 @@ def merge_dataframes(input_dict, master_df, data_path, results_id, rotation_on, 
     # TODO move saving data to out of function
     # TODO this shouldn't output to the parent directory 
     # TODO want to save WHICH rotation has been applied in filename
-    output_name = data_path.split('.csv')[0] + ('_{results_id}_{rotation}_ncomponents={ncomp}'.format(
+    output_name = data_path.split('.csv')[0] + ('_{results_id}_{rotation}_ncomponents{ncomp}'.format(
         results_id = results_id,
         rotation=('rotation-on' if rotation_on else 'rotation-off'),
         # For number components, create list of all values in n_compoentns dictionary to show all possible number of compoennets enetered nby user  
-        ncomp=(list(n_components_dict.values()) if n_components else 'EV>1'))) + '.csv'
+        ncomp=(list(n_components_dict.values()) if n_components else 'EV'))) + '.csv'
 
     # TODO make this save line more robust - breaks for Will due to paths
     outputdf.to_csv(output_name, index = False)
@@ -192,10 +195,10 @@ def page_of_plots(pca_dict,loadings_dict, masking_num, results_id, rotation_on, 
     """
     Function to create PDF of all figures for all groups
     """
-    out_pdf = 'scratch/results/figures_{results_id}_{rotation}_ncomponents={ncomp}.pdf'.format(
+    out_pdf = 'scratch/results/figures_{results_id}_{rotation}_ncomponents{ncomp}.pdf'.format(
         results_id = results_id,
         rotation=('rotation-on' if rotation_on else 'rotation-off'),
-        ncomp=(list(n_components_dict.values()) if n_components else 'EV>1')
+        ncomp=(list(n_components_dict.values()) if n_components else 'EV')
     )
 
     pdf = matplotlib.backends.backend_pdf.PdfPages(out_pdf)
