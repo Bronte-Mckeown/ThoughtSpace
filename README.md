@@ -58,7 +58,7 @@ If you have never used it before, here are the steps to install, assuming you ha
 
 ### Setting up to code in Python
 
-- In order to code in Python within visual studio code, there are a few extra steps.
+In order to code in Python within visual studio code, there are a few extra steps.
 
 1. Install Python
 
