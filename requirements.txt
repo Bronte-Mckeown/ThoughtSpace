@@ -3,7 +3,7 @@ numpy>=1.16
 pandas>=1.1.4
 scipy>=1.6.2
 pathlib
-sklearn
+scikit-learn
 seaborn>=0.11.1
 adjustText 
 wordcloud

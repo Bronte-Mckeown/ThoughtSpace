@@ -1,6 +1,8 @@
 import pandas as pd
 from ThoughtSpace._base import basePCA
-data = pd.read_csv("scratch//data//output.csv")
+
+data = pd.read_csv("scratch//data//example_data.csv")
+
 model = basePCA(n_components=4,rotation="promax")
 
 projected_results = model.fit_project(data)
