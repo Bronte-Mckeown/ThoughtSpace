@@ -233,6 +233,7 @@ In the example below, change the file path to your own csv stored in your own da
 
 Using example data (daily life experience sampling data before and during lockdown in the UK): 
 
+```
 import pandas as pd # for reading in your csv
 from ThoughtSpace._base import basePCA # to use ThoughtSpace
 
@@ -248,6 +249,7 @@ projected_results = model.fit_project("data/lockdown_data.csv")
 
 # save results to results folder
 model.save(path="results",pathprefix="PCA_results")
+```
 
 Using your own data:
 
@@ -256,6 +258,7 @@ Things to note about the data format required:
 - So make sure any columns you don't want included, such as an ID column, are set to string variables,
 and that variables you do want included are set to numerical variables.
 
+```
 import pandas as pd # for reading in your csv
 from ThoughtSpace._base import basePCA # to use ThoughtSpace
 
@@ -270,6 +273,7 @@ projected_results = model.fit_project("data/lockdown_data.csv")
 
 # save results to results folder
 model.save(path="results",pathprefix="PCA_results")
+```
 
 3. Before running this script, select the conda environment you have created.
 
