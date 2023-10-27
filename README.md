@@ -353,25 +353,25 @@ In the csv directory, you will find:
 
   ### Push your changes to remote
 
-  What do I mean when I say "push changes"?
+What do I mean when I say "push changes"?
 
-  Put simply:
+Put simply:
 
-  1. Making Changes:
+1. Making Changes:
 
-  - Imagine you're working on a school essay. You write, edit, and add new content to your document. These changes are like the modifications you make in your project files.
+- Imagine you're working on a school essay. You write, edit, and add new content to your document. These changes are like the modifications you make in your project files.
 
-  2. Saving Changes Locally (Commit):
+2. Saving Changes Locally (Commit):
 
-  - Before you leave your computer, you save your essay to not lose your work. Similarly, in coding, you save your changes locally. This is called a "commit." It's like saving your progress in a game.
+- Before you leave your computer, you save your essay to not lose your work. Similarly, in coding, you save your changes locally. This is called a "commit." It's like saving your progress in a game.
 
-  3. Sending Changes Online (Push):
+3. Sending Changes Online (Push):
 
-  - Now, if you want to share your essay with your teacher or friends, you need to give them a copy. In coding, you need to send your saved changes online. This is called a "push." It's like uploading a file to the internet.
+- Now, if you want to share your essay with your teacher or friends, you need to give them a copy. In coding, you need to send your saved changes online. This is called a "push." It's like uploading a file to the internet.
 
-  4. Using GitHub Desktop:
+4. Using GitHub Desktop:
 
-  - GitHub Desktop is like a magical tool that helps you do these steps easily. It shows you what changes you made (like highlighting the edited parts of your essay).
+- GitHub Desktop is like a magical tool that helps you do these steps easily. It shows you what changes you made (like highlighting the edited parts of your essay).
 When you click "commit," it's like saving your work. And when you click "push," it's like sharing your essay with others online.
 
 Now here are the instructions to do these steps:
