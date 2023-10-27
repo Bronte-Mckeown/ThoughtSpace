@@ -13,8 +13,8 @@ It can be used to code in a range of programming languages including Python and 
 If you have never used it before, here are the steps to install, assuming you have a windows machine:
 1. Download Visual Studio Code:
 
-Open your web browser and go to the official Visual Studio Code website: https://code.visualstudio.com/.
-Click on the "Download for Windows" button. This will download the installer file to your computer.
+- Open your web browser and go to the official Visual Studio Code website: https://code.visualstudio.com/.
+- Click on the "Download for Windows" button. This will download the installer file to your computer.
 
 2. Run the Installer:
 
