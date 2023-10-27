@@ -215,7 +215,7 @@ The easiest way to do this is:
 
 - Alternatively, for your first analysis, you can use the example data available in ThoughtSpace (see below).
 
-#### Final steps to being able to use ThoughtSpace
+### Final steps to being able to use ThoughtSpace
 
 You now have 1) a local copy of ThoughtSpace on your machine and 2) a GitHub repository in which you will run your analysis. 
 
@@ -279,7 +279,7 @@ pip install .
 
 You have now installed ThougthSpace inside the anaconda environment you created.
 
-##### Run your first PCA analysis
+#### Run your first PCA analysis
 
 1. Open visual studio code
 
@@ -351,7 +351,7 @@ In the csv directory, you will find:
 - full_pca_scores: data PCA was trained/fitted on plus data PCA was applied to
 - pca_scores_original_format: PCA scores + rest of original dataframe PCA was trained on (including string columns not included in PCA)
 
-  ##### Push your changes to remote
+  ### Push your changes to remote
 
   What do I mean when I say "push changes"?
 
