@@ -199,7 +199,7 @@ The easiest way to do this is:
 
 - You can optionally add a description (e.g., "This repository uses ThoughtSpace to analyze COVID-19 lockdown data.").
 
-- Select a folder to store the repository. It's up to you where you keep it but Github Desktop will default to a folder it creates on installation: "GitHub". This is not a good option.
+- Select a folder to store the repository. It's up to you where you keep it but Github Desktop will default to a folder it creates on installation: "GitHub". This is a good option.
 
 - Select "Create Repository". 
 
@@ -350,3 +350,53 @@ In the csv directory, you will find:
 - projected_pca_scores: data PCA was applied to
 - full_pca_scores: data PCA was trained/fitted on plus data PCA was applied to
 - pca_scores_original_format: PCA scores + rest of original dataframe PCA was trained on (including string columns not included in PCA)
+
+  ##### Push your changes to remote
+
+  What do I mean when I say "push changes"?
+
+  Put simply:
+
+  1. Making Changes:
+
+  - Imagine you're working on a school essay. You write, edit, and add new content to your document. These changes are like the modifications you make in your project files.
+
+  2. Saving Changes Locally (Commit):
+
+  - Before you leave your computer, you save your essay to not lose your work. Similarly, in coding, you save your changes locally. This is called a "commit." It's like saving your progress in a game.
+
+  3. Sending Changes Online (Push):
+
+  - Now, if you want to share your essay with your teacher or friends, you need to give them a copy. In coding, you need to send your saved changes online. This is called a "push." It's like uploading a file to the internet.
+
+  4. Using GitHub Desktop:
+
+  - GitHub Desktop is like a magical tool that helps you do these steps easily. It shows you what changes you made (like highlighting the edited parts of your essay).
+When you click "commit," it's like saving your work. And when you click "push," it's like sharing your essay with others online.
+
+Now here are the instructions to do these steps:
+
+1. Open GitHub Desktop
+
+2. View Changes:
+
+- GitHub Desktop will show you the changes you've made in the "Changes" tab.
+- You'll see a list of files that have been modified or created.
+
+3. Commit Changes:
+
+- Write a brief summary of the changes you made in the "Summary" box.
+- Click on the "Commit to main" button. 
+- Your changes are now committed to your local repository.
+
+4. Push Changes to Remote:
+
+- After committing, you'll see a button labeled "Push origin."
+- Click on this button.
+- GitHub Desktop will upload your committed changes to the remote repository on GitHub.com.
+- Depending on your settings, you might be asked to log in to your GitHub account and confirm the push.
+
+5. Verification:
+
+- Once the push is completed, your changes are now on the remote repository.
+- You can go to your GitHub repository on GitHub.com to see the changes reflected there.
