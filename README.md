@@ -6,9 +6,7 @@ Python-based pipeline for flexible Principal Components Analysis (PCA) and proje
 
 This is a Beginners guide that assumes little-to-no prior knowledge of coding and GitHub. It does assume you already have a GitHub account set up. So, if you don't, create one first.
 
-### Initital set up
-
-#### Installing Visual Studio Code
+### Installing Visual Studio Code
 VS Code, is a free, open-source code editor developed by Microsoft. It's designed for developers and programmers to write, edit, and debug code easily and efficiently.
 It can be used to code in a range of programming languages including Python and R.
 
@@ -58,7 +56,7 @@ Once the installation is complete, click "Finish" to exit the installer. You can
 
 After installation, you can launch Visual Studio Code by finding it in the Start menu or by double-clicking the desktop icon if you created one during the installation process.
 
-#### Setting up to code in Python
+### Setting up to code in Python
 
 In order to code in Python within visual studio code, there are a few extra steps.
 
@@ -67,11 +65,15 @@ In order to code in Python within visual studio code, there are a few extra step
 Before you start coding in Python, you need to have Python installed on your system.
 - If you are unsure whether it is already installed, open up the "Command Prompt" and type:
 
+```
 python --version
+```
 
 OR
 
+```
 python3 --version
+```
 
 If Python is installed, this command will return the installed Python version number. If Python is not installed, you will likely see an error message 
 indicating that the command is not recognized. In that case, you would need to install Python on your machine.
@@ -120,7 +122,11 @@ You can select the interpreter by opening the Command Palette (Ctrl+Shift+P), ty
 
 Select "File", then "New File". You can then select "Python File".
 
-Type the following: print ("Hello World")
+Type the following: 
+
+```
+print ("Hello World")
+```
 
 Save as this file to your computer.
 
@@ -131,7 +137,7 @@ Make sure you have selected "Terminal" in the bottom window, and you should be a
 If you run into issues, stackoverflow often has good fixes and Chat GPT can also be useful here. If in doubt, chat to someone with more experience before making
 any big changes to your machine.
 
-##### Recap of what you have done so far...
+#### Recap of what you have done so far...
 
 Installed Visual studio code:
 What It Is: Visual Studio Code is like a digital workspace on your computer. It's a text editor, but it's much more than that. It's a powerful tool that helps you write and edit code for various programming languages, including Python.
@@ -145,18 +151,40 @@ Selected Python Interpreter:
 What It Is: The Python interpreter is like a translator between human-readable Python code and the language that your computer understands. When you write Python code in VS Code, the Python interpreter takes that code and executes it, making your instructions come to life on your computer.
 Imagine It Like: The Python interpreter is like a magical friend who understands both your language (Python) and your computer's language. You tell your magical friend what you want to do in Python, and they make sure your computer understands and follows your instructions.
 
-Putting It All Together:
+##### Putting It All Together:
 
 Imagine you want to create a program that says "Hello, World!" on your computer screen. You write the instructions for this in Python inside Visual Studio Code (your notebook). When you run your program, Visual Studio Code uses the Python interpreter to translate your Python instructions into a language your computer understands. As a result, your computer displays "Hello, World!" on the screen.
 In summary, Visual Studio Code is your workspace, Python is the language you use to communicate with your computer, and the Python interpreter is the translator that makes sure your computer understands and carries out your Python instructions.
 
-#### Fork and Clone ThoughtSpace
+### Fork and Clone ThoughtSpace.
 
 1. Fork ThoughtSpace
 
-2. Clone ThoughtSpace to your local PC
+Please see instructions here: https://docs.github.com/en/get-started/quickstart/fork-a-repo
 
-##### Create a new GitHub repository on your local machine.
+This step creates your own remote copy of this repository.
+
+4. Clone ThoughtSpace to your local PC
+
+Launch GitHub Desktop on your computer.
+
+Find the Repository to Clone:
+Go to the forked GitHub repository using your web browser.
+Copy the URL of the repository. It looks like https://github.com/username/ThoughtSpace.git.
+
+Clone the Repository:
+In GitHub Desktop, click on the "File" menu in the upper-left corner.
+Select "Clone Repository..." from the dropdown menu.
+GitHub Desktop will open a dialog box. In this box:
+URL: Paste the URL of the repository you copied from GitHub.
+Local Path: Choose the local directory on your computer where you want to clone the repository. Click "Choose..." to select the folder.
+Click the "Clone" button to start the cloning process.
+
+GitHub Desktop will download the repository files to your computer. Wait for the process to finish. Once it's done, you'll see the repository listed in your GitHub Desktop application.
+
+You now have a local copy of your forked copy of ThoughtSpace.
+
+### Create a new GitHub repository on your local machine.
 
 The easiest way to do this is: 
 
@@ -174,7 +202,7 @@ Select "Create Repository".
 
 You have now created a GitHub repository on your local PC. It is has not yet been "pushed" to the remote but don't worry about what that means for now (we will get to that later).
 
-3. Create required folders in repository.
+3. Create data and results folders in repository.
 
 Now navigate to where your repository is stored using the file explorer.
 
@@ -184,7 +212,7 @@ Create a directory called 'data' and a directory called 'results'.
 
 Alternatively, for your first analysis, you can use the example data available in ThoughtSpace (see below).
 
-##### Install ThoughtSpace
+#### Final steps to being able to use ThoughtSpace
 You now have 1) a local copy of ThoughtSpace on your machine and 2) a GitHub repository in which you will run your analysis. 
 
 In order to be able to use ThoughtSpace within your own GitHub analysis repository, you need to do the following:
@@ -193,35 +221,55 @@ In order to be able to use ThoughtSpace within your own GitHub analysis reposito
 
 2. Create a new anaconda environment with Python 3.8.13 and name it according your analysis (e.g., covid)
 
+An Anaconda environment is like a self-contained workspace for your Python projects. Imagine it as a virtual box where you can install specific versions of Python and libraries tailored for a particular project, without affecting other projects. It helps you manage different project requirements independently. This way, you can work on one project using one set of libraries and another project using a different set, ensuring they don't interfere with each other. You are going to create one of these environments and install ThoughtSpace into this environment.
+
 Type the following into your command prompt and press enter: 
 
+```
 conda create -n <name_of_environment> python=3.8.13
+```
 
-e.g., conda create -n covid python=3.8.13
+e.g., 
+
+```
+conda create -n covid python=3.8.13
+```
 
 Type 'y' if prompted to install associated packages.
 
-[insert more info on how this works]
-
 3. Activate environment
+
+You have now created the environment on your machine. But now you need to 'activate' it in order to install ThoughtSpace. 
 
 Type the following into your command prompt and press enter:
 
+```
 conda activate <name_of_environment>
+```
 
-e.g., conda activate covid
+e.g., 
+
+```
+conda activate covid
+```
 
 4. Navigate to ThoughtSpace directory
 
-Type the following into your command prompt and press enter:
+Type the following (replacing with your own path) into your command prompt and press enter:
 
+```
 cd <path_to_thoughtspace>
+```
 
 5. pip install ThoughtSpace requirements
 
 From within ThoughtSpace, type the following into your command prompt and press enter:
 
+```
 pip install .
+```
+
+You have now installed ThougthSpace inside the anaconda environment you created.
 
 ##### Run your first PCA analysis
 
