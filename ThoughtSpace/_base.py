@@ -231,11 +231,6 @@ class basePCA(TransformerMixin, BaseEstimator):
             self.project_columns.index = newdfidx
         return self.project_columns.copy()
 
-    def project(self, df: pd.DataFrame) -> pd.DataFrame:
-        return self.transform(df.copy())
-
-    def fit_project(self, df: pd.DataFrame) -> pd.DataFrame:
-        return self.fit(df).project(df)
     
     def save(self,group=None,path=None,pathprefix="analysis",includetime=True) -> None:
         if self.path is None:
