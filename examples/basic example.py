@@ -1,5 +1,5 @@
 import pandas as pd
-from ThoughtSpace._base import basePCA
+from ThoughtSpace.pca import basePCA
 
 data = pd.read_csv("scratch//data//example_data.csv")
 

@@ -1,5 +1,5 @@
 import pandas as pd
-from ThoughtSpace._base import groupedPCA
+from ThoughtSpace.pca import groupedPCA
 
 data = pd.read_csv("scratch//data//example_data.csv")
 

@@ -8,17 +8,62 @@ from sklearn.preprocessing import StandardScaler
 from ThoughtSpace.plotting import save_wordclouds, plot_scree,plot_stats
 from ThoughtSpace.utils import setupanalysis
 import os
-
-
-
+from sklearn.model_selection import KFold, BaseCrossValidator
 
 class basePCA(TransformerMixin, BaseEstimator):
+    """
+    A base class for performing Principal Component Analysis (PCA) with ThoughtSpace.
+
+    Args:
+        n_components (int or "infer", optional): The number of components to keep. If "infer", the number of components is determined based on the explained variance. Defaults to "infer".
+        verbosity (int, optional): The level of verbosity. Set to 0 for no output, 1 for basic output, and 2 for detailed output. Defaults to 1.
+        rotation (str or bool, optional): The rotation method to use for the loadings. If False, no rotation is performed. Supported methods are "varimax", "promax", "oblimin", "oblimax", "quartimin", "quartimax", and "equamax". Defaults to "varimax".
+
+    Attributes:
+        n_components (int or "infer"): The number of components to keep.
+        verbosity (int): The level of verbosity.
+        rotation (str or bool): The rotation method to use for the loadings.
+        path (str or None): The path to save the results.
+        ogdf (pd.DataFrame or None): The original dataframe.
+        scaler (StandardScaler): The scaler used for z-score normalization.
+        loadings (pd.DataFrame): The loadings matrix.
+        extra_columns (pd.DataFrame): The fitted PCA scores.
+        project_columns (pd.DataFrame): The projected PCA scores.
+        _raw_fitted (pd.DataFrame): The raw fitted data.
+        _raw_project (pd.DataFrame): The raw projected data.
+        fullpca (PCA): The PCA object with full components.
+        items (list): The column names of the input dataframe.
+
+    Methods:
+        check_stats(df: pd.DataFrame) -> None:
+            This function checks the KMO and Bartlett Sphericity of the dataframe.
+
+        check_inputs(df: pd.DataFrame, fit: bool = False, project: bool = False) -> pd.DataFrame:
+            Check the inputs of the function.
+
+        z_score(df: pd.DataFrame) -> np.ndarray:
+            This function returns the z-score of the dataframe.
+
+        naive_pca(df: pd.DataFrame) -> Tuple[PCA, pd.DataFrame]:
+            Perform PCA on the input dataframe.
+
+        fit(df, y=None, scale: bool = True, **kwargs) -> "PCA":
+            Fits the PCA model.
+
+        transform(df: pd.DataFrame, scale=True) -> pd.DataFrame:
+            Transform the input dataframe using the fitted PCA model.
+
+        save(group=None, path=None, pathprefix="analysis", includetime=True) -> None:
+            Save the results of the PCA analysis.
+
+    """
     def __init__(self, n_components="infer",verbosity=1,rotation="varimax"):
         self.n_components = n_components
         self.verbosity = verbosity
         self.rotation = rotation
         self.path = None
         self.ogdf = None
+        
     def check_stats(self, df: pd.DataFrame) -> None:
         """
         This function checks the KMO and Bartlett Sphericity of the dataframe.
@@ -113,11 +158,17 @@ class basePCA(TransformerMixin, BaseEstimator):
 
     def naive_pca(self, df: pd.DataFrame) -> Tuple[PCA, pd.DataFrame]:  # type: ignore
         """
-        This is a multi-line Google style docstring.
+        Perform Principal Component Analysis (PCA) on the input dataframe.
+
         Args:
             df (pd.DataFrame): The dataframe to be used for PCA.
+
         Returns:
-            Tuple[PCA, pd.DataFrame]: The PCA object and the loadings dataframe.
+            Tuple[PCA, pd.DataFrame]: A tuple containing the PCA object and the loadings dataframe.
+
+        Raises:
+            TypeError: If the rotation type is not supported.
+
         """
         if self.n_components == "infer":
             self.fullpca = PCA(svd_solver="full").fit(df)
@@ -196,6 +247,17 @@ class basePCA(TransformerMixin, BaseEstimator):
         df: pd.DataFrame,
         scale=True,
     ) -> pd.DataFrame:
+        """
+        Transform the input dataframe using the fitted PCA model.
+
+        Args:
+            df (pd.DataFrame): The input dataframe to be transformed.
+            scale (bool, optional): Whether to scale the input dataframe. Defaults to True.
+
+        Returns:
+            pd.DataFrame: The transformed dataframe.
+
+        """
         _df = df.copy()
         if isinstance(_df, pd.DataFrame):
             newdfidx = _df.index
@@ -225,14 +287,33 @@ class basePCA(TransformerMixin, BaseEstimator):
                 self.project_columns[f"PCA_{x}"] = output_[x, :]
         else:
             self.project_columns = output_.T
-            # for x in range(self.n_components):
-            #     self.project_columns[f"PCA_{x}"] = output_[x, :]  
         if isinstance(self.project_columns, pd.DataFrame) : 
             self.project_columns.index = newdfidx
         return self.project_columns.copy()
 
     
+    # def cv(self,data,cv=None):
+    #     if not cv:
+    #         cv = KFold()
+    #     else:
+    #         assert isinstance(cv,BaseCrossValidator)
+    #     for x,y in cv.split(data):
+            
+    
     def save(self,group=None,path=None,pathprefix="analysis",includetime=True) -> None:
+        """
+        Save the results of the PCA analysis.
+
+        Args:
+            group (str or None, optional): The group name for saving results. If None, save results for all groups. Defaults to None.
+            path (str or None, optional): The path to save the results. If None, use the default path. Defaults to None.
+            pathprefix (str, optional): The prefix for the path. Defaults to "analysis".
+            includetime (bool, optional): Whether to include the timestamp in the path. Defaults to True.
+
+        Returns:
+            None
+
+        """
         if self.path is None:
 
             self.path = setupanalysis(path,pathprefix,includetime)
@@ -301,15 +382,35 @@ class basePCA(TransformerMixin, BaseEstimator):
 
 
 class groupedPCA(basePCA):
-    def __init__(self, grouping_col=None, n_components="infer", **kwargs):
-        """
-        Initialize the class.
+    """
+    A class for performing grouped Principal Component Analysis (PCA).
 
-        Args:
-            grouping_col: The column to group by.
-            n_components: The number of components to use.
-            kwargs: Additional keyword arguments.
-        """
+    Args:
+        grouping_col: The column to group by.
+        n_components: The number of components to use.
+        **kwargs: Additional keyword arguments.
+
+    Attributes:
+        grouping_col: The column to group by.
+
+    Methods:
+        z_score_byitem(df_dict) -> pd.DataFrame:
+            Calculate the z-score of the dataframe.
+
+        z_score_byitem_project(df_dict) -> pd.DataFrame:
+            Calculate the z-score of the dataframe for projection.
+
+        fit(df, y=None, **kwargs) -> self:
+            Fit the grouped PCA model.
+
+        transform(df) -> pd.DataFrame:
+            Transform the input dataframe using the fitted grouped PCA model.
+
+        save(savebygroup=False, path=None, pathprefix="analysis", includetime=True) -> None:
+            Save the results of the grouped PCA analysis.
+
+    """
+    def __init__(self, grouping_col=None, n_components="infer", **kwargs):
         super().__init__(n_components)
         self.grouping_col = grouping_col
         if grouping_col is None:
@@ -369,7 +470,7 @@ class groupedPCA(basePCA):
 
     def fit(self, df: pd.DataFrame, y=None, **kwargs):
         """
-        This is a multi-line Google style docstring.
+        Fit the grouped PCA model.
 
         Args:
             df (pd.DataFrame): The dataframe to fit.
@@ -378,6 +479,7 @@ class groupedPCA(basePCA):
 
         Returns:
             self
+
         """
         self.ogdf = df.copy()
         d = dict(tuple(df.groupby(self.grouping_col)))
@@ -386,11 +488,37 @@ class groupedPCA(basePCA):
         return self
 
     def transform(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Transform the input dataframe using the fitted grouped PCA model.
+
+        Args:
+            df (pd.DataFrame): The input dataframe to be transformed.
+
+        Returns:
+            pd.DataFrame: The transformed dataframe.
+
+        """
         d = dict(tuple(df.groupby(self.grouping_col)))
         zdf = self.z_score_byitem_project(d)
         return super().transform(zdf, scale=False)
     
     def save(self,savebygroup=False,path=None,pathprefix="analysis",includetime=True):
+        """
+    Save the results of the grouped PCA analysis.
+
+    Args:
+        savebygroup (bool, optional): Whether to save results by group. Defaults to False.
+        path (str or None, optional): The path to save the results. If None, use the default path. Defaults to None.
+        pathprefix (str, optional): The prefix for the path. Defaults to "analysis".
+        includetime (bool, optional): Whether to include the timestamp in the path. Defaults to True.
+
+    Returns:
+        None
+
+    Raises:
+        NotImplementedError: If saving by group is not yet implemented.
+
+    """
         self.path = setupanalysis(path,"grouped_"+pathprefix,includetime)
         if savebygroup:
             raise NotImplementedError("Saving by group is not yet implemented.")
