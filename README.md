@@ -503,8 +503,10 @@ The screeplot directory contains scree plots showing the 1) eigenvalues of each 
 Finally, the wordclouds directory contains png images of wordclouds representing each of the PCA components identified.
     
 - They are first named numerically (e.g., PC1).
-- Positive just indicates that the component loadings are mostly positive (and if the originals weren't, they were automatically all flipped).
-- The next three terms indicate the three items with the highest loadings for that component.
+- The three terms are the terms with the highest loading, separated by direction of loading:
+    - Positive indicates the highest positive terms
+    - Negative indicates the highest negative
+
 - In these images, each word = experience sampling item, size = magnitude of loading, and color = direction of loading.
     
   ### Push your changes to remote
