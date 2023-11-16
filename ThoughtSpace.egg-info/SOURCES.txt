@@ -2,7 +2,6 @@ README.md
 setup.py
 ThoughtSpace/__init__.py
 ThoughtSpace/_base.py
-ThoughtSpace/pca_plots.py
 ThoughtSpace/plotting.py
 ThoughtSpace/utils.py
 ThoughtSpace.egg-info/PKG-INFO
