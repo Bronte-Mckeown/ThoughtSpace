@@ -4,6 +4,7 @@ import pandas as pd
 from factor_analyzer import Rotator, calculate_bartlett_sphericity, calculate_kmo
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.decomposition import PCA
+from scipy.stats import pearsonr
 from sklearn.preprocessing import StandardScaler
 from ThoughtSpace.plotting import save_wordclouds, plot_scree,plot_stats
 from ThoughtSpace.utils import setupanalysis
@@ -292,12 +293,22 @@ class basePCA(TransformerMixin, BaseEstimator):
         return self.project_columns.copy()
 
     
-    # def cv(self,data,cv=None):
-    #     if not cv:
-    #         cv = KFold()
-    #     else:
-    #         assert isinstance(cv,BaseCrossValidator)
-    #     for x,y in cv.split(data):
+    def cv(self,data,cv=None):
+        if not cv:
+            cv = KFold()
+        else:
+            assert isinstance(cv,BaseCrossValidator)
+        baseline = self.fit_transform(data)
+        folds = []
+        correlations = []
+        for x,y in cv.split(data):
+            self.fit(data.iloc[x])
+            out = self.transform(data.iloc[y])
+            folds.append(out)
+            outv = self.check_inputs(out).values.ravel()
+            bv = self.check_inputs(baseline.iloc[y]).values.ravel()
+            correlations.append(pearsonr(outv,bv)[0])
+        return correlations, folds
             
     
     def save(self,group=None,path=None,pathprefix="analysis",includetime=True) -> None:
