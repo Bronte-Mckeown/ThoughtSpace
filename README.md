@@ -410,7 +410,7 @@ In the example pasted below, change the file path to your own csv file stored in
 
 Using URL method to read in example data (daily life experience sampling data before and during lockdown in the UK): 
 
-```
+```python
 import pandas as pd # for reading in the csv file containg the data
 from ThoughtSpace._base import basePCA # this imports the basePCA class from ThoughtSpace
 
@@ -435,7 +435,7 @@ Things to note about the data format required:
 - PCA will be applied to any numerical columns provided.
 - So make sure any columns you don't want included, such as an 'ID number' column or an 'age' column, are set to string variables, and that variables you do want included (i.e., experience sampling items) are set to numerical variables.
 
-```
+```python
 import pandas as pd # for reading in your csv
 from ThoughtSpace._base import basePCA # to use ThoughtSpace
 
