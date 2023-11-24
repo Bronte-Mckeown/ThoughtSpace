@@ -91,4 +91,6 @@ def clean_substrings(names: List[str]) -> str:
     max_occurring_substring = max(substring_counts.items(), key=operator.itemgetter(1))
     if max_occurring_substring[1] < len(names):
         return None
+    if len(max_occurring_substring[0]) == 1:
+        return None
     return max_occurring_substring[0]
