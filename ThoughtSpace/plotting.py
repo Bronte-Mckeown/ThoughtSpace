@@ -83,10 +83,6 @@ def save_wordclouds(df: pd.DataFrame, path: str, font: str = "helvetica", n_item
 
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
         FONT_DIR = os.path.join(BASE_DIR, f'fonts\\{font}.ttf')
-        if os.path.exists(FONT_DIR):
-            print(f'The file or directory at {FONT_DIR} exists.')
-        else:
-            print(f'The file or directory at {FONT_DIR} does not exist.')
 
         wc = WordCloud(
             font_path= FONT_DIR,
