@@ -51,13 +51,14 @@ def plot_scree(pca, path: str):
     plt.close()
 
 
-def save_wordclouds(df: pd.DataFrame, path: str, n_items_filename: int = 3) -> None:
+def save_wordclouds(df: pd.DataFrame, path: str, font: str = "helvetica", n_items_filename: int = 3) -> None:
     """
     This function saves wordclouds to a given path.
 
     Args:
         df (pd.DataFrame): DataFrame containing the wordclouds.
         path (str): Path to save the wordclouds.
+        font (str): Font name for wordclouds.
         n_items_filename (int): Number of items to be included in the filename.
 
     Returns:
@@ -69,17 +70,22 @@ def save_wordclouds(df: pd.DataFrame, path: str, n_items_filename: int = 3) -> N
     if max_subst is not None:
         question_names = [x.replace(max_subst, "") for x in question_names]
         df.index = question_names
-    arrmax = df.max().max()
-    arrmin = -arrmax
     for col in df.columns:
         subdf = abs(df[col])
         def _color(x, *args, **kwargs):
-            true_value = (df[col][x] - arrmin) / (arrmax - arrmin)
-            colorv = cm.RdBu_r(true_value)
-            chex = mcolor.to_hex(colorv)
-            return chex
+            value = df[col][x]
+            if value >= 0:
+                # Assign red color for positive values
+                return "#BB0000"  # Hex code for red
+            else:
+                # Assign blue color for negative values
+                return "#00156A"  # Hex code for blue
+
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        FONT_DIR = os.path.join(BASE_DIR, f'fonts\\{font}.ttf')
 
         wc = WordCloud(
+            font_path= FONT_DIR,
             background_color="white",
             color_func=_color,
             width=400,
@@ -92,3 +98,4 @@ def save_wordclouds(df: pd.DataFrame, path: str, n_items_filename: int = 3) -> N
         wc = wc.generate_from_frequencies(frequencies=df_dict)
         highest = returnhighest(df[col], n_items_filename)
         wc.to_file(os.path.join(path, f"{col}_{highest}.png"))
+

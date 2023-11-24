@@ -8,5 +8,10 @@ setup(
    author='Bronte Mckeown & Will Strawson',
    author_email='bronte.mckeown@gmail.com',
    packages=find_packages(include=['ThoughtSpace']),
-   install_requires=required
+   install_requires=required,
+   package_data={'ThoughtSpace': [
+    'fonts/*.ttf'
+    ]
+    }
+ 
 )

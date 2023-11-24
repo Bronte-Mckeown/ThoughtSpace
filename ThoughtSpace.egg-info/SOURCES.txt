@@ -9,3 +9,5 @@ ThoughtSpace.egg-info/SOURCES.txt
 ThoughtSpace.egg-info/dependency_links.txt
 ThoughtSpace.egg-info/requires.txt
 ThoughtSpace.egg-info/top_level.txt
+ThoughtSpace/fonts/helvetica.ttf
+ThoughtSpace/fonts/opensans.ttf

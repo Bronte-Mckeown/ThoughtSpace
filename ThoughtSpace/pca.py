@@ -311,7 +311,7 @@ class basePCA(TransformerMixin, BaseEstimator):
         return correlations, folds
             
     
-    def save(self,group=None,path=None,pathprefix="analysis",includetime=True) -> None:
+    def save(self,group=None,path=None,pathprefix="analysis",font = "helvetica", includetime=True) -> None:
         """
         Save the results of the PCA analysis.
 
@@ -334,7 +334,7 @@ class basePCA(TransformerMixin, BaseEstimator):
             os.makedirs(os.path.join(self.path,"screeplots"),exist_ok=True)
             os.makedirs(os.path.join(self.path, "descriptives"),exist_ok=True)
             
-            save_wordclouds(self.loadings,os.path.join(self.path,"wordclouds"))
+            save_wordclouds(self.loadings,os.path.join(self.path,"wordclouds"),font)
             self.project_columns.to_csv(os.path.join(self.path,"csvdata","projected_pca_scores.csv"))
             self.extra_columns.to_csv(os.path.join(self.path, "csvdata","fitted_pca_scores.csv"))
             
