@@ -7,7 +7,7 @@ from sklearn.decomposition import PCA
 from scipy.stats import pearsonr
 from sklearn.preprocessing import StandardScaler
 from ThoughtSpace.plotting import save_wordclouds, plot_scree,plot_stats
-from ThoughtSpace.utils import setupanalysis
+from ThoughtSpace.utils import setupanalysis, returnhighest, clean_substrings
 import os
 from sklearn.model_selection import KFold, BaseCrossValidator
 
@@ -75,8 +75,11 @@ class basePCA(TransformerMixin, BaseEstimator):
         """
         if self.verbosity > 0:
             bart = calculate_bartlett_sphericity(df)
+            n, p = df.shape
+            print (f"The matrix shape is ({n}, {p}).")
+            degreesfreedom = p * (p - 1) / 2
             if bart[1] < 0.05:
-                print("Bartlett Sphericity is acceptable. The p-value is %.3f" % bart[1])
+                print(f"Bartlett Sphericity is acceptable. χ2({int(degreesfreedom)}) = %.2f." % bart[0],"The p-value is %.3f" % bart[1])
             else:
                 print(
                     "Bartlett Sphericity is unacceptable. Something is very wrong with your data. The p-value is %.3f"
@@ -86,32 +89,32 @@ class basePCA(TransformerMixin, BaseEstimator):
             k = kmo[1]
             if k < 0.5:
                 print(
-                    "KMO score is unacceptable. The value is %.3f, you should not trust your data."
+                    "KMO score is unacceptable. The value is %.2f, you should not trust your data."
                     % k
                 )
             if 0.6 > k > 0.5:
                 print(
-                    "KMO score is miserable. The value is %.3f, you should consider resampling or continuing data collection."
+                    "KMO score is miserable. The value is %.2f, you should consider resampling or continuing data collection."
                     % k
                 )
             if 0.7 > k > 0.6:
                 print(
-                    "KMO score is mediocre. The value is %.3f, you should consider continuing data collection, or use the data as is."
+                    "KMO score is mediocre. The value is %.2f, you should consider continuing data collection, or use the data as is."
                     % k
                 )
             if 0.8 > k > 0.7:
                 print(
-                    "KMO score is middling. The value is %.3f, your data is perfectly acceptable, but could benefit from more sampling."
+                    "KMO score is middling. The value is %.2f, your data is perfectly acceptable, but could benefit from more sampling."
                     % k
                 )
             if 0.9 > k > 0.8:
                 print(
-                    "KMO score is meritous. The value is %.3f, your data is perfectly acceptable."
+                    "KMO score is meritous. The value is %.2f, your data is perfectly acceptable."
                     % k
                 )
             if k > 0.9:
                 print(
-                    "KMO score is marvelous. The value is %.3f, what demon have you sold your soul to to collect this data? Please email me."
+                    "KMO score is marvelous. The value is %.2f, what demon have you sold your soul to to collect this data? Please email me."
                     % k
                 )
 
@@ -241,7 +244,45 @@ class basePCA(TransformerMixin, BaseEstimator):
         for x in range(self.n_components):
             self.extra_columns[f"PCA_{x}"] = indivloadings[x, :]
         self.extra_columns.index = dfidx
+
+        self.print_explained_variance()
+        self.print_highestloadings()
+
         return self
+    
+    def print_explained_variance(self) -> None:
+        """
+        Print explained variance for each principal component or cumulative variance.
+        """
+        if self.verbosity > 0:
+            if self.fullpca is not None:
+                explained_variance = self.fullpca.explained_variance_ratio_
+                cumulative_variance = self.fullpca.explained_variance_ratio_.cumsum()
+
+                print(f"The first {self.n_components} components explained {cumulative_variance[self.n_components-1]*100:.2f}% of cumulative variance.")
+                
+                if self.rotation:
+                    pass  
+                else:
+                    for i in range(self.n_components):
+                        print(f"Component {i+1} explained {explained_variance[i]*100:.2f}% of variance.")
+            else:
+                print("PCA model not fitted. Please fit the model first.")
+
+    def print_highestloadings(self) -> None:
+        if self.verbosity > 0:
+            if self.loadings is not None:
+                question_names = self.loadings.index.tolist()
+                question_names[0] = question_names[0].split("_")[0]
+                max_subst = clean_substrings(question_names)
+                if max_subst is not None:
+                    question_names = [x.replace(max_subst, "") for x in question_names]
+                    self.loadings.index = question_names
+                for col in self.loadings:
+                    highest = returnhighest(self.loadings[col], 3)
+                    print (f"{col}: {highest}")
+            else:
+                print("PCA model not fitted. Please fit the model first.")
 
     def transform(
         self,
