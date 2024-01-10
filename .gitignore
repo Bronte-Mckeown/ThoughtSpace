@@ -7,3 +7,4 @@ build
 *.png
 *.csv
 .vscode/settings.json
+*.pyc
