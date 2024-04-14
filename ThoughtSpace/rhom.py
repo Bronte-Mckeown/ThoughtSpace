@@ -1,23 +1,24 @@
 from sklearn.base import BaseEstimator
-# from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
 from itertools import combinations
 from itertools import permutations
 from itertools import product
 
-from _base import basePCA
+from ThoughtSpace.pca import basePCA
 
 import numpy as np
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
+
 import pandas as pd
+from pandas.errors import SettingWithCopyWarning
+warnings.simplefilter(action="ignore", category=SettingWithCopyWarning)
+
 import copy
 from factor_analyzer.rotator import Rotator
 
-from tensorly.metrics.factors import congruence_coefficient
 from scipy.linalg import orthogonal_procrustes
-from scipy.spatial import procrustes
 
 import matplotlib.pyplot as plt
 from random import randint
@@ -481,7 +482,7 @@ class pair_cv():
 
         return redists    
 
-def splithalf(df=None, group=None, npc=None, rotation='varimax', save=True, file_prefix=randint(10000,99999), display=False, shuffle=False) :
+def splithalf(df=None, group=None, npc=None, rotation='varimax', boot=1000, save=True, display=False, shuffle=False, file_prefix=randint(10000,99999)) :
     '''
     Split-Half Reliability
     ----------------------
@@ -506,6 +507,9 @@ def splithalf(df=None, group=None, npc=None, rotation='varimax', save=True, file
         
         rotation: str, default="varimax"
             Rotation method to be performed on referent. "none" for no rotation.
+
+        boot: int, default=1000
+            Number of bootstrap samples to generate 95% confidence intervals.
         
         save: bool, default=True
             Save outputted split-half reliability to .csv.
@@ -543,7 +547,7 @@ def splithalf(df=None, group=None, npc=None, rotation='varimax', save=True, file
     else :
         boot_model = rhom(rd = copy.deepcopy(df_t.values), n_comp = npc, method=rotation)
         
-    cv = pair_cv(group=group)
+    cv = pair_cv(group=group, n=boot)
 
     split_df = pd.DataFrame(columns=['n_comp', group, 'rhm_x','rhm_sd','rhm_LCI','rhm_UCI','phi_x','phi_sd','phi_LCI','phi_UCI'])
 
@@ -557,7 +561,7 @@ def splithalf(df=None, group=None, npc=None, rotation='varimax', save=True, file
         return conf_int, mean, sd
 
     for i in range(len(samples)):
-        resultslist = bootstrap(boot_model, df, samples[i], cv=cv, splithalf = True, pro_cong=True)
+        resultslist = bootstrap(boot_model, df, samples[i], cv=cv, splithalf = True, pro_cong=True, shuffle=shuffle)
 
         print('Running ' + str(samples[i]))
         #scaler = StandardScaler()
@@ -600,7 +604,7 @@ def splithalf(df=None, group=None, npc=None, rotation='varimax', save=True, file
 
     return split_df  
 
-def dir_proj(df=None, group=None, npc=None, rotation="varimax", save=True, plot=True, display=False, shuffle = False, file_prefix=randint(10000,99999)):    
+def dir_proj(df=None, group=None, npc=None, rotation="varimax", folds=5, save=True, plot=True, display=False, shuffle=False, file_prefix=randint(10000,99999)):    
     '''
     Direct-Projection Reproducibility
     ---------------------------------
@@ -625,6 +629,9 @@ def dir_proj(df=None, group=None, npc=None, rotation="varimax", save=True, plot=
         
         rotation: str, default="varimax"
             Rotation method to be performed on referent. "none" for no rotation.
+
+        folds: int, default=5
+            Number of folds to use for cross-validation.
         
         save: bool, default=True
             Save outputted reproducibility results to .csv.
@@ -688,10 +695,10 @@ def dir_proj(df=None, group=None, npc=None, rotation="varimax", save=True, plot=
         return conf_int, mean, sd
 
     boot_model = rhom(rd = copy.deepcopy(df.values), n_comp = npc, method=rotation)
-    cv = pair_cv(boot=True)
+    cv = pair_cv(boot=True, k=folds)
     for currentset in dagoodlist:
         print("Running " + str(currentset[0]) + " x " + str(currentset[1]))
-        resultslist = bootstrap(boot_model, maindict[currentset[0]],maindict[currentset[1]], cv=cv, pro_cong = True)
+        resultslist = bootstrap(boot_model, maindict[currentset[0]],maindict[currentset[1]], cv=cv, pro_cong = True, shuffle=shuffle)
         #scaler = StandardScaler()
         #s_results = scaler.fit_transform(np.array(results).reshape(-1, 1)).squeeze()
         print("Saving " + str(currentset[0]) + " x " + str(currentset[1]))
@@ -764,7 +771,7 @@ def dir_proj(df=None, group=None, npc=None, rotation="varimax", save=True, plot=
 
     return dirproj_df
 
-def omni_sample(df=None, group=None, npc=None, rotation="varimax", save=True, display=False, shuffle = False, file_prefix=randint(10000,99999)):
+def omni_sample(df=None, group=None, npc=None, rotation="varimax", boot=1000, save=True, display=False, shuffle=False, file_prefix=randint(10000,99999)):
     '''
     Omnibus-Sample Reproducibility
     ------------------------------
@@ -792,6 +799,9 @@ def omni_sample(df=None, group=None, npc=None, rotation="varimax", save=True, di
         
         rotation: str, default="varimax"
             Rotation method to be performed on omnibus set. "none" for no rotation.
+
+        boot: int, default=1000
+            Number of bootstrap samples to generate 95% confidence intervals.
         
         save: bool, default=True
             Save outputted omnibus-sample reliability to .csv.
@@ -836,7 +846,7 @@ def omni_sample(df=None, group=None, npc=None, rotation="varimax", save=True, di
     else :
         boot_model = rhom(rd = copy.deepcopy(df_t.values), n_comp = npc, method=rotation)
         
-    cv = pair_cv(omnibus = True, group=group)
+    cv = pair_cv(omnibus = True, group=group, n=boot)
     totalRhm = []
     totalPhi = []
     for i in range(len(samples)):
@@ -991,7 +1001,7 @@ def bypc(df=None, group=None, npc=None, rotation="varimax", save=True, plot=True
     stats_bypc = pd.DataFrame(columns=['n_comp', 'dataset', 'comp', 'rhm_x','rhm_sd','rhm_LCI','rhm_UCI','phi_x','phi_sd','phi_LCI','phi_UCI'])
 
     for currentset in dagoodlist:
-        comps = bootstrap(boot_model, maindict[currentset[0]], maindict[currentset[1]], cv=cv, bypc = True, pro_cong = True)
+        comps = bootstrap(boot_model, maindict[currentset[0]], maindict[currentset[1]], cv=cv, bypc = True, pro_cong = True, shuffle=shuffle)
 
         print("Running " + str(currentset[0]) + " x " + str(currentset[1]))
         # print("*" * 20)
