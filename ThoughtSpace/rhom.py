@@ -27,6 +27,19 @@ from scipy.stats import t, norm
 
 
 def crazyshuffle(arr):
+    '''
+    Full-Mantel Shuffle
+    -------------------
+    Shuffles the rows and then columns of an inputted array.
+
+    Parameters:
+    -----------
+        arr: array-like or dataframe
+
+    Returns:
+    --------
+        array: shuffled array.
+    '''
     arr = arr.loc[:, 'focus':].values
     x, y = arr.shape
     rows = np.indices((x,y))[0]
@@ -35,6 +48,42 @@ def crazyshuffle(arr):
     return out
 
 def bootstrap(estimator, X, y, group=None, cv=None, omnibus = False, splithalf = False, pro_cong = False, bypc = False, shuffle = False, fit_params={}):
+    """
+    Bootstrap Resampling
+    --------------------
+    This function performs bootstrap resampling on the provided data using the specified estimator and resampling method.
+
+    Parameters:
+    -----------
+        estimator : object
+            The rhom object to use for fitting the data.
+        X : array-like or DataFrame, shape (n_samples, n_features)
+            The input data for the referent dataset.
+        y : array-like, shape (n_samples,)
+            The input data for the comparate dataset and the subject on which components are projected.
+        group : array-like, shape (n_samples,), optional, default=None
+            Grouping variable for shuffling.
+        cv : object, default=None
+            pair_cv object for method of resampling/cross-validating data.
+        omnibus : bool, default=False.
+            Whether to bootstrap omnibus-sample reproducibility.
+        splithalf : bool, default=False.
+            Whether to bootstrap split-half reproducibility.
+        pro_cong : bool, default=False.
+            Whether to include estimates of loading similarity with Tucker's Congruence Coefficient.
+        bypc : bool, default=False.
+            Whether to return omnibus-sample results by principal component.
+        shuffle : bool, default=False.
+            Whether to full-mantel shuffle the data.
+        fit_params : dict, default=empty dictionary.
+            Additional parameters to pass to the fit method of the estimator.
+
+    Returns:
+    --------
+        results : list
+            A list containing the results of the bootstrap resampling.
+    """
+    # If shuffle is True, the data is shuffled using the specified group variable.
     if shuffle:
         firstcols_X = X.loc[:, group]
 
@@ -45,14 +94,17 @@ def bootstrap(estimator, X, y, group=None, cv=None, omnibus = False, splithalf =
     avg_score = []
     exp_var = []
 
+    # If pro_cong is True, procrustes congruence analysis is performed on the bootstrap samples.
     if pro_cong:
         avg_phi = []
         
     if not omnibus:
+        # If bypc is True, omnibus-sample results are returned by principal component.
         if bypc:
             complist = []
             for i in range(estimator.n_comp):
                 complist.append([])
+            # If pro_cong is True, results include Tucker's Congruence Coefficients (TCC) in addition to R-Homologue scores.
             if pro_cong:
                 philist = []
                 for i in range(estimator.n_comp):
@@ -68,6 +120,7 @@ def bootstrap(estimator, X, y, group=None, cv=None, omnibus = False, splithalf =
                     for i in range(len(complist)):
                         complist[i].append(ests[i])
 
+        # If splithalf is True, split-half reliability is bootstrapped.
         elif splithalf:
         
             for x1, x2 in cv.redists(df=X, subset=y): 
@@ -78,6 +131,7 @@ def bootstrap(estimator, X, y, group=None, cv=None, omnibus = False, splithalf =
                 else:
                     avg_score.append(ests)              
 
+        # If neither split-half or omnibus-sample are selected, direct-projection reproducibility is bootstrapped.
         else:
             for x1, x2 in cv.split(X,y):
 
@@ -88,6 +142,7 @@ def bootstrap(estimator, X, y, group=None, cv=None, omnibus = False, splithalf =
                 else:
                     avg_score.append(ests)
     
+    # If omnibus is True, omnibus-sample reproducibility is bootstrapped.
     else:
 
         for x1, x2 in cv.redists(df=X, subset=y):
@@ -111,11 +166,40 @@ def bootstrap(estimator, X, y, group=None, cv=None, omnibus = False, splithalf =
     return avg_score
 
 def gen_ests(estimator, x1, x2, pro_cong = False, fit_params={}):
+    """
+    Generate component-similarity estimates using the provided estimator.
 
+    This function fits the estimator to the provided data subsets 'x1' and 'x2', generates predictions,
+    calculates correlations, and computes homologous pairs. Optionally, it performs procrustes congruence
+    analysis.
+
+    Parameters:
+    -----------
+        estimator : object
+            The rhom object to use for fitting the data.
+        x1 : array-like or DataFrame, shape (n_samples, n_features)
+            The referent subset of input data.
+        x2 : array-like or DataFrame, shape (n_samples, n_features)
+            The comparate subset of input data.
+        pro_cong : bool, default=False.
+            Whether to generate estimates of loading similarity using the Tucker's Congruence Coefficient.
+        fit_params : dict, default=empty dictionary.
+            Additional parameters to pass to the fit method of the estimator.
+
+    Returns:
+    --------
+        results : list or float
+            If pro_cong is True, a list containing the results of homologous pairs and procrustes congruence analysis. If pro_cong is False, the results of homologous pairs.
+    """
+    # The estimator is fitted to the provided data subsets using the rhom .fit method.
     estimator.fit(x1,x2,**fit_params)
+    # Predictions are generated using the rhom .predict method.
     preds = estimator.predict()
+    # Correlation coefficients are calculated between the predicted values.
     corrs = np.corrcoef(preds[0], preds[1], rowvar=False)
+    # Homologous pairs are computed based on the correlation matrix of x1 and x2 using the rhom .hom_pairs method.
     rhm = estimator.hom_pairs(corrs)
+    # If pro_cong is True, procrustes congruence analysis is performed using the rhom .pro_cong method.
     if pro_cong:
         phi = estimator.pro_cong()
         return [rhm, phi]
@@ -123,15 +207,94 @@ def gen_ests(estimator, x1, x2, pro_cong = False, fit_params={}):
     return rhm
 
 def tcc(fac1=None, fac2=None):
+    """
+    Tucker's Congruence Coefficient
+    -------------------------------
+    Calculate the Tucker's Congruence Coefficient (TCC) between two components, which is an estimate of their loading similarity.
 
-    #Lovik et al.(2020): Using the absolute value of the numerator is more suitable for factor matching
+    Parameters:
+    -----------
+        fac1 : array-like
+            The first component.
+        fac2 : array-like
+            The second component.
+
+    Returns:
+    --------
+        tcc : float
+            The Tucker's Congruence Coefficient (TCC) between the two factors.
+
+    Notes:
+    ------
+        The TCC is a measure of loading similarity between two given components (Tucker, 1951). Lovik et al. (2020) suggest using the absolute value of the numerator for factor matching.
+
+    References:
+    -----------
+        Tucker, L. R. (1951). A method for synthesis of factor analysis studies (PRS-984). Washington, DC: Department of the Army. 
+
+        Lovik, A., Nassiri, V., Verbeke, G., & Molenberghs, G. (2020). A modified tucker’s congruence coefficient for factor matching.
+            Methodology: European Journal of Research Methods for the Behavioral and Social Sciences,
+            16(1), 59-74. https://doi.org/10.5964/meth.2813 
+
+    """
     numerator = np.sum(abs(fac1*fac2))
     denominator = np.sqrt(np.sum(fac1**2) * np.sum(fac2**2))
     return numerator / denominator
 
 class rhom(BaseEstimator):
-    
-    def __init__(self, rd = None, n_comp=4, rotate = True, method="varimax", bypc = False):
+    """
+    R-Homologue and Tucker's Congruence Coefficient
+    -----------------------------------------------
+    A class for calculating component similarity between two sets of data.
+
+    Parameters:
+    -----------
+        rd: array-like or pd.DataFrame, default=None
+            The referent dataset for deriving components.
+        n_comp: int, default=None
+            The number of components to extract from the dataset.
+        rotate: bool, default=True
+            Whether to rotate the extracted components.
+        method: str, default="Varimax"
+            The rotation method to use for the loadings. If 'none', no rotation is performed. Supported methods are "varimax", "promax", "oblimin", "oblimax", "quartimin", "quartimax", and "equamax".
+        bypc: bool, default=False
+            Whether to save component similarity on a by-component basis.
+
+    Attributes:
+    -----------
+        model_x: PCA
+            The PCA object for the referent dataset.
+        model_x2: PCA
+            The PCA object for the comparate dataset.
+        results: pd.DataFrame
+            The projected component scores for each set of components.
+
+    Methods:
+    --------
+        get_params(deep=True):
+            Retrieve the parameters of the instance.
+
+        fit(x, y=None):
+            Fit the model to the provided referent and comparate data.
+
+        predict(y=None):
+            Predict the output based on the provided input data.
+
+        hom_pairs(cor_matrix):
+            Calculate the correlation of homologous pairs in the correlation matrix of two datasets \n\t\t(Mulholland et al., 2023; Everett, 1983).
+
+        pro_cong():
+            Perform procrustes congruence analysis.
+   
+    References:
+    -----------
+
+    Mulholland, B., Goodall-Halliwell, I., Wallace, R., Chitiz, L., McKeown, B., Rastan, A., Poerio, G. L., \n\tLeech, R., Turnbull, A., Klein, A., Milham, M., Wammes, J. D., Jefferies, E., & Smallwood, J. (2023). \n\tPatterns of ongoing thought in the real world. Consciousness and Cognition, 114, 103530. https://doi.org/10.1016/j.concog.2023.103530 
+
+    Everett, J. E. (1983). Factor Comparability As A Means Of Determining The Number Of Factors And Their Rotation. \n\tMultivariate Behavioral Research, 18(2), 197-218. https://doi.org/10.1207/s15327906mbr1802_5
+
+    """
+    def __init__(self, rd=None, n_comp=None, rotate=True, method="varimax", bypc=False):
         self.rd = rd
         self.n_comp = n_comp
         self.rotate = rotate
@@ -139,51 +302,73 @@ class rhom(BaseEstimator):
         self.bypc = bypc
     
     def get_params(self,deep=True):
+        """
+        Retrieve the parameters of the instance.
+
+        Parameters:
+        -----------
+            deep: bool, optional
+                If True, returns a deep copy of the parameters. If False, returns a shallow copy. Defaults to True.
+
+        Returns:
+        --------
+            dict: 
+                A dictionary containing the parameters of the instance. If deep is True, a deep copy of the parameters is returned, otherwise, a shallow copy is returned.
+        """
         return (copy.deepcopy(
             {"rd":self.rd})
             if deep
             else {"rd":self.rd})
         
-    def fit(self, x, y=None,xidx=None,yidx=None, ncv=0):
-        # self.model_x = PCA(n_components=self.n_comp)
-        # self.model_x.fit(x)
+    def fit(self, x, y=None):
+        """
+        Fit the model to the provided data.
 
+        This function fits the model to the provided input data 'x' and 'y' if applicable.
+
+        Parameters:
+        -----------
+            x : array-like or DataFrame, shape (n_samples, n_features)
+                The input data for the referent dataset.
+            y : array-like or DataFrame, shape (n_samples, n_targets), optional, default=None
+                The input data for the comparate dataset.
+
+        Returns:
+        --------
+            None
+        """
+
+        #If self.n_comp is greater than or equal to 2, a basePCA model is fitted to the 'x' data with the specified rotation method.
         if self.n_comp >= 2:
             self.model_x = basePCA(n_components=self.n_comp, rot_method=self.method)
             self.model_x.fit(pd.DataFrame(x))
+        #If self.n_comp is less than 2, a basePCA model is fitted to the 'x' data with rotation method set to "none".
         else:
             self.model_x = basePCA(n_components=self.n_comp, rot_method="none")
 
-        # self.model_x = basePCA(n_components=self.n_comp, rot_method='none')
-        # self.model_x.fit(x)
-
-        # self.model_x2 = PCA(n_components=self.n_comp)
-        # self.model_x2.fit(y)
-
+        #Regardless of the value of self.n_comp, a basePCA model is always fitted to the 'y' data with rotation method set to "none".
         self.model_x2 = basePCA(n_components=self.n_comp, rot_method='none')
         self.model_x2.fit(pd.DataFrame(y))
 
     def predict(self, y=None):
+        """
+        Generate component scores based on projections from each dataset.
+
+        Parameters:
+        -----------
+            y : array-like, default=None
+                The input data for prediction.
+
+        Returns:
+        --------
+            results : list
+                A list containing the predicted outputs.
+        """
         y = self.rd
+
+        #If self.rotate is True, the prediction is performed by calculating the dot product of 'y' with the loadings of the fitted PCA models ('model_x' and 'model_x2') after applying orthogonal Procrustes rotation.
         if self.rotate :
             results = []
-
-            # for model in [self.model_x,self.model_x2]:
-            #     rot = Rotator(method=method)
-            #     loadings = rot.fit_transform(model.components_.T)
-                
-            #     self.results = np.dot(y, loadings)
-            #     results.append(self.results)
-            # if self.n_comp >= 2:
-            #     rot = Rotator(method=self.method)
-            #     # loadings = rot.fit_transform(self.model_x.components_.T)
-            #     loadings = rot.fit_transform(self.model_x.loadings.to_numpy())
-            # else:
-            #     # loadings = self.model_x.components_.T
-            #     loadings = self.model_x.loadings.to_numpy()
-
-            # R, s = orthogonal_procrustes(loadings, self.model_x2.components_.T)
-            # loadings_x2 = np.dot(self.model_x2.components_.T, R.T) * s
 
             loadings = self.model_x.loadings.to_numpy()
 
@@ -194,6 +379,7 @@ class rhom(BaseEstimator):
                 self.results = np.dot(y, loads)
                 results.append(self.results)
 
+        #If self.rotate is False, the prediction is performed by transforming 'y' using the loadings of the fitted PCA models ('model_x' and 'model_x2').
         else:
             results = []
             for model in [self.model_x,self.model_x2]:
@@ -202,10 +388,22 @@ class rhom(BaseEstimator):
     
         return results
 
-    def score(self,x,y):
-        return self.model.score(x,y)
-
     def hom_pairs(self,cor_matrix):
+        """
+        Calculate homologous components between the referent and comparate datasets.
+
+        Parameters:
+        -----------
+            cor_matrix : array-like, shape (n_features, n_features)
+                The correlation matrix between the components for the referent and comparate datasets.
+
+        Returns:
+        --------
+            homologous_pairs : list or float
+                If self.bypc is True, a list containing the correlation values of homologous pairs. If self.bypc is False, the mean correlation value of homologous pairs.
+        """
+
+        #The function first extracts the relevant cells from the correlation matrix.
         cor_matrix = cor_matrix[-self.n_comp:,:self.n_comp]
         cor_matrix = np.abs(cor_matrix)
 
@@ -215,6 +413,7 @@ class rhom(BaseEstimator):
         x2 = [[a,en] for en,a in enumerate(x2)]
         x2 = sorted(x2, key = lambda x: x[0])
 
+        #If the rows and columns with the highest correlations are different, it explores all possible permutations of the indices to find the best arrangement that maximizes the mean correlation value.
         if x != x2:
             idx = list(range(self.n_comp))
             sols = list(permutations(idx, r=self.n_comp))
@@ -232,11 +431,15 @@ class rhom(BaseEstimator):
             
             bestval = max(list(soldict.keys()))
 
+            #If self.bypc is True, it returns the correlation values of homologous pairs.
             if self.bypc:
                 bestorg = soldict[bestval]
                 bestorg = sorted(bestorg, key = lambda x: x[0])    
                 rhoms = [cor_matrix.T[z[0],z[1]] for z in bestorg]              
                 return rhoms
+            
+            
+            #If self.bypc is False, it returns the mean correlation value of homologous pairs.
             else:
                 return bestval
 
@@ -248,12 +451,23 @@ class rhom(BaseEstimator):
                 return np.mean(rhoms)
 
     def pro_cong(self):
+        """
+        Performs procrustes congruence analysis between the loadings matrices of the referent and comparate fitted PCA models. It calculates the Tucker's Congruence Coefficient (TCC) for all possible combinations of loadings pairs between the two models.
+
+        Returns:
+        --------
+            phi : list or float
+                If self.bypc is True, a list containing the TCC values of homologous pairs. If self.bypc is False, the mean TCC value of homologous pairs.
+
+        """
         loadings_X = self.model_x.loadings.to_numpy()
         loadings_x2 = self.model_x2.loadings.to_numpy()
         
+        #The function first applies orthogonal Procrustes rotation to align the loadings matrices.
         R, s = orthogonal_procrustes(loadings_X, loadings_x2)
         loadings_x2 = np.dot(loadings_x2, R.T) * s
 
+        #It then calculates the TCC between each pair of loadings vectors from the aligned matrices.
         tcc_matrix = []
         tcclist = []
         for i in range(len(loadings_X.T)):
@@ -264,11 +478,67 @@ class rhom(BaseEstimator):
             tcclist =[]
         
         tcc_matrix = np.asarray(tcc_matrix)
+
+        #The resulting TCC matrix is passed to the 'hom_pairs' method to determine the homologous pairs.
         phi = self.hom_pairs(tcc_matrix)
         return phi
 
 class pair_cv():
+    """
+    Resampling Methods for Bootstrapping Component Reproducibility
+    --------------------------------------------------------------
+    A class for bootstrap resampling component-similarity analyses.
 
+    Parameters:
+    -----------
+        k: int, default=5
+            Number of folds to cross-validate direct-projection reproducibility.
+        n: int, default=1000
+            Number of resamples to bootstrap similarity scores.
+        boot: bool, default=False
+            Whether to bootstrap direct-projection reproducibility by comparing every combination of folds in the referent dataset with every combination of folds in the comparate.
+        omnibus: bool, default=False
+            Whether to bootstrap resample according to omnibus-sample reproducibility or split-half reliability.
+        group: str, default=False
+            The name of the column to be the selection variable by which to conduct separate reprodcubility analyses.
+        
+    Attributes:
+    -----------
+        scaler: StandardScaler
+            The scaler used for z-score normalization.
+
+    Methods:
+    --------
+        divide_chunks(l, c):
+            Divides inputted dataset into specified number of folds.
+
+        assignModel(df=None):
+            Assigns rows of inputted dataset to either an 'omnibus' or 'sample' subset. See omni_sample() for more detail.
+
+        standardize(df=None):
+            z-score normalizes an inputted dataframe using scaler.
+
+        omni_prep(df=None):
+            Used in by-component omnibus-sample reproducibility. Assigns 'omnibus' and 'sample' subsets for each level of the grouping variable. See bypc() for more detail.
+
+        omni_prep_mini(df=None, subsamps=None, subset=None):
+            Used in regular omnibus-sample reproducibility. Assigns 'omnibus' and 'sample' subsets for a specific level of the grouping variable. See omni_sample() for more detail.
+        
+        split(X, y, groups=None):
+            Used in direct-projection reproducibility. Splits the referent and comparate dataframes into folds. If 'boot' is set to True, it will compare every combination of folds in the referent dataset with every combination of folds in the comparate. 
+
+        bypc_split(X, y, groups=None):
+            Used in by-component omnibus-sample reproducibility. Splits the established omnibus and sample sets into folds and compares every combination of folds in the omnibus dataset with every combination of folds in the sample set.
+
+        split_half(df=None):
+            Used in split-half reliability. Randomly assigns the rows of an inputted dataframe into one of two halves.
+
+        split_frame(df):
+            Used in tandem with split_half(). Divides the assigned halves into split dataframes.
+
+        redists(df=None, subset=None):
+            Bootstrap resamples the split-half or omnibus-sample subdivisions of an inputted dataframe, outputting a list of iterations.
+        """
     def __init__(self, k=5, n=1000, boot=False, omnibus=False, group=None) :
         self.n_splits = k
         self.n_redists = n
@@ -318,12 +588,6 @@ class pair_cv():
         return models
 
     def omni_prep_mini(self, df=None, subsamps=None, subset=None) :
-        # samples = df[idcol].unique()
-        # subsamps = {}
-        # for sample in samples:
-        #     if sample != subset :
-        #         subsamps[sample] = df[df[idcol] == sample]
-
         model = df[df[self.group] == subset]
         model = self.assignModel(model)
 
