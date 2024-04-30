@@ -525,10 +525,10 @@ class pair_cv():
         - omni_prep_mini(df=None, subsamps=None, subset=None):
             - Used in regular omnibus-sample reproducibility. Assigns 'omnibus' and 'sample' subsets for a specific level of the grouping variable. See omni_sample() for more detail.
         
-        - split(X, y, groups=None):
+        - split(X, y):
             - Used in direct-projection reproducibility. Splits the referent and comparate dataframes into folds. If 'boot' is set to True, it will compare every combination of folds in the referent dataset with every combination of folds in the comparate. 
 
-        - bypc_split(X, y, groups=None):
+        - bypc_split(X, y):
             - Used in by-component omnibus-sample reproducibility. Splits the established omnibus and sample sets into folds and compares every combination of folds in the omnibus dataset with every combination of folds in the sample set.
 
         - split_half(df=None):
