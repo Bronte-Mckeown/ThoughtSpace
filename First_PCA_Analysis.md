@@ -76,7 +76,7 @@ The print out in the terminal will tell you about the KMO and Bartlett's Test of
 
 - Bartlett's Test of Sphericity: Bartlett's test checks whether the variables in your dataset are correlated, indicating that they might be suitable for PCA. It tests the null hypothesis that the correlation matrix is an identity matrix (which would mean no correlation between variables). In the context of PCA, you want to reject this null hypothesis because PCA is based on the idea that variables are correlated. If Bartlett's test is statistically significant (i.e., the p-value is below a chosen significance level, such as 0.05), it suggests that your data is appropriate for PCA.
 
-**5. Check your results!**
+**7. Check your results!**
 
 They will be stored in your results folder.
 
@@ -111,7 +111,7 @@ Finally, the wordclouds directory contains png images of wordclouds representing
 
 - In these images, each word = experience sampling item, size = magnitude of loading, and color = direction of loading.
     
-  ### Push your changes to remote
+### Push your changes to remote
     
 You have now run your first ThoughtSpace analysis in your own (local) Github repository.
     
