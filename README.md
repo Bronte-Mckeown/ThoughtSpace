@@ -31,7 +31,7 @@ Once you've set up a local (and forked) ThoughtSpace repository on your computer
 
 - [Running Your First PCA Analysis](https://github.com/Bronte-Mckeown/ThoughtSpace/blob/Rhom/First_PCA_Analysis.md)
 
-## The Rhom Module: Testing the Robustness of Your Components
+## The rhom Module: Testing the Robustness of Your Components
 
 
 
