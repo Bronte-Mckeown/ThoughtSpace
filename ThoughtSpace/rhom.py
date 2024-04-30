@@ -226,7 +226,8 @@ def tcc(fac1=None, fac2=None):
 
     Notes:
     ------
-        The TCC is a measure of loading similarity between two given components (Tucker, 1951). Lovik et al. (2020) suggest using the absolute value of the numerator for factor matching.
+        - The TCC is a measure of loading similarity between two given components (Tucker, 1951).
+        - Lovik et al. (2020) suggest using the absolute value of the numerator for factor matching.
 
     References:
     -----------
@@ -249,42 +250,42 @@ class rhom(BaseEstimator):
 
     Parameters:
     -----------
-        rd: array-like or pd.DataFrame, default=None
-            The referent dataset for deriving components.
-        n_comp: int, default=None
-            The number of components to extract from the dataset.
-        rotate: bool, default=True
-            Whether to rotate the extracted components.
-        method: str, default="Varimax"
-            The rotation method to use for the loadings. If 'none', no rotation is performed. Supported methods are "varimax", "promax", "oblimin", "oblimax", "quartimin", "quartimax", and "equamax".
-        bypc: bool, default=False
-            Whether to save component similarity on a by-component basis.
+        - rd: array-like or pd.DataFrame, default=None
+            - The referent dataset for deriving components.
+        - n_comp: int, default=None
+            - The number of components to extract from the dataset.
+        - rotate: bool, default=True
+            - Whether to rotate the extracted components.
+        - method: str, default="Varimax"
+            - The rotation method to use for the loadings. If 'none', no rotation is performed. Supported methods are "varimax", "promax", "oblimin", "oblimax", "quartimin", "quartimax", and "equamax".
+        - bypc: bool, default=False
+            - Whether to save component similarity on a by-component basis.
 
     Attributes:
     -----------
-        model_x: PCA
-            The PCA object for the referent dataset.
-        model_x2: PCA
-            The PCA object for the comparate dataset.
-        results: pd.DataFrame
-            The projected component scores for each set of components.
+        - model_x: PCA
+            - The PCA object for the referent dataset.
+        - model_x2: PCA
+            - The PCA object for the comparate dataset.
+        - results: pd.DataFrame
+            - The projected component scores for each set of components.
 
     Methods:
     --------
-        get_params(deep=True):
-            Retrieve the parameters of the instance.
+        - get_params(deep=True):
+            - Retrieve the parameters of the instance.
 
-        fit(x, y=None):
-            Fit the model to the provided referent and comparate data.
+        - fit(x, y=None):
+            - Fit the model to the provided referent and comparate data.
 
-        predict(y=None):
-            Predict the output based on the provided input data.
+        - predict(y=None):
+            - Predict the output based on the provided input data.
 
-        hom_pairs(cor_matrix):
-            Calculate the correlation of homologous pairs in the correlation matrix of two datasets \n\t\t(Mulholland et al., 2023; Everett, 1983).
+        - hom_pairs(cor_matrix):
+            - Calculate the correlation of homologous pairs in the correlation matrix of two datasets \n\t\t(Mulholland et al., 2023; Everett, 1983).
 
-        pro_cong():
-            Perform procrustes congruence analysis.
+        - pro_cong():
+            - Perform procrustes congruence analysis.
    
     References:
     -----------
@@ -485,59 +486,59 @@ class rhom(BaseEstimator):
 
 class pair_cv():
     """
-    Resampling Methods for Bootstrapping Component Reproducibility
-    --------------------------------------------------------------
+    Resampling Methods for Bootstrapping Component Reproducibility Analysis
+    ------------------------------------------------------------------------
     A class for bootstrap resampling component-similarity analyses.
 
     Parameters:
     -----------
-        k: int, default=5
-            Number of folds to cross-validate direct-projection reproducibility.
-        n: int, default=1000
-            Number of resamples to bootstrap similarity scores.
-        boot: bool, default=False
-            Whether to bootstrap direct-projection reproducibility by comparing every combination of folds in the referent dataset with every combination of folds in the comparate.
-        omnibus: bool, default=False
-            Whether to bootstrap resample according to omnibus-sample reproducibility or split-half reliability.
-        group: str, default=False
-            The name of the column to be the selection variable by which to conduct separate reprodcubility analyses.
+        - k: int, default=5
+            - Number of folds to cross-validate direct-projection reproducibility.
+        - n: int, default=1000
+            - Number of resamples to bootstrap similarity scores.
+        - boot: bool, default=False
+            - Whether to bootstrap direct-projection reproducibility by comparing every combination of folds in the referent dataset with every combination of folds in the comparate.
+        - omnibus: bool, default=False
+            - Whether to bootstrap resample according to omnibus-sample reproducibility or split-half reliability.
+        - group: str, default=False
+            - The name of the column to be the selection variable by which to conduct separate reprodcubility analyses.
         
     Attributes:
     -----------
-        scaler: StandardScaler
-            The scaler used for z-score normalization.
+        - scaler: StandardScaler
+            - The scaler used for z-score normalization.
 
     Methods:
     --------
-        divide_chunks(l, c):
-            Divides inputted dataset into specified number of folds.
+        - divide_chunks(l, c):
+            - Divides inputted dataset into specified number of folds.
 
-        assignModel(df=None):
-            Assigns rows of inputted dataset to either an 'omnibus' or 'sample' subset. See omni_sample() for more detail.
+        - assignModel(df=None):
+            - Assigns rows of inputted dataset to either an 'omnibus' or 'sample' subset. See omni_sample() for more detail.
 
-        standardize(df=None):
-            z-score normalizes an inputted dataframe using scaler.
+        - standardize(df=None):
+            - z-score normalizes an inputted dataframe using scaler.
 
-        omni_prep(df=None):
-            Used in by-component omnibus-sample reproducibility. Assigns 'omnibus' and 'sample' subsets for each level of the grouping variable. See bypc() for more detail.
+        - omni_prep(df=None):
+            - Used in by-component omnibus-sample reproducibility. Assigns 'omnibus' and 'sample' subsets for each level of the grouping variable. See bypc() for more detail.
 
-        omni_prep_mini(df=None, subsamps=None, subset=None):
-            Used in regular omnibus-sample reproducibility. Assigns 'omnibus' and 'sample' subsets for a specific level of the grouping variable. See omni_sample() for more detail.
+        - omni_prep_mini(df=None, subsamps=None, subset=None):
+            - Used in regular omnibus-sample reproducibility. Assigns 'omnibus' and 'sample' subsets for a specific level of the grouping variable. See omni_sample() for more detail.
         
-        split(X, y, groups=None):
-            Used in direct-projection reproducibility. Splits the referent and comparate dataframes into folds. If 'boot' is set to True, it will compare every combination of folds in the referent dataset with every combination of folds in the comparate. 
+        - split(X, y, groups=None):
+            - Used in direct-projection reproducibility. Splits the referent and comparate dataframes into folds. If 'boot' is set to True, it will compare every combination of folds in the referent dataset with every combination of folds in the comparate. 
 
-        bypc_split(X, y, groups=None):
-            Used in by-component omnibus-sample reproducibility. Splits the established omnibus and sample sets into folds and compares every combination of folds in the omnibus dataset with every combination of folds in the sample set.
+        - bypc_split(X, y, groups=None):
+            - Used in by-component omnibus-sample reproducibility. Splits the established omnibus and sample sets into folds and compares every combination of folds in the omnibus dataset with every combination of folds in the sample set.
 
-        split_half(df=None):
-            Used in split-half reliability. Randomly assigns the rows of an inputted dataframe into one of two halves.
+        - split_half(df=None):
+            - Used in split-half reliability. Randomly assigns the rows of an inputted dataframe into one of two halves.
 
-        split_frame(df):
-            Used in tandem with split_half(). Divides the assigned halves into split dataframes.
+        - split_frame(df):
+            - Used in tandem with split_half(). Divides the assigned halves into split dataframes.
 
-        redists(df=None, subset=None):
-            Bootstrap resamples the split-half or omnibus-sample subdivisions of an inputted dataframe, outputting a list of iterations.
+        - redists(df=None, subset=None):
+            - Bootstrap resamples the split-half or omnibus-sample subdivisions of an inputted dataframe, outputting a list of iterations.
         """
     def __init__(self, k=5, n=1000, boot=False, omnibus=False, group=None) :
         self.n_splits = k
@@ -547,12 +548,41 @@ class pair_cv():
         self.group = group
 
     def divide_chunks(self, l, c) :
+        """
+        Divide a list into chunks of approximately equal size.
+
+        Parameters:
+        -----------
+            l: list
+                The list to be divided into chunks.
+            c: int
+                The desired number of chunks.
+
+        Yields:
+        -------
+            list:
+                A generator that yields chunks of the original list, with each chunk containing approximately equal elements.
+        """
         n = len(l)//c
         # looping till length l
         for i in range(0, len(l), n):
             yield l[i:i + n]
 
     def assignModel(self, df=None) :
+        """
+        Randomly assign rows of a dataframe to be part of 'omnibus' or 'sample' subsets.
+
+        Parameters:
+        -----------
+            df: pd.DataFrame, default=None
+                The DataFrame to which model types will be assigned. If not provided, an empty DataFrame is created.
+
+        Returns:
+        --------
+            pd.DataFrame:
+                The DataFrame with the 'o/s' column indicating the assigned 'omnibus/sample' rows.
+
+        """
         rows = df.shape[0]
         df['o/s'] = "omnibus"
         df['o/s'][0:int(rows/2)] = "sample"
@@ -560,22 +590,57 @@ class pair_cv():
         return df
 
     def standardize(self, df=None) :
+        """
+        Standardize the values in the DataFrame using z-score normalization.
+
+        Parameters:
+        -----------
+            df: pd.DataFrame, default=None
+                The DataFrame whose values will be standardized.
+
+        Returns:
+        --------
+            pd.DataFrame:
+                The DataFrame with standardized values.
+
+        Notes:
+        ------
+            - Standardization is performed independently on each feature (column) of the DataFrame.
+            - This function uses the StandardScaler from scikit-learn for standardization.
+        """
         scaler = StandardScaler()
         dft = scaler.fit_transform(df)
         df = pd.DataFrame(dft,index=df.index,columns=df.columns)
         return df
-
+    
     def omni_prep(self, df=None) :
+        """
+        Prepares data for by-component omnibus-sample reproducibility by partitioning, assigning omnibus/sample grouping to rows, and standardizing.
+
+        Parameters:
+        -----------
+            df: pd.DataFrame, default=None
+                The DataFrame containing the data to be prepared for omnibus-sample reproducibility analysis.
+
+        Returns:
+        --------
+            dict:
+                A dictionary containing each sample dataframe and the omnibus dataframe.
+        """
+        # The 'group' attribute specifies the column in the DataFrame used for grouping the data.
         samples = df[self.group].unique()
         subsamps = {}
         for sample in samples:
             subsamps[str(sample)] = df[df[self.group] == sample]
 
         models = {"omnibus":pd.DataFrame()}
+
+        # This function depends on the 'assignModel' and 'standardize' methods of the class.
         for subsamp in subsamps:
             model = subsamps[subsamp]
             model = self.assignModel(model)
 
+            # The 'o/s' column in each DataFrame represents the assigned model type ('sample' or 'omnibus').
             models[subsamp] = model[model["o/s"] == "sample"]
             models[subsamp] = models[subsamp].drop(labels = [self.group, "o/s"], axis = 1)
             models[subsamp] = self.standardize(models[subsamp])
@@ -588,15 +653,35 @@ class pair_cv():
         return models
 
     def omni_prep_mini(self, df=None, subsamps=None, subset=None) :
+        """
+        Prepare data for omnibus-sample reproducibility analysis with a specified subset.
+
+        Parameters:
+        -----------
+            df: pd.DataFrame, default=None
+                The DataFrame containing the data to be prepared for omnibus-sample analysis.
+            subsamps: dict, default=None
+                A dictionary containing subsets of the data named by their corresponding levels of the grouping variable.
+            subset: str, default=None
+                The name of the subset to be processed.
+
+        Returns:
+        --------
+            dict:
+                A dictionary containing the omnibus and sample subdivisions of the dataframe.
+        """
+        # The 'group' attribute specifies the column in the DataFrame used for grouping the data.
         model = df[df[self.group] == subset]
         model = self.assignModel(model)
 
+        # The 'o/s' column in each DataFrame represents the assigned model type ('sample' or 'omnibus').
         models = {"omnibus":model[model["o/s"] == "omnibus"]}
 
         models[subset] = model[model["o/s"] == "sample"]
         models[subset] = models[subset].drop(labels = [self.group, "o/s"], axis = 1)
         models[subset] = self.standardize(models[subset])
 
+        # This function depends on the 'assignModel' and 'standardize' methods of the class.
         for subsamp in subsamps:
             model = subsamps[subsamp]
             model = self.assignModel(model)
@@ -608,7 +693,22 @@ class pair_cv():
 
         return models
 
-    def split(self, X, y, groups=None) :
+    def split(self, X, y) :
+        """
+        Generate indices to split data into referent and comparate sets for cross-validation and/or bootstrapping.
+
+        Parameters:
+        -----------
+            X: array-like or DataFrame
+                The referent data.
+            y: array-like or Series
+                The comparate data.
+
+        Yields:
+        -------
+            tuple:
+                A tuple containing the indices of the referent and comparate sets for each fold.
+        """
         foldidx = list(range(self.n_splits))
         try:
             X = X.values
@@ -617,17 +717,20 @@ class pair_cv():
         except:
             pass
 
+        # This function shuffles the referent features and comparate values.
         np.random.shuffle(X)
         np.random.shuffle(y)
         x1_c = list(self.divide_chunks(X, self.n_splits))
         x2_c = list(self.divide_chunks(y, self.n_splits))
 
         folds = []
+        # If bootstrapping is not enabled, it pairs the fold indices for referent and comparate sets.
         if not self.boot:
             for fold in product(foldidx, repeat=2):
                 folds.append(fold)
             folds = [[x1_c[z],x2_c[q]] for z,q in folds]
 
+        # If bootstrapping is enabled, it generates all combinations of fold indices for referent and comparate sets.
         elif self.boot:
             for z in range(1,self.n_splits+1):
                 for fold in combinations(foldidx, r=z):
@@ -658,7 +761,22 @@ class pair_cv():
         for x1,x2 in folds:
             yield x1,x2
 
-    def bypc_split(self, X, y, groups=None):
+    def bypc_split(self, X, y):
+        """
+        Generate indices to split data into referent and comparate sets based on unique values of a grouping variable.
+
+        Parameters:
+        -----------
+            X: array-like or DataFrame
+                The referent features.
+            y: array-like or Series
+                The comparate values.
+
+        Yields:
+        -------
+            tuple:
+                A tuple containing the indices of the referent and comparate sets for each fold.
+        """
         foldidx = list(range(self.n_splits))
         try:
             X = X.values
@@ -667,14 +785,17 @@ class pair_cv():
         except:
             pass
 
+        # This function shuffles the comparate values.
         np.random.shuffle(y)
         x_c = list(self.divide_chunks(y, self.n_splits))
         folds = []
+        # If bootstrapping is not enabled, it pairs the fold indices for referent and comparate sets.
         if not self.boot:
             for fold in product(foldidx, repeat=2):
                 folds.append(fold)
                 folds = [[X,x_c[z]] for z in folds]
 
+        # If bootstrapping is enabled, it generates all combinations of fold indices for referent and comparate sets.
         elif self.boot:
             for z in range(1,self.n_splits+1):
                 for fold in combinations(foldidx, r=z):
@@ -697,6 +818,19 @@ class pair_cv():
             yield x1,x2
   
     def split_half(self, df=None) :
+        """
+        Split the DataFrame randomly into two halves.
+
+        Parameters:
+        -----------
+            df: pd.DataFrame, default=None
+                The DataFrame to be split.
+
+        Returns:
+        --------
+            pd.DataFrame:
+                The DataFrame with a new column 'subset' indicating the assigned halves.
+        """
         rows = df.shape[0]
         df['subset'] = 2
         df['subset'][0:int(rows/2)] = 1
@@ -704,7 +838,19 @@ class pair_cv():
         return df
         
     def split_frame(self, df) :
+        """
+        Split the DataFrame into two separate DataFrames based on the 'subset' column.
 
+        Parameters:
+        -----------
+            df: pd.DataFrame, default=None
+                The DataFrame to be split.
+
+        Returns:
+        --------
+            dict:
+                A dictionary containing two DataFrames, with keys '1' and '2', representing the subsets.
+        """
         models = {'1':pd.DataFrame(), '2':pd.DataFrame()}
 
         for model in models:
@@ -717,6 +863,21 @@ class pair_cv():
         return models
     
     def redists(self, df=None, subset=None) :
+        """
+        Generates a set of bootstrap reassignments of different subdivisions of either omnibus/sample or split-half reproducibility.
+
+        Parameters:
+        -----------
+            df: pd.DataFrame, default=None
+                The DataFrame containing the data to be redistributed.
+            subset: str, default=None 
+                The subset of the grouping variable for which to generate a set of redistributions.
+
+        Returns:
+        --------
+            list:
+                A list of redistributions, where each redistribution is represented as a list of two DataFrames.
+        """
         redists = []
         if self.omnibus:
             samples = df[self.group].unique()
