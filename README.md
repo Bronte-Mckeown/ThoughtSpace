@@ -36,8 +36,9 @@ Once you've set up a local (and forked) ThoughtSpace repository on your computer
 After you've generated your components, it's good to get a sense of how robustly they represent your data and how well they might generalize across different levels of some grouping variable of interest (e.g., different sampling environments).
 
 The rhom module allows you to do just that! Usage of this module comprises mainly of four functions representing a range of ways to assess both component reliability and generalizability. Take a look at the guides below as to how to use them and be sure to look at the example script provided in the /examples folder!
-    - [Split-Half Reliability]()
-    - [Direct-Projection Reproducibility]()
-    - [Omnibus-Sample Reproducibility]()
-    - [By-Component Omnibus-Sample Reproducibility]()
+
+- [Split-Half Reliability]()
+- [Direct-Projection Reproducibility]()
+- [Omnibus-Sample Reproducibility]()
+- [By-Component Omnibus-Sample Reproducibility]()
 
