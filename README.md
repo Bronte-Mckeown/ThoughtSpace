@@ -10,17 +10,9 @@ This readme is a Beginners guide to using ThoughtSpace that assumes little-to-no
 
 It does assume you already have a GitHub account set up. So, if you don't, create one first!
 
-The guide will take you through installation and your first analysis, with examples.
+The guide will take you through installation and your first analysis, with examples:
 
-### Installing GitHub Desktop
-
-GitHub Desktop is a an application provided by GitHub. 
-
-It allows users to interact with Git repositories visually (rather than from the oh-so-scary command line) and provides an easier way for users, especially beginners, to manage their version-controlled projects.
-
-I recommend using GitHub desktop for all git-related steps described below.
-
-So... if you haven't already install GitHub Desktop (https://desktop.github.com/) and sign into your account.
+- [Installing Github Desktop](https://github.com/Bronte-Mckeown/ThoughtSpace/blob/rhom/Installing_GitHub_Desktop.md)
 
 ### Installing Visual Studio Code
 
