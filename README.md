@@ -12,7 +12,7 @@ It does assume you already have a GitHub account set up. So, if you don't, creat
 
 The guide will take you through installation and your first analysis, with examples:
 
-- [Installing Github Desktop](https://github.com/Bronte-Mckeown/ThoughtSpace/blob/rhom/Installing_GitHub_Desktop.md)
+- [Installing Github Desktop](https://github.com/Bronte-Mckeown/ThoughtSpace/blob/Rhom/Installing_GitHub_Desktop.md)
 
 ### Installing Visual Studio Code
 
