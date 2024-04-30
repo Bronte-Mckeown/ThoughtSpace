@@ -35,12 +35,7 @@ Once you've set up a local (and forked) ThoughtSpace repository on your computer
 
 After you've generated your components, it's important to get a sense of how robustly they represent your data and how well they might generalize across types of situations (e.g., different sampling environments, different participant populations, etc.).
 
-Answering these questions requires a metric that provides some indication of the similarity between two components (e.g., generated from different halves of the same dataset, generated from separate datasets with the same measure, etc.). To do so, the rhom module leverages two metrics of component similarity:
-
-- [Tucker's Congruence Coefficient (TCC): Comparing Components by Their Loadings]()
-- [R-Homologue: Comparing Components by the Way They Organize Observations]()
-
-With these two metrics, rhom uses four functions to assess both component reliability and generalizability in a few different ways. Take a look at the guides below, organized by the questions each function targets, and be sure to look at the example script provided in the /examples folder!
+Usage of rhom primarily involves four functions that assess both component reliability and generalizability in a few different ways. Take a look at the guides below, organized by the questions each function targets, and be sure to look at the example script provided in the /examples folder!
 
 How robustly do my components represent my data?
 - [Split-Half Reliability]()
@@ -51,4 +46,9 @@ How similar are the components produced by different situations?
 How representative are the components I get when I combine data from different situations?
 - [Omnibus-Sample Reproducibility]()
 - [By-Component Omnibus-Sample Reproducibility]()
+
+Answering these questions requires a metric that provides some indication of the similarity between two components (e.g., generated from different halves of the same dataset, generated from separate datasets with the same measure, etc.). To do so, the rhom module leverages two metrics of component similarity:
+
+- [Tucker's Congruence Coefficient (TCC): Comparing Components by Their Loadings]()
+- [R-Homologue: Comparing Components by the Way They Organize Observations]()
 
