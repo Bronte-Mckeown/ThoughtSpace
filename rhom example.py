@@ -1,7 +1,7 @@
 import pandas as pd
 from ThoughtSpace.rhom import splithalf, omni_sample, dir_proj, bypc
 
-df = pd.read_csv("examples/output.csv")
+df = pd.read_csv('output.csv')
 
 # If not specifying a grouping variable, remember to specify only the data to be decomposed
 splithalf_df = df.iloc[:, 2:11]

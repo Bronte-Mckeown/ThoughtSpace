@@ -245,8 +245,9 @@ class basePCA(TransformerMixin, BaseEstimator):
             self.extra_columns[f"PCA_{x}"] = indivloadings[x, :]
         self.extra_columns.index = dfidx
 
-        self.print_explained_variance()
-        self.print_highestloadings()
+        if self.verbosity > 0:
+            self.print_explained_variance()
+            self.print_highestloadings()
 
         return self
     

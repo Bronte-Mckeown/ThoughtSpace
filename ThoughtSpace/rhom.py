@@ -8,6 +8,7 @@ from itertools import product
 from ThoughtSpace.pca import basePCA
 
 import numpy as np
+import os
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
@@ -341,14 +342,18 @@ class rhom(BaseEstimator):
 
         #If self.n_comp is greater than or equal to 2, a basePCA model is fitted to the 'x' data with the specified rotation method.
         if self.n_comp >= 2:
-            self.model_x = basePCA(n_components=self.n_comp, rot_method=self.method)
-            self.model_x.fit(pd.DataFrame(x))
+            if self.method == "none":
+                self.model_x = basePCA(n_components=self.n_comp, verbosity = 0, rotation=False)
+            else:
+                self.model_x = basePCA(n_components=self.n_comp, verbosity = 0, rotation=self.method)
         #If self.n_comp is less than 2, a basePCA model is fitted to the 'x' data with rotation method set to "none".
         else:
-            self.model_x = basePCA(n_components=self.n_comp, rot_method="none")
+            self.model_x = basePCA(n_components=self.n_comp, verbosity = 0, rotation=False)
+
+        self.model_x.fit(pd.DataFrame(x))
 
         #Regardless of the value of self.n_comp, a basePCA model is always fitted to the 'y' data with rotation method set to "none".
-        self.model_x2 = basePCA(n_components=self.n_comp, rot_method='none')
+        self.model_x2 = basePCA(n_components=self.n_comp, verbosity = 0, rotation=False)
         self.model_x2.fit(pd.DataFrame(y))
 
     def predict(self, y=None):
@@ -907,6 +912,16 @@ class pair_cv():
 
         return redists    
 
+def check_paths(parent_folder, prefix):
+    path = os.getcwd()
+    fullpath = os.path.join(path, parent_folder)
+    if not os.path.exists(fullpath):
+        os.makedirs(fullpath, exist_ok = True)
+
+    project_path = os.path.join(fullpath, prefix)
+    if not os.path.exists(project_path):
+        os.makedirs(project_path, exist_ok = True)
+
 def splithalf(df=None, group=None, npc=None, rotation='varimax', boot=1000, save=True, display=False, shuffle=False, file_prefix=randint(10000,99999)) :
     '''
     Split-Half Reliability
@@ -974,6 +989,9 @@ def splithalf(df=None, group=None, npc=None, rotation='varimax', boot=1000, save
         
     cv = pair_cv(group=group, n=boot)
 
+    if save:
+        check_paths('results', file_prefix)
+
     split_df = pd.DataFrame(columns=['n_comp', group, 'rhm_x','rhm_sd','rhm_LCI','rhm_UCI','phi_x','phi_sd','phi_LCI','phi_UCI'])
 
     def getstats(data):
@@ -1024,7 +1042,8 @@ def splithalf(df=None, group=None, npc=None, rotation='varimax', boot=1000, save
 
     if save:
 
-        split_df.to_csv('results/' + str(file_prefix) + '_' + str(len(df.columns)) + 'D_' + str(boot_model.n_comp) + 'PC.csv', index = False)
+        split_df.to_csv('results/' + str(file_prefix) + '/' + str(file_prefix) + '_splithalf_' + str(len(df.columns)) + 'D_' + str(boot_model.n_comp) + 'PC.csv', index = False)
+        
         print('dataframe saved')
 
     return split_df  
@@ -1104,6 +1123,9 @@ def dir_proj(df=None, group=None, npc=None, rotation="varimax", folds=5, save=Tr
     dft = scaler.fit_transform(df)
     df = pd.DataFrame(dft,index=df.index,columns=df.columns)
 
+    if save:
+        check_paths('results', file_prefix)
+
     dirproj_df = pd.DataFrame(columns=['n_comp', 'referent', 'comparator', 'rhm_x','rhm_sd','rhm_LCI','rhm_UCI','phi_x','phi_sd','phi_LCI','phi_UCI'])
 
     if plot:
@@ -1176,7 +1198,7 @@ def dir_proj(df=None, group=None, npc=None, rotation="varimax", folds=5, save=Tr
                     annot_kws={"fontsize": 35 / np.sqrt(len(dirproj_mtx))},
                     cmap = "flare")
         plt.suptitle('Mean Homologue Similarity', fontsize=16)
-        plt.savefig('results/' + str(file_prefix) + '_heatmap' + str(len(df.columns)) + "D(alt)_" + str(boot_model.n_comp) + 'PC_rhm.png')
+        plt.savefig('results/' + str(file_prefix) + '/' + str(file_prefix) + 'heatmap' + str(len(df.columns)) + "D(alt)_" + str(boot_model.n_comp) + 'PC_rhm.png')
         plt.show()
         plt.close()
 
@@ -1187,12 +1209,12 @@ def dir_proj(df=None, group=None, npc=None, rotation="varimax", folds=5, save=Tr
                     annot_kws={"size": 35 / np.sqrt(len(dirproj_phi))},
                     cmap = "flare")
         plt.suptitle('Mean Factor Congruence', fontsize=16)
-        plt.savefig('results/'  + str(file_prefix) + '_heatmap' + str(len(df.columns)) + "D(alt)_" + str(boot_model.n_comp) + 'PC_phi.png')
+        plt.savefig('results/' + str(file_prefix) + '/' + str(file_prefix) + 'heatmap' + str(len(df.columns)) + "D(alt)_" + str(boot_model.n_comp) + 'PC_phi.png')
         plt.show()
         plt.close()
 
     if save:
-        dirproj_df.to_csv('results/' + str(file_prefix) + '_dj' + str(len(df.columns)) + "D(alt)_" + str(boot_model.n_comp) + 'PC.csv', index = False)
+        dirproj_df.to_csv('results/' + str(file_prefix) + '/' + str(file_prefix) +'_dj' + str(len(df.columns)) + "D(alt)_" + str(boot_model.n_comp) + 'PC.csv', index = False)
 
     return dirproj_df
 
@@ -1256,6 +1278,9 @@ def omni_sample(df=None, group=None, npc=None, rotation="varimax", boot=1000, sa
     df_t = df.drop(labels = [group], axis = 1)
 
     omsamp_df = pd.DataFrame(columns=['n_comp', group, 'rhm_x','rhm_sd','rhm_LCI','rhm_UCI','phi_x','phi_sd','phi_LCI','phi_UCI'])
+
+    if save:
+        check_paths('results', file_prefix)
 
     def getstats(data):
         conf_int = norm.interval(0.95, np.median(data), scale = np.std(data))
@@ -1338,11 +1363,11 @@ def omni_sample(df=None, group=None, npc=None, rotation="varimax", boot=1000, sa
 
     if save:
 
-        omsamp_df.to_csv('results/' + str(file_prefix) + '_omsamp_' + str(len(df_t.columns)) + "D_" + str(boot_model.n_comp) + 'PC.csv', index = False)
+        omsamp_df.to_csv('results/' + str(file_prefix) + '/' + str(file_prefix) + '_omsamp_' + str(len(df_t.columns)) + "D_" + str(boot_model.n_comp) + 'PC.csv', index = False)
 
     return omsamp_df
 
-def bypc(df=None, group=None, npc=None, rotation="varimax", save=True, plot=True, display=False, shuffle = False, file_prefix=randint(10000,99999)):
+def bypc(df=None, group=None, npc=None, rotation="varimax", folds=5, save=True, plot=True, display=False, shuffle = False, file_prefix=randint(10000,99999)):
     '''
     Omnibus-Sample Reproducibility: By-Component
     ------------------------------
@@ -1404,7 +1429,7 @@ def bypc(df=None, group=None, npc=None, rotation="varimax", save=True, plot=True
     df_t = df.drop(labels=group, axis=1)
     
     boot_model = rhom(rd = copy.deepcopy(df_t.values), bypc=True, n_comp=npc, method=rotation)
-    cv = pair_cv(boot = True, group=group)
+    cv = pair_cv(boot = True, group=group, k=folds)
 
     maindict = cv.omni_prep(df = df)
 
@@ -1422,6 +1447,9 @@ def bypc(df=None, group=None, npc=None, rotation="varimax", save=True, plot=True
         mean = np.mean(data)
         sd = np.std(data)
         return conf_int, mean, sd
+    
+    if save:
+        check_paths('results', file_prefix)
 
     stats_bypc = pd.DataFrame(columns=['n_comp', 'dataset', 'comp', 'rhm_x','rhm_sd','rhm_LCI','rhm_UCI','phi_x','phi_sd','phi_LCI','phi_UCI'])
 
@@ -1458,12 +1486,12 @@ def bypc(df=None, group=None, npc=None, rotation="varimax", save=True, plot=True
                 print("*"*40)
 
     if plot:
-        model = basePCA(n_components=npc, rot_method=rotation)
+        model = basePCA(n_components=npc, rotation=rotation)
         model.fit(maindict['omnibus'])
-        model.fit_project(maindict['omnibus'])
-        model.save(path="results", pathprefix=str(file_prefix)+"_os")
+        model.fit_transform(maindict['omnibus'])
+        model.save(path="results/" + str(file_prefix), pathprefix=str(file_prefix)+"_os")
 
     if save:
-        stats_bypc.to_csv('results/' + str(file_prefix) + '_bypc_' + str(len(df_t.columns)) + 'D(alt)_' + str(boot_model.n_comp) + 'PC.csv', index = False)
+        stats_bypc.to_csv('results/' + str(file_prefix) + '/' + str(file_prefix) + '_bypc_' + str(len(df_t.columns)) + 'D(alt)_' + str(boot_model.n_comp) + 'PC.csv', index = False)
 
     return stats_bypc
