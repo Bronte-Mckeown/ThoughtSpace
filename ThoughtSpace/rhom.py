@@ -379,7 +379,7 @@ class rhom(BaseEstimator):
             loadings = self.model_x.loadings.to_numpy()
 
             R, s = orthogonal_procrustes(loadings, self.model_x2.loadings.to_numpy())
-            loadings_x2 = np.dot(self.model_x2.loadings.to_numpy(), R.T) * s
+            loadings_x2 = np.dot(self.model_x2.loadings.to_numpy(), R.T)
 
             for loads in [loadings, loadings_x2]:
                 self.results = np.dot(y, loads)
@@ -471,7 +471,7 @@ class rhom(BaseEstimator):
         
         #The function first applies orthogonal Procrustes rotation to align the loadings matrices.
         R, s = orthogonal_procrustes(loadings_X, loadings_x2)
-        loadings_x2 = np.dot(loadings_x2, R.T) * s
+        loadings_x2 = np.dot(loadings_x2, R.T)
 
         #It then calculates the TCC between each pair of loadings vectors from the aligned matrices.
         tcc_matrix = []
