@@ -38,7 +38,7 @@ After you've generated your components, it's important to get a sense of how rob
 Usage of rhom primarily involves four functions that assess both component reliability and generalizability in a few different ways. Take a look at the guides below, organized by the questions each function targets, and be sure to look at the example script provided in the /examples folder!
 
 *How robustly do my components represent my data?*
-- [Split-Half Reliability]()
+- [Split-Half Reliability](https://github.com/Bronte-Mckeown/ThoughtSpace/blob/Rhom/tutorials/split-half.md)
 
 *How similar are the components produced by different situations?*
 - [Direct-Projection Reproducibility]()
