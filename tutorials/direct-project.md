@@ -7,7 +7,7 @@ The rhom module goes about answering this question using the **dir_proj()** func
 
 **Analyzing similarity between datasets**
 
-<img src='figures/direct-project.png' width='100%'>
+<img src='../figures/direct-project.png' width='100%'>
 
 *A visualisation of the ‘direct-projection’ method whether datasets derived from different samples produce similar components. 𝛬 = Principal components, F = Component scores, TCC = Tucker's Congruence Coefficient.*
 
