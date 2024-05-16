@@ -44,8 +44,7 @@ Usage of rhom primarily involves four functions that assess both component relia
 - [Direct-Projection Reproducibility](https://github.com/Bronte-Mckeown/ThoughtSpace/blob/Rhom/tutorials/direct-project.md)
 
 *How representative are the components I get when I combine data from different situations?*
-- [Omnibus-Sample Reproducibility]()
-- [By-Component Omnibus-Sample Reproducibility]()
+- [Omnibus-Sample Reproducibility](https://github.com/Bronte-Mckeown/ThoughtSpace/blob/Rhom/tutorials/omni-sample.md)
 
 Answering these questions requires a metric that provides some indication of the similarity between two components (e.g., generated from different halves of the same dataset, generated from separate datasets with the same measure, etc.). To do so, the rhom module leverages two metrics of component similarity:
 
