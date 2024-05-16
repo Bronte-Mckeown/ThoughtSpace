@@ -7,7 +7,7 @@ Rather than generating components from different datasets as in direct-projectio
 
 **Analyzing how well components derived from combined data represent the constituent datasets they synthesize**
 
-<img src=../figures/omni-sample.png width = 100%>
+<img src=figures/omni-sample.png width = 100%>
 
 *A visualisation of the ‘omnibus-sample’ method used to determine whether the ‘common’ components derived from aggregated data reproduce the components seen in each dataset individually, O = ‘omnibus’, S = ‘sample’, 𝛬 = principal components, F = component scores, TCC = Tucker’s Congruence Coefficient.*
 
