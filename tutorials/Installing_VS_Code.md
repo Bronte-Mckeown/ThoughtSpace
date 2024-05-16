@@ -1,8 +1,8 @@
-### Installing Visual Studio Code
+## Installing Visual Studio Code
 
 We are going to start with making sure you have visual studio code (VS Code) installed. If you already have it installed, skip to the next section.
 
-#### What is VS code?
+### What is VS code?
 
 *What it is:* Visual Studio Code is like a digital workspace on your computer. It's a text editor, but it's much more than that. It's a powerful tool that helps you write, edit, and debug code easily in various programming languages, including Python and R.
 

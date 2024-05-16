@@ -9,6 +9,8 @@ One simple way to test component 'goodness-of-fit' is with a technique called 's
 
 This measure of robustness is helpful for measuring component reliability but can also be useful in its own right, say, for: 1) helping determine the number of components to extract from a given dataset, and 2) whether certain items in a questionnaire introduce more noise to a measure that damages component reliability (e.g., see Chitiz et al., 2024; Everett, 1983; Mulholland et al., 2023).
 
+Be sure to check out the splithalf() functions doc string in the script!
+
 ## References
 
 Alavi, M., Visentin, D. C., Thapa, D. K., Hunt, G. E., Watson, R., & Cleary, M. (2020). Exploratory factor analysis and principal component analysis in clinical studies: Which one should you use? Journal of Advanced Nursing, 76(8), 1886-1889. https://doi.org/10.1111/jan.14377 

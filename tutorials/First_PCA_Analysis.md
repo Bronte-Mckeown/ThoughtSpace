@@ -1,4 +1,4 @@
-### Running your first PCA analysis
+## Running your first PCA analysis
 
 We are now ready to run your first ThoughtSpace analysis!
 
@@ -72,9 +72,9 @@ It will be called whatever you called the conda environment created above (e.g.,
     
 The print out in the terminal will tell you about the KMO and Bartlett's Test of Sphericity:
     
-- Kaiser-Meyer-Olkin (KMO) Measure: KMO is a statistic that measures the adequacy of the sample size for conducting factor analysis. It assesses the proportion of variance among variables that might be common variance. In simpler terms, KMO helps you determine if your data is suitable for PCA. A high KMO value (usually above 0.6) suggests that the data is appropriate for factor analysis, indicating that the variables are related enough for PCA to yield meaningful results.
+- *Kaiser-Meyer-Olkin (KMO) Measure*: KMO is a statistic that measures the adequacy of the sample size for conducting factor analysis. It assesses the proportion of variance among variables that might be common variance. In simpler terms, KMO helps you determine if your data is suitable for PCA. A high KMO value (usually above 0.6) suggests that the data is appropriate for factor analysis, indicating that the variables are related enough for PCA to yield meaningful results.
 
-- Bartlett's Test of Sphericity: Bartlett's test checks whether the variables in your dataset are correlated, indicating that they might be suitable for PCA. It tests the null hypothesis that the correlation matrix is an identity matrix (which would mean no correlation between variables). In the context of PCA, you want to reject this null hypothesis because PCA is based on the idea that variables are correlated. If Bartlett's test is statistically significant (i.e., the p-value is below a chosen significance level, such as 0.05), it suggests that your data is appropriate for PCA.
+- *Bartlett's Test of Sphericity*: Bartlett's test checks whether the variables in your dataset are correlated, indicating that they might be suitable for PCA. It tests the null hypothesis that the correlation matrix is an identity matrix (which would mean no correlation between variables). In the context of PCA, you want to reject this null hypothesis because PCA is based on the idea that variables are correlated. If Bartlett's test is statistically significant (i.e., the p-value is below a chosen significance level, such as 0.05), it suggests that your data is appropriate for PCA.
 
 **7. Check your results!**
 
@@ -111,7 +111,7 @@ Finally, the wordclouds directory contains png images of wordclouds representing
 
 - In these images, each word = experience sampling item, size = magnitude of loading, and color = direction of loading.
     
-### Push your changes to remote
+## Push your changes to remote
     
 You have now run your first ThoughtSpace analysis in your own (local) Github repository.
     
@@ -123,20 +123,19 @@ Put simply:
 
 1. Making Changes:
 
-- Imagine you're working on a school essay. You write, edit, and add new content to your document. These changes are like the modifications you make in your project files.
+    - Imagine you're working on a school essay. You write, edit, and add new content to your document. These changes are like the modifications you make in your project files.
 
 2. Saving Changes Locally (Commit):
 
-- Before you leave your computer, you save your essay to not lose your work. Similarly, in coding, you save your changes locally. This is called a "commit." It's like saving your progress in a game.
+    - Before you leave your computer, you save your essay to not lose your work. Similarly, in coding, you save your changes locally. This is called a "commit." It's like saving your progress in a game.
 
 3. Sending Changes Online (Push):
 
-- Now, if you want to share your essay with your teacher or friends, you need to give them a copy. In coding, you need to send your saved changes online. This is called a "push." It's like uploading a file to the internet.
+    - Now, if you want to share your essay with your teacher or friends, you need to give them a copy. In coding, you need to send your saved changes online. This is called a "push." It's like uploading a file to the internet.
 
 4. Using GitHub Desktop:
 
-- GitHub Desktop is like a magical tool that helps you do these steps easily. It shows you what changes you made (like highlighting the edited parts of your essay).
-When you click "commit," it's like saving your work. And when you click "push," it's like sharing your essay with others online.
+    - GitHub Desktop is like a magical tool that helps you do these steps easily. It shows you what changes you made (like highlighting the edited parts of your essay). When you click "commit," it's like saving your work. And when you click "push," it's like sharing your essay with others online.
 
 Now here are the instructions to do these steps:
 
@@ -144,24 +143,24 @@ Now here are the instructions to do these steps:
 
 2. View Changes:
 
-- GitHub Desktop will show you the changes you've made in the "Changes" tab.
-- You'll see a list of files that have been modified or created.
-    - This will be the analysis script file and the results.
+    - GitHub Desktop will show you the changes you've made in the "Changes" tab.
+    - You'll see a list of files that have been modified or created.
+        - This will be the analysis script file and the results.
 
 3. Commit Changes:
 
-- Write a brief summary of the changes you made in the "Summary" box (e.g., first analysis)
-- Click on the "Commit to main" button. 
-- Your changes are now committed to your local repository.
+    - Write a brief summary of the changes you made in the "Summary" box (e.g., first analysis)
+    - Click on the "Commit to main" button. 
+    - Your changes are now committed to your local repository.
 
 4. Push Changes to Remote:
 
-- After committing, you'll see a button labeled "Push origin."
-- Click on this button.
-- GitHub Desktop will upload your committed changes to the remote repository on GitHub.com.
-- Depending on your settings, you might be asked to log in to your GitHub account and confirm the push.
+    - After committing, you'll see a button labeled "Push origin."
+    - Click on this button.
+    - GitHub Desktop will upload your committed changes to the remote repository on GitHub.com.
+    - Depending on your settings, you might be asked to log in to your GitHub account and confirm the push.
 
 5. Verification:
 
-- Once the push is completed, your changes are now on the remote repository.
-- You can go to your GitHub repository on GitHub.com to see the changes reflected there.
+    - Once the push is completed, your changes are now on the remote repository.
+    - You can go to your GitHub repository on GitHub.com to see the changes reflected there.

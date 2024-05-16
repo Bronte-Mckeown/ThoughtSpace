@@ -41,7 +41,7 @@ Usage of rhom primarily involves four functions that assess both component relia
 - [Split-Half Reliability](https://github.com/Bronte-Mckeown/ThoughtSpace/blob/Rhom/tutorials/split-half.md)
 
 *How similar are the components produced by different situations?*
-- [Direct-Projection Reproducibility]()
+- [Direct-Projection Reproducibility](https://github.com/Bronte-Mckeown/ThoughtSpace/blob/Rhom/tutorials/direct-project.md)
 
 *How representative are the components I get when I combine data from different situations?*
 - [Omnibus-Sample Reproducibility]()

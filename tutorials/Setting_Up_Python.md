@@ -1,4 +1,4 @@
-### Setting up to code in Python
+## Setting up to code in Python
 
 You have now sucessfully installed VS Code to your machine.
 
@@ -118,7 +118,7 @@ print ("Hello World")
   - What It Is: The Python interpreter is like a translator between human-readable Python code and the language that your computer understands. When you write Python code in VS Code, the Python interpreter takes that code and executes it, making your instructions come to life on your computer.
   - Imagine It Like: The Python interpreter is like a magical friend who understands both your language (Python) and your computer's language. You tell your magical friend what you want to do in Python, and they make sure your computer understands and follows your instructions.
 
-#### Putting It All Together:
+### Putting It All Together:
 
 - So when you created your program that says "Hello, World!" on your computer screen, you wrote the instructions for this in Python (your language) inside Visual Studio Code (your notebook). When you ran your program, Visual Studio Code used the Python interpreter to translate your Python instructions into a language your computer understands. As a result, your computer displayed "Hello, World!" on the screen.
   

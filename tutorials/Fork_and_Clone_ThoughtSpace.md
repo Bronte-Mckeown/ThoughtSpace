@@ -1,4 +1,4 @@
-### Fork and Clone ThoughtSpace.
+## Fork and Clone ThoughtSpace.
     
 Now it's time to get ThoughtSpace installed onto your machine so you can use it in your own analyses.
 
@@ -15,7 +15,7 @@ Now it's time to get ThoughtSpace installed onto your machine so you can use it 
 - For more information on how all this works, see here: https://docs.github.com/en/get-started/quickstart/fork-a-repo
 
 
-**4. Clone ThoughtSpace to your machine**
+**2. Clone ThoughtSpace to your machine**
     
 If you have forked ThoughtSpace first:
 

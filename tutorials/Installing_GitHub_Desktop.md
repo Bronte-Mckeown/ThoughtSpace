@@ -1,4 +1,4 @@
-### Installing GitHub Desktop
+## Installing GitHub Desktop
 
 GitHub Desktop is a an application provided by GitHub. 
 

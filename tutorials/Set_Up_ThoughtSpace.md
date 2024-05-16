@@ -1,4 +1,4 @@
-### Final steps 
+## Final steps for setting up ThoughtSpace
 
 You now have all the necessary software installed and have set up your own GitHub repository for running your ThoughtSpace analysis.
 
