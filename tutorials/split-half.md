@@ -7,7 +7,7 @@ While techniques such as Exploratory Factor Analysis have 'goodness-of-fit' metr
 
 One simple way to test component 'goodness-of-fit' is with a technique called 'split-half reliability'. This method involves repeatedly randomly dividing your dataframe into halves, extracting components from each half and then testing if the components from each half are similar. If the components were capturing patterns weakly representative of your data structure, then the patterns would likely not stably appear across subsets of the data. However, if random halves of the data repeatedly produce similar components, that provides some evidence that the patterns the components are capturing are robust enough to consistently appear in random subsamples of your data.
 
-This measure of robustness is helpful for measuring component reliability but can also be useful in its own right, say, for: 1) helping determine both the number of components to extract from a given dataset, and 2) whether certain items in a questionnaire introduce more noise to a measure that damages component reliability (e.g., see Chitiz et al., 2024; Everett, 1983; Mulholland et al., 2023).
+This measure of robustness is helpful for measuring component reliability but can also be useful in its own right, say, for: 1) helping determine the number of components to extract from a given dataset, and 2) whether certain items in a questionnaire introduce more noise to a measure that damages component reliability (e.g., see Chitiz et al., 2024; Everett, 1983; Mulholland et al., 2023).
 
 ## References
 
