@@ -10,7 +10,7 @@ $R_{Hom.} = \arg{\max_{j}} \, R(\mathbf{T}_i^{(A)}, \mathbf{T}_j^{(B)})$
 
 (Formula 1.2)
 
-$R_{Hom.} = \max_{\pi} \left( \frac{1}{n} \sum_{i=1}^{n} R(\mathbf{T}_i^{(A)}, \mathbf{T}_{\pi(i)}^{(B)}) \right)$
+$\overline{X}_{{R_{Hom.}}} = \max_{\pi} [\frac{1}{n} \sum_{i=1}^{n} R(\mathbf{T}_i^{(A)}, \mathbf{T}_{\pi(j)}^{(B)})]$
 
 - $\mathbf{T}_i^{(A)}$: The $i$-th principal component from solution $A$.
 - $\mathbf{T}_j^{(B)}$: The $j$-th principal component from solution $B$.
