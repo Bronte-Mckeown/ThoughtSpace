@@ -4,19 +4,21 @@
 
 **R-Homologue (RHom.)**
 
-(Formula 1.1)
+**(Formula 1.1)**
 
 $R_{Hom.} = \arg{\max_{j}} \, R(\mathbf{T}_i^{(A)}, \mathbf{T}_j^{(B)})$
-
-(Formula 1.2)
-
-$\overline{X}_{{R_{Hom.}}} = \max_{\pi} [\frac{1}{n} \sum_{i=1}^{n} R(\mathbf{T}_i^{(A)}, \mathbf{T}_{\pi(j)}^{(B)})]$
 
 - $\mathbf{T}_i^{(A)}$: The $i$-th principal component from solution $A$.
 - $\mathbf{T}_j^{(B)}$: The $j$-th principal component from solution $B$.
 - $R(\mathbf{T}_i^{(A)}, \mathbf{T}_j^{(B)})$: The Pearson correlation coefficient between $\mathbf{T}_i^{(A)}$ and $\mathbf{T}_j^{(B)}$.
-- $n$: The number of principal components in each solution.
+
+
+**(Formula 1.2)**
+
+$`\overline{X}_{{R_{Hom.}}} = \max_{\pi} [\frac{1}{n} \sum_{i=1}^{n} R(\mathbf{T}_i^{(A)}, \mathbf{T}_{\pi(j)}^{(B)})]`$
+
 - $\pi$ is a permutation of the indices $\{1, 2, \ldots, n\}$ representing the pairing of components from solution $A$ to components from solution $B$.
+- $n$: The number of principal components in each solution.
 
 
 
