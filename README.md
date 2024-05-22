@@ -48,6 +48,6 @@ Usage of rhom primarily involves four functions that assess both component relia
 
 Answering these questions requires a metric that provides some indication of the similarity between two components (e.g., generated from different halves of the same dataset, generated from separate datasets with the same measure, etc.). To do so, the rhom module leverages two metrics of component similarity:
 
-- [Tucker's Congruence Coefficient (TCC): Comparing Components by Their Loadings]()
-- [R-Homologue: Comparing Components by the Way They Organize Observations]()
+- [Tucker's Congruence Coefficient (TCC): Comparing Components by Their Loadings](https://github.com/Bronte-Mckeown/ThoughtSpace/blob/Rhom/tutorials/tcc.md)
+- [R-Homologue: Comparing Components by the Way They Organize Observations](https://github.com/Bronte-Mckeown/ThoughtSpace/blob/Rhom/tutorials/RHom.md)
 
