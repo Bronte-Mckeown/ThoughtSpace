@@ -30,7 +30,7 @@ $`\overline{X}_{{R_{Hom.}}} = \max_{\pi} [\frac{1}{n} \sum R(\mathbf{S}_i^{(A)},
 - $\pi$ is a permutation of the indices $\{1, 2, \ldots, n\}$ representing the pairing of components from solution $A$ to components from solution $B$.
 - $n$: The number of principal components in each solution.
 
-To interpret RHom., we borrowed from guidelines regarding problematic multicollinearity in multiple regression that a correlation of $R_{Hom.} \ge .80$ as indicative of two components measuring a redundant phenomenon and thus achieving good similarity (Berry & Feldman, 1985).
+To interpret RHom., we borrowed from guidelines regarding problematic multicollinearity in multiple regression that a correlation of $R_{Hom.} \ge .80$ as indicative of two components measuring a redundant phenomenon and thus achieving good similarity (Berry & Feldman, 1985; Chitiz et al., 2024).
 
 ## References
 
