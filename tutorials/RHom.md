@@ -26,7 +26,7 @@ $`\overline{X}_{{R_{Hom.}}} = \max_{\pi} [\frac{1}{n} \sum R(\mathbf{S}_i^{(A)},
 
 - $\mathbf{S}_i^{(A)}$: The component scores generated from the $i$-th principal component from solution $A$.
 - $\mathbf{S}_{\pi(j)}^{(B)}$: The component scores generated from the $j$-th principal component from solution $B$ in a given permutation ($\pi$).
-- $R(\mathbf{S}_i^{(A)}, \mathbf{S}_{\pi(j)}^{(B)})$: The Pearson correlation coefficient between the component scores of $\mathbf{S}_i^{(A)}$ and $\mathbf{S}_j^{(B)}$.
+- $`R(\mathbf{S}_i^{(A)}, \mathbf{S}_{\pi(j)}^{(B)})`$: The Pearson correlation coefficient between the component scores of $\mathbf{S}_i^{(A)}$ and $\mathbf{S}_j^{(B)}$.
 - $\pi$ is a permutation of the indices $\{1, 2, \ldots, n\}$ representing the pairing of components from solution $A$ to components from solution $B$.
 - $n$: The number of principal components in each solution.
 
