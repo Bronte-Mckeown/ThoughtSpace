@@ -14,7 +14,7 @@ $\phi(x,y)=\frac{\sum |x_i y_i|}{\sqrt{\sum x_i^2\sum y_i^2}}$
 - $\sum |x_i y_i|$ is the sum of the absolute products of each loading of the two components (i.e., $x$ and $y$).
 - $\sqrt{\sum x_i^2\sum y_i^2}$ is the total variance in the loadings between the two components with 0 held as the absolute mean value of any set of loadings.
 
-The TCC is essentially a slightly modified Pearson's correlation coefficient: it is the proportion of the total variability among the loadings captured by the covariability between the loadings. However, instead of calculating covariance and variance by subtracting each loading from the mean loading for each component, it maintains an absolute mean loading value of 0.
+The TCC is essentially a slightly modified Pearson's correlation coefficient: it is the proportion of the total variability among the loadings captured by the covariability between the loadings. However, instead of calculating covariance and variance by subtracting each loading from the mean loading value for each component, it maintains an absolute mean loading value of 0.
 
 To interpret the TCC, Lorenzo-Seva & ten Berge (2006) recommend interpreting $\phi\ge.85$ as indicating fair similarity and $\phi\ge.95$ as indicating exact similarity. 
 
