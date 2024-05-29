@@ -1198,7 +1198,7 @@ def dir_proj(df=None, group=None, npc=None, rotation="varimax", folds=5, save=Tr
                     annot_kws={"fontsize": 35 / np.sqrt(len(dirproj_mtx))},
                     cmap = "flare")
         plt.suptitle('Mean Homologue Similarity', fontsize=16)
-        plt.savefig('results/' + str(file_prefix) + '/' + str(file_prefix) + 'heatmap' + str(len(df.columns)) + "D(alt)_" + str(boot_model.n_comp) + 'PC_rhm.png')
+        plt.savefig('results/' + str(file_prefix) + '/' + str(file_prefix) + 'heatmap' + str(len(df.columns)) + "D_" + str(boot_model.n_comp) + 'PC_rhm.png')
         plt.show()
         plt.close()
 
@@ -1209,12 +1209,12 @@ def dir_proj(df=None, group=None, npc=None, rotation="varimax", folds=5, save=Tr
                     annot_kws={"size": 35 / np.sqrt(len(dirproj_phi))},
                     cmap = "flare")
         plt.suptitle('Mean Factor Congruence', fontsize=16)
-        plt.savefig('results/' + str(file_prefix) + '/' + str(file_prefix) + 'heatmap' + str(len(df.columns)) + "D(alt)_" + str(boot_model.n_comp) + 'PC_phi.png')
+        plt.savefig('results/' + str(file_prefix) + '/' + str(file_prefix) + 'heatmap' + str(len(df.columns)) + "D_" + str(boot_model.n_comp) + 'PC_phi.png')
         plt.show()
         plt.close()
 
     if save:
-        dirproj_df.to_csv('results/' + str(file_prefix) + '/' + str(file_prefix) +'_dj' + str(len(df.columns)) + "D(alt)_" + str(boot_model.n_comp) + 'PC.csv', index = False)
+        dirproj_df.to_csv('results/' + str(file_prefix) + '/' + str(file_prefix) +'_dj' + str(len(df.columns)) + "D_" + str(boot_model.n_comp) + 'PC.csv', index = False)
 
     return dirproj_df
 
@@ -1492,6 +1492,6 @@ def bypc(df=None, group=None, npc=None, rotation="varimax", folds=5, save=True, 
         model.save(path="results/" + str(file_prefix), pathprefix=str(file_prefix)+"_os")
 
     if save:
-        stats_bypc.to_csv('results/' + str(file_prefix) + '/' + str(file_prefix) + '_bypc_' + str(len(df_t.columns)) + 'D(alt)_' + str(boot_model.n_comp) + 'PC.csv', index = False)
+        stats_bypc.to_csv('results/' + str(file_prefix) + '/' + str(file_prefix) + '_bypc_' + str(len(df_t.columns)) + 'D_' + str(boot_model.n_comp) + 'PC.csv', index = False)
 
     return stats_bypc
