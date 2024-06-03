@@ -3,9 +3,9 @@
 
 In PCA, each component is some linear combination of the variables being decomposed that accounts for as much variance in those variables as possible. In other words, a component essentially summarizes broad relationships between groups of variables. You can kind of think of PCA as correlating all of the inputted variables with each other at once and ranking which groupings (i.e., 'components') show the strongest correlations/patterns in the data. Each variable will contribute to each pattern in a different way (e.g., some variables will be more/less involved in some patterns than others, some variables will positively associate with the pattern while others negatively associate with it, etc.). The way each variable contributes to the pattern across the variables (i.e., the component) is called a 'loading'.
 
-One way to assess the similarity between two components is by examining the similarity of each of their loadings. Since, loadings describe the particular pattern the component is capturing in the data, if two components have similar loadings they can be thought of as identifying similar largescale relationships among the variables. 
+One way to assess the similarity between two components is by examining the similarity of each of their loadings. Since loadings describe the particular pattern the component is capturing in the data, if two components have similar loadings they can be thought of as identifying similar largescale relationships among the variables. 
 
-The metric typically used to measure the similarity between loadings is called *Tucker's Congruence Coefficient (TCC)* also known as *Tucker's Phi ($\phi$)* (Lorenzo-Seva & ten Berge, 2006; Tucker, 1951). The formula below is a slightly modified version of the original shown to be more effective for identifying which components are the most similar across two datasets (Lovik et al., 2020).
+The metric typically used to measure the similarity between loadings is called *Tucker's Congruence Coefficient (TCC)* also known as *Tucker's Phi ($`\phi`$)* (Lorenzo-Seva & ten Berge, 2006; Tucker, 1951). The formula below is a slightly modified version of the original shown to be more effective for identifying which components are the most similar across two datasets (Lovik et al., 2020).
 
 **Tucker's Congruence Coefficient ($\phi$)**
 
