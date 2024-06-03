@@ -38,16 +38,16 @@ After you've generated your components, it's important to get a sense of how rob
 Usage of rhom primarily involves four functions that assess both component reliability and generalizability in a few different ways. Take a look at the guides below, organized by the questions each function targets, and be sure to look at the example script provided in the /examples folder!
 
 *How robustly do my components represent my data?*
-- [Split-Half Reliability](https://github.com/Bronte-Mckeown/ThoughtSpace/blob/Rhom/tutorials/split-half.md)
+- [Split-Half Reliability](https://github.com/Bronte-Mckeown/ThoughtSpace/blob/master/tutorials/split-half.md)
 
 *How similar are the components produced by different situations?*
-- [Direct-Projection Reproducibility](https://github.com/Bronte-Mckeown/ThoughtSpace/blob/Rhom/tutorials/direct-project.md)
+- [Direct-Projection Reproducibility](https://github.com/Bronte-Mckeown/ThoughtSpace/blob/master/tutorials/direct-project.md)
 
 *How representative are the components I get when I combine data from different situations?*
-- [Omnibus-Sample Reproducibility](https://github.com/Bronte-Mckeown/ThoughtSpace/blob/Rhom/tutorials/omni-sample.md)
+- [Omnibus-Sample Reproducibility](https://github.com/Bronte-Mckeown/ThoughtSpace/blob/master/tutorials/omni-sample.md)
 
 Answering these questions requires a metric that provides some indication of the similarity between two components (e.g., generated from different halves of the same dataset, generated from separate datasets with the same measure, etc.). To do so, the rhom module leverages two metrics of component similarity:
 
-- [Tucker's Congruence Coefficient (TCC): Comparing Components by Their Loadings](https://github.com/Bronte-Mckeown/ThoughtSpace/blob/Rhom/tutorials/tcc.md)
-- [R-Homologue: Comparing Components by the Way They Organize Observations](https://github.com/Bronte-Mckeown/ThoughtSpace/blob/Rhom/tutorials/RHom.md)
+- [Tucker's Congruence Coefficient (TCC): Comparing Components by Their Loadings](https://github.com/Bronte-Mckeown/ThoughtSpace/blob/master/tutorials/tcc.md)
+- [R-Homologue: Comparing Components by the Way They Organize Observations](https://github.com/Bronte-Mckeown/ThoughtSpace/blob/master/tutorials/RHom.md)
 
