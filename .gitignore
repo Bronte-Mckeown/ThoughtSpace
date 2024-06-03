@@ -4,7 +4,6 @@ env
 *.pdf
 pca_and_projection.egg-info
 build
-*.png
 *.csv
 .vscode/settings.json
 *.pyc
