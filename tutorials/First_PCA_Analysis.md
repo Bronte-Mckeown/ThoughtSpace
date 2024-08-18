@@ -14,7 +14,7 @@ Using URL method to read in example data (daily life experience sampling data be
 
 ```python
 import pandas as pd # for reading in the csv file containg the data
-from ThoughtSpace._base import basePCA # this imports the basePCA class from ThoughtSpace
+from ThoughtSpace.pca import basePCA # this imports the basePCA class from ThoughtSpace
 
 # read in data
 url = 'https://github.com/Bronte-Mckeown/ThoughtSpace/tree/master/scratch/data/example_data.csv'
@@ -25,7 +25,7 @@ model = basePCA(n_components=4,rotation="varimax")
 
 # train PCA on data and transform data to create PCA scores
 # pca_scores now contains dataframe with original data plus PCA columns
-pca_scores = model.fit_transform("data/lockdown_data.csv")
+pca_scores = model.fit_transform(df)
 
 # save results to results folder using .save
 model.save(path="results",pathprefix="PCA_results")
@@ -39,7 +39,7 @@ Things to note about the data format required:
 
 ```python
 import pandas as pd # for reading in your csv
-from ThoughtSpace._base import basePCA # to use ThoughtSpace
+from ThoughtSpace.pca import basePCA # to use ThoughtSpace
 
 # read in data
 df = pd.read_csv("data/lockdown_data.csv")
@@ -49,7 +49,7 @@ model = basePCA(n_components=4,rotation="varimax")
 
 # train PCA on data and transform data to create PCA scores
 # pca_scores now contains dataframe with original data plus PCA columns
-pca_scores = model.fit_transform("data/lockdown_data.csv")
+pca_scores = model.fit_transform(df)
 
 # save results to results folder using .save
 model.save(path="results",pathprefix="PCA_results")

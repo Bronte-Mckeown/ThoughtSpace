@@ -573,15 +573,22 @@ class pair_cv():
         for i in range(0, len(l), n):
             yield l[i:i + n]
 
-    def assignModel(self, df=None) :
+    def assignModel(self, df=None, subrows=None) :
         """
         Randomly assign rows of a dataframe to be part of 'omnibus' or 'sample' subsets.
 
         Parameters:
         -----------
-            df: pd.DataFrame, default=None
-                The DataFrame to which model types will be assigned. If not provided, an empty DataFrame is created.
-
+            - df: pd.DataFrame, default=None
+                - The DataFrame to which model types will be assigned. If not provided, an empty DataFrame is created.
+            - subrows: int, default=None
+                - To ensure each subset of the dataframe contributes an equal number of rows to the omnibus solution,
+                this argument limits the number of rows assigned to the 'omnibus' set to always be equal to the size of half of
+                the subset with the smallest number of rows.
+                - So if subset A includes 1000 rows, and subset B includes 800 rows,
+                both subset A and B will contribute 800/2 = 400 rows to the omnibus solution and their remaining rows to
+                their respective sample solutions. 
+            
         Returns:
         --------
             pd.DataFrame:
@@ -590,7 +597,7 @@ class pair_cv():
         """
         rows = df.shape[0]
         df['o/s'] = "omnibus"
-        df['o/s'][0:int(rows/2)] = "sample"
+        df['o/s'][0:int(subrows)] = "sample"
         df['o/s'] = np.random.permutation(df['o/s'].values)
         return df
 
@@ -618,14 +625,16 @@ class pair_cv():
         df = pd.DataFrame(dft,index=df.index,columns=df.columns)
         return df
     
-    def omni_prep(self, df=None) :
+    def omni_prep(self, df=None, subrows=None) :
         """
         Prepares data for by-component omnibus-sample reproducibility by partitioning, assigning omnibus/sample grouping to rows, and standardizing.
 
         Parameters:
         -----------
-            df: pd.DataFrame, default=None
-                The DataFrame containing the data to be prepared for omnibus-sample reproducibility analysis.
+            - df: pd.DataFrame, default=None
+                - The DataFrame containing the data to be prepared for omnibus-sample reproducibility analysis.
+            - subrows: int, default=None
+                - Limits the number of rows contributed to omnibus solution according to the subset with the smallest sample. See the assignModel() docstring for more detail.
 
         Returns:
         --------
@@ -643,7 +652,7 @@ class pair_cv():
         # This function depends on the 'assignModel' and 'standardize' methods of the class.
         for subsamp in subsamps:
             model = subsamps[subsamp]
-            model = self.assignModel(model)
+            model = self.assignModel(model, subrows = subrows)
 
             # The 'o/s' column in each DataFrame represents the assigned model type ('sample' or 'omnibus').
             models[subsamp] = model[model["o/s"] == "sample"]
@@ -657,18 +666,20 @@ class pair_cv():
         
         return models
 
-    def omni_prep_mini(self, df=None, subsamps=None, subset=None) :
+    def omni_prep_mini(self, df=None, subsamps=None, subset=None, subrows=None) :
         """
         Prepare data for omnibus-sample reproducibility analysis with a specified subset.
 
         Parameters:
         -----------
-            df: pd.DataFrame, default=None
-                The DataFrame containing the data to be prepared for omnibus-sample analysis.
-            subsamps: dict, default=None
-                A dictionary containing subsets of the data named by their corresponding levels of the grouping variable.
-            subset: str, default=None
-                The name of the subset to be processed.
+            - df: pd.DataFrame, default=None
+                - The DataFrame containing the data to be prepared for omnibus-sample analysis.
+            - subsamps: dict, default=None
+                - A dictionary containing subsets of the data named by their corresponding levels of the grouping variable.
+            - subset: str, default=None
+                - The name of the subset to be processed.
+            - subrows: int, default=None
+                - Limits the number of rows contributed to omnibus solution according to the subset with the smallest sample. See the assignModel() docstring for more detail.
 
         Returns:
         --------
@@ -677,7 +688,7 @@ class pair_cv():
         """
         # The 'group' attribute specifies the column in the DataFrame used for grouping the data.
         model = df[df[self.group] == subset]
-        model = self.assignModel(model)
+        model = self.assignModel(model, subrows=subrows)
 
         # The 'o/s' column in each DataFrame represents the assigned model type ('sample' or 'omnibus').
         models = {"omnibus":model[model["o/s"] == "omnibus"]}
@@ -689,7 +700,7 @@ class pair_cv():
         # This function depends on the 'assignModel' and 'standardize' methods of the class.
         for subsamp in subsamps:
             model = subsamps[subsamp]
-            model = self.assignModel(model)
+            model = self.assignModel(model, subrows=subrows)
 
             models['omnibus'] = models['omnibus'].append(model[model["o/s"] == "omnibus"])
 
@@ -891,15 +902,19 @@ class pair_cv():
                 if sample != subset :
                     subsamps[sample] = df[df[self.group] == sample]
 
+            nrows = df[self.group].value_counts().reset_index()
+            nrows.columns = [self.group, 'frequency']
+            nval = (nrows['frequency'].min())/2
+
             for i in range(self.n_redists):
-                redist = self.omni_prep_mini(df=df, subset=subset, subsamps=subsamps)
+                redist = self.omni_prep_mini(df=df, subset=subset, subsamps=subsamps, subrows=nval)
                 redistv = list(redist.values())
                 redists.append(redistv)
         
         else:
             if self.group != None:
                 splitdf = df[df[self.group] == subset].copy()
-                splitdf = splitdf.drop(labels="dataset", axis=1)
+                splitdf = splitdf.drop(labels=self.group, axis=1)
                 splitdf = self.split_half(splitdf.copy())
             else:
                 splitdf = self.split_half(df.copy())
@@ -1004,9 +1019,11 @@ def splithalf(df=None, group=None, npc=None, rotation='varimax', boot=1000, save
         return conf_int, mean, sd
 
     for i in range(len(samples)):
+        
+        print('Running ' + str(samples[i]))
         resultslist = bootstrap(boot_model, df, samples[i], cv=cv, splithalf = True, pro_cong=True, shuffle=shuffle)
 
-        print('Running ' + str(samples[i]))
+        print('Saving ' + str(samples[i]))
         #scaler = StandardScaler()
         #s_results = scaler.fit_transform(np.array(results).reshape(-1, 1)).squeeze()
         rhm_ci, rhm_x, rhm_sd = getstats(resultslist[0])
@@ -1042,7 +1059,7 @@ def splithalf(df=None, group=None, npc=None, rotation='varimax', boot=1000, save
 
     if save:
 
-        split_df.to_csv('results/' + str(file_prefix) + '/' + str(file_prefix) + '_splithalf_' + str(len(df.columns)) + 'D_' + str(boot_model.n_comp) + 'PC.csv', index = False)
+        split_df.to_csv('results/' + str(file_prefix) + '/' + str(file_prefix) + '_splithalf_' + str(len(df_t.columns)) + 'D_' + str(boot_model.n_comp) + 'PC.csv', index = False)
         
         print('dataframe saved')
 
@@ -1198,7 +1215,7 @@ def dir_proj(df=None, group=None, npc=None, rotation="varimax", folds=5, save=Tr
                     annot_kws={"fontsize": 35 / np.sqrt(len(dirproj_mtx))},
                     cmap = "flare")
         plt.suptitle('Mean Homologue Similarity', fontsize=16)
-        plt.savefig('results/' + str(file_prefix) + '/' + str(file_prefix) + 'heatmap' + str(len(df.columns)) + "D_" + str(boot_model.n_comp) + 'PC_rhm.png')
+        plt.savefig('results/' + str(file_prefix) + '/' + str(file_prefix) + '_heatmap' + str(len(df.columns)) + "D_" + str(boot_model.n_comp) + 'PC_rhm.png')
         plt.show()
         plt.close()
 
@@ -1209,7 +1226,7 @@ def dir_proj(df=None, group=None, npc=None, rotation="varimax", folds=5, save=Tr
                     annot_kws={"size": 35 / np.sqrt(len(dirproj_phi))},
                     cmap = "flare")
         plt.suptitle('Mean Factor Congruence', fontsize=16)
-        plt.savefig('results/' + str(file_prefix) + '/' + str(file_prefix) + 'heatmap' + str(len(df.columns)) + "D_" + str(boot_model.n_comp) + 'PC_phi.png')
+        plt.savefig('results/' + str(file_prefix) + '/' + str(file_prefix) + '_heatmap' + str(len(df.columns)) + "D_" + str(boot_model.n_comp) + 'PC_phi.png')
         plt.show()
         plt.close()
 
@@ -1347,7 +1364,7 @@ def omni_sample(df=None, group=None, npc=None, rotation="varimax", boot=1000, sa
     stats_dict = {}
 
     stats_dict['n_comp'] = int(boot_model.n_comp)
-    stats_dict['dataset'] = "Total"
+    stats_dict[group] = "Total"
 
     stats_dict['rhm_x'] = rhm_x
     stats_dict['rhm_sd'] = rhm_sd
@@ -1396,6 +1413,9 @@ def bypc(df=None, group=None, npc=None, rotation="varimax", folds=5, save=True, 
         
         rotation: str, default="varimax"
             Rotation method to be performed on omnibus set. "none" for no rotation.
+
+        folds: int, default=5
+            Number of folds to use for cross-validation.
         
         save: bool, default=True
             Save outputted omnibus-sample reliability to .csv.
@@ -1431,7 +1451,11 @@ def bypc(df=None, group=None, npc=None, rotation="varimax", folds=5, save=True, 
     boot_model = rhom(rd = copy.deepcopy(df_t.values), bypc=True, n_comp=npc, method=rotation)
     cv = pair_cv(boot = True, group=group, k=folds)
 
-    maindict = cv.omni_prep(df = df)
+    nrows = df[group].value_counts().reset_index()
+    nrows.columns = [group, 'frequency']
+    nval = (nrows['frequency'].min())/2
+
+    maindict = cv.omni_prep(df = df, subrows = nval)
 
     samples = df[group].unique()
     dagoodlist=[]
@@ -1451,7 +1475,7 @@ def bypc(df=None, group=None, npc=None, rotation="varimax", folds=5, save=True, 
     if save:
         check_paths('results', file_prefix)
 
-    stats_bypc = pd.DataFrame(columns=['n_comp', 'dataset', 'comp', 'rhm_x','rhm_sd','rhm_LCI','rhm_UCI','phi_x','phi_sd','phi_LCI','phi_UCI'])
+    stats_bypc = pd.DataFrame(columns=['n_comp', group, 'comp', 'rhm_x','rhm_sd','rhm_LCI','rhm_UCI','phi_x','phi_sd','phi_LCI','phi_UCI'])
 
     for currentset in dagoodlist:
         comps = bootstrap(boot_model, maindict[currentset[0]], maindict[currentset[1]], cv=cv, bypc = True, pro_cong = True, shuffle=shuffle)
@@ -1464,7 +1488,7 @@ def bypc(df=None, group=None, npc=None, rotation="varimax", folds=5, save=True, 
             phi_ci, phi_x, phi_sd = getstats(comps[1][i])
 
             stats_dict['n_comp'] = str(boot_model.n_comp) + "PC"
-            stats_dict['dataset'] = str(currentset[1])
+            stats_dict[group] = str(currentset[1])
             stats_dict['comp'] = i + 1
 
             stats_dict['rhm_x'] = rhm_x
