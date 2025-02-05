@@ -33,12 +33,12 @@ def crazyshuffle(arr):
     -------------------
     Shuffles the rows and then columns of an inputted array.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
         arr: array-like or dataframe
 
-    Returns:
-    --------
+    Returns
+    -------
         array: shuffled array.
     '''
     arr = arr.loc[:, 'focus':].values
@@ -54,8 +54,8 @@ def bootstrap(estimator, X, y, group=None, cv=None, omnibus = False, splithalf =
     --------------------
     This function performs bootstrap resampling on the provided data using the specified estimator and resampling method.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
         estimator : object
             The rhom object to use for fitting the data.
         X : array-like or DataFrame, shape (n_samples, n_features)
@@ -79,8 +79,8 @@ def bootstrap(estimator, X, y, group=None, cv=None, omnibus = False, splithalf =
         fit_params : dict, default=empty dictionary.
             Additional parameters to pass to the fit method of the estimator.
 
-    Returns:
-    --------
+    Returns
+    -------
         results : list
             A list containing the results of the bootstrap resampling.
     """
@@ -174,8 +174,8 @@ def gen_ests(estimator, x1, x2, pro_cong = False, fit_params={}):
     calculates correlations, and computes homologous pairs. Optionally, it performs procrustes congruence
     analysis.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
         estimator : object
             The rhom object to use for fitting the data.
         x1 : array-like or DataFrame, shape (n_samples, n_features)
@@ -187,8 +187,8 @@ def gen_ests(estimator, x1, x2, pro_cong = False, fit_params={}):
         fit_params : dict, default=empty dictionary.
             Additional parameters to pass to the fit method of the estimator.
 
-    Returns:
-    --------
+    Returns
+    -------
         results : list or float
             If pro_cong is True, a list containing the results of homologous pairs and procrustes congruence analysis. If pro_cong is False, the results of homologous pairs.
     """
@@ -213,25 +213,25 @@ def tcc(fac1=None, fac2=None):
     -------------------------------
     Calculate the Tucker's Congruence Coefficient (TCC) between two components, which is an estimate of their loading similarity.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
         fac1 : array-like
             The first component.
         fac2 : array-like
             The second component.
 
-    Returns:
-    --------
+    Returns
+    -------
         tcc : float
             The Tucker's Congruence Coefficient (TCC) between the two factors.
 
-    Notes:
-    ------
+    Notes
+    -----
         - The TCC is a measure of loading similarity between two given components (Tucker, 1951).
         - Lovik et al. (2020) suggest using the absolute value of the numerator for factor matching.
 
-    References:
-    -----------
+    References
+    ----------
         Tucker, L. R. (1951). A method for synthesis of factor analysis studies (PRS-984). Washington, DC: Department of the Army. 
 
         Lovik, A., Nassiri, V., Verbeke, G., & Molenberghs, G. (2020). A modified tucker’s congruence coefficient for factor matching.
@@ -249,8 +249,8 @@ class rhom(BaseEstimator):
     -----------------------------------------------
     A class for calculating component similarity between two sets of data.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
         - rd: array-like or pd.DataFrame, default=None
             - The referent dataset for deriving components.
         - n_comp: int, default=None
@@ -262,8 +262,8 @@ class rhom(BaseEstimator):
         - bypc: bool, default=False
             - Whether to save component similarity on a by-component basis.
 
-    Attributes:
-    -----------
+    Attributes
+    ----------
         - model_x: PCA
             - The PCA object for the referent dataset.
         - model_x2: PCA
@@ -271,8 +271,8 @@ class rhom(BaseEstimator):
         - results: pd.DataFrame
             - The projected component scores for each set of components.
 
-    Methods:
-    --------
+    Methods
+    -------
         - get_params(deep=True):
             - Retrieve the parameters of the instance.
 
@@ -288,8 +288,8 @@ class rhom(BaseEstimator):
         - pro_cong():
             - Perform procrustes congruence analysis.
    
-    References:
-    -----------
+    References
+    ----------
 
     Mulholland, B., Goodall-Halliwell, I., Wallace, R., Chitiz, L., McKeown, B., Rastan, A., Poerio, G. L., \n\tLeech, R., Turnbull, A., Klein, A., Milham, M., Wammes, J. D., Jefferies, E., & Smallwood, J. (2023). \n\tPatterns of ongoing thought in the real world. Consciousness and Cognition, 114, 103530. https://doi.org/10.1016/j.concog.2023.103530 
 
@@ -307,13 +307,13 @@ class rhom(BaseEstimator):
         """
         Retrieve the parameters of the instance.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
             deep: bool, optional
                 If True, returns a deep copy of the parameters. If False, returns a shallow copy. Defaults to True.
 
-        Returns:
-        --------
+        Returns
+        -------
             dict: 
                 A dictionary containing the parameters of the instance. If deep is True, a deep copy of the parameters is returned, otherwise, a shallow copy is returned.
         """
@@ -328,15 +328,15 @@ class rhom(BaseEstimator):
 
         This function fits the model to the provided input data 'x' and 'y' if applicable.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
             x : array-like or DataFrame, shape (n_samples, n_features)
                 The input data for the referent dataset.
             y : array-like or DataFrame, shape (n_samples, n_targets), optional, default=None
                 The input data for the comparate dataset.
 
-        Returns:
-        --------
+        Returns
+        -------
             None
         """
 
@@ -360,13 +360,13 @@ class rhom(BaseEstimator):
         """
         Generate component scores based on projections from each dataset.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
             y : array-like, default=None
                 The input data for prediction.
 
-        Returns:
-        --------
+        Returns
+        -------
             results : list
                 A list containing the predicted outputs.
         """
@@ -398,13 +398,13 @@ class rhom(BaseEstimator):
         """
         Calculate homologous components between the referent and comparate datasets.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
             cor_matrix : array-like, shape (n_features, n_features)
                 The correlation matrix between the components for the referent and comparate datasets.
 
-        Returns:
-        --------
+        Returns
+        -------
             homologous_pairs : list or float
                 If self.bypc is True, a list containing the correlation values of homologous pairs. If self.bypc is False, the mean correlation value of homologous pairs.
         """
@@ -460,8 +460,8 @@ class rhom(BaseEstimator):
         """
         Performs procrustes congruence analysis between the loadings matrices of the referent and comparate fitted PCA models. It calculates the Tucker's Congruence Coefficient (TCC) for all possible combinations of loadings pairs between the two models.
 
-        Returns:
-        --------
+        Returns
+        -------
             phi : list or float
                 If self.bypc is True, a list containing the TCC values of homologous pairs. If self.bypc is False, the mean TCC value of homologous pairs.
 
@@ -495,8 +495,8 @@ class pair_cv():
     ------------------------------------------------------------------------
     A class for bootstrap resampling component-similarity analyses.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
         - k: int, default=5
             - Number of folds to cross-validate direct-projection reproducibility.
         - n: int, default=1000
@@ -508,13 +508,13 @@ class pair_cv():
         - group: str, default=False
             - The name of the column to be the selection variable by which to conduct separate reprodcubility analyses.
         
-    Attributes:
-    -----------
+    Attributes
+    ----------
         - scaler: StandardScaler
             - The scaler used for z-score normalization.
 
-    Methods:
-    --------
+    Methods
+    -------
         - divide_chunks(l, c):
             - Divides inputted dataset into specified number of folds.
 
@@ -556,15 +556,15 @@ class pair_cv():
         """
         Divide a list into chunks of approximately equal size.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
             l: list
                 The list to be divided into chunks.
             c: int
                 The desired number of chunks.
 
-        Yields:
-        -------
+        Yields
+        ------
             list:
                 A generator that yields chunks of the original list, with each chunk containing approximately equal elements.
         """
@@ -577,8 +577,8 @@ class pair_cv():
         """
         Randomly assign rows of a dataframe to be part of 'omnibus' or 'sample' subsets.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
             - df: pd.DataFrame, default=None
                 - The DataFrame to which model types will be assigned. If not provided, an empty DataFrame is created.
             - subrows: int, default=None
@@ -589,8 +589,8 @@ class pair_cv():
                 both subset A and B will contribute 800/2 = 400 rows to the omnibus solution and their remaining rows to
                 their respective sample solutions. 
             
-        Returns:
-        --------
+        Returns
+        -------
             pd.DataFrame:
                 The DataFrame with the 'o/s' column indicating the assigned 'omnibus/sample' rows.
 
@@ -605,18 +605,18 @@ class pair_cv():
         """
         Standardize the values in the DataFrame using z-score normalization.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
             df: pd.DataFrame, default=None
                 The DataFrame whose values will be standardized.
 
-        Returns:
-        --------
+        Returns
+        -------
             pd.DataFrame:
                 The DataFrame with standardized values.
 
-        Notes:
-        ------
+        Notes
+        -----
             - Standardization is performed independently on each feature (column) of the DataFrame.
             - This function uses the StandardScaler from scikit-learn for standardization.
         """
@@ -629,15 +629,15 @@ class pair_cv():
         """
         Prepares data for by-component omnibus-sample reproducibility by partitioning, assigning omnibus/sample grouping to rows, and standardizing.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
             - df: pd.DataFrame, default=None
                 - The DataFrame containing the data to be prepared for omnibus-sample reproducibility analysis.
             - subrows: int, default=None
                 - Limits the number of rows contributed to omnibus solution according to the subset with the smallest sample. See the assignModel() docstring for more detail.
 
-        Returns:
-        --------
+        Returns
+        -------
             dict:
                 A dictionary containing each sample dataframe and the omnibus dataframe.
         """
@@ -670,8 +670,8 @@ class pair_cv():
         """
         Prepare data for omnibus-sample reproducibility analysis with a specified subset.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
             - df: pd.DataFrame, default=None
                 - The DataFrame containing the data to be prepared for omnibus-sample analysis.
             - subsamps: dict, default=None
@@ -681,8 +681,8 @@ class pair_cv():
             - subrows: int, default=None
                 - Limits the number of rows contributed to omnibus solution according to the subset with the smallest sample. See the assignModel() docstring for more detail.
 
-        Returns:
-        --------
+        Returns
+        -------
             dict:
                 A dictionary containing the omnibus and sample subdivisions of the dataframe.
         """
@@ -713,15 +713,15 @@ class pair_cv():
         """
         Generate indices to split data into referent and comparate sets for cross-validation and/or bootstrapping.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
             X: array-like or DataFrame
                 The referent data.
             y: array-like or Series
                 The comparate data.
 
-        Yields:
-        -------
+        Yields
+        ------
             tuple:
                 A tuple containing the indices of the referent and comparate sets for each fold.
         """
@@ -781,15 +781,15 @@ class pair_cv():
         """
         Generate indices to split data into referent and comparate sets based on unique values of a grouping variable.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
             X: array-like or DataFrame
                 The referent features.
             y: array-like or Series
                 The comparate values.
 
-        Yields:
-        -------
+        Yields
+        ------
             tuple:
                 A tuple containing the indices of the referent and comparate sets for each fold.
         """
@@ -837,13 +837,13 @@ class pair_cv():
         """
         Split the DataFrame randomly into two halves.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
             df: pd.DataFrame, default=None
                 The DataFrame to be split.
 
-        Returns:
-        --------
+        Returns
+        -------
             pd.DataFrame:
                 The DataFrame with a new column 'subset' indicating the assigned halves.
         """
@@ -857,13 +857,13 @@ class pair_cv():
         """
         Split the DataFrame into two separate DataFrames based on the 'subset' column.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
             df: pd.DataFrame, default=None
                 The DataFrame to be split.
 
-        Returns:
-        --------
+        Returns
+        -------
             dict:
                 A dictionary containing two DataFrames, with keys '1' and '2', representing the subsets.
         """
@@ -882,15 +882,15 @@ class pair_cv():
         """
         Generates a set of bootstrap reassignments of different subdivisions of either omnibus/sample or split-half reproducibility.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
             df: pd.DataFrame, default=None
                 The DataFrame containing the data to be redistributed.
             subset: str, default=None 
                 The subset of the grouping variable for which to generate a set of redistributions.
 
-        Returns:
-        --------
+        Returns
+        -------
             list:
                 A list of redistributions, where each redistribution is represented as a list of two DataFrames.
         """
@@ -937,7 +937,7 @@ def check_paths(parent_folder, prefix):
     if not os.path.exists(project_path):
         os.makedirs(project_path, exist_ok = True)
 
-def splithalf(df=None, group=None, npc=None, rotation='varimax', boot=1000, save=True, display=False, shuffle=False, file_prefix=randint(10000,99999)) :
+def splithalf(df=None, group=None, npc=None, rotation='varimax', boot=1000, save=True, display=False, shuffle=False, path = 'results', file_prefix=randint(10000,99999)) :
     '''
     Split-Half Reliability
     ----------------------
@@ -948,8 +948,8 @@ def splithalf(df=None, group=None, npc=None, rotation='varimax', boot=1000, save
         1) Loading similarity (with Tucker's Congruence Coefficient: Tucker, 1951; See also Lovik et al., 2020)
         2) Component-score similarity (with R-homologue: Mulholland et al., 2023; See also Everett, 1983)
 
-     Parameters:
-    -----------
+    Parameters
+    ----------
 
         df: pd.Dataframe, default=None
             It should include only the columns to be decomposed and your grouping variable.
@@ -975,11 +975,14 @@ def splithalf(df=None, group=None, npc=None, rotation='varimax', boot=1000, save
         shuffle: bool, default=False
             Perform analysis on shuffled "garbage" data.
 
+        path: str, default='results'
+            The path to the output directory.
+
         file_prefix: str, default=randint(10000,99999)
             Provide name to distinguish saved files. By default will classify files with random 5-digit ID.
 
-    Returns:
-    --------
+    Returns
+    -------
         pd.DataFrame:
             The function at minimum returns a pandas dataframe with the results.
         
@@ -1005,7 +1008,7 @@ def splithalf(df=None, group=None, npc=None, rotation='varimax', boot=1000, save
     cv = pair_cv(group=group, n=boot)
 
     if save:
-        check_paths('results', file_prefix)
+        check_paths(path, file_prefix)
 
     split_df = pd.DataFrame(columns=['n_comp', group, 'rhm_x','rhm_sd','rhm_LCI','rhm_UCI','phi_x','phi_sd','phi_LCI','phi_UCI'])
 
@@ -1017,7 +1020,7 @@ def splithalf(df=None, group=None, npc=None, rotation='varimax', boot=1000, save
         mean = np.mean(data)
         sd = np.std(data)
         return conf_int, mean, sd
-
+    
     for i in range(len(samples)):
         
         print('Running ' + str(samples[i]))
@@ -1043,7 +1046,8 @@ def splithalf(df=None, group=None, npc=None, rotation='varimax', boot=1000, save
         stats_dict['phi_LCI'] = phi_ci[0]
         stats_dict['phi_UCI'] = phi_ci[1]
 
-        split_df = split_df.append(stats_dict, ignore_index = True)
+        newrow = pd.DataFrame(stats_dict, index = [0])
+        split_df = pd.concat([split_df, newrow], axis = 0)
 
         if display:
 
@@ -1059,13 +1063,13 @@ def splithalf(df=None, group=None, npc=None, rotation='varimax', boot=1000, save
 
     if save:
 
-        split_df.to_csv('results/' + str(file_prefix) + '/' + str(file_prefix) + '_splithalf_' + str(len(df_t.columns)) + 'D_' + str(boot_model.n_comp) + 'PC.csv', index = False)
+        split_df.to_csv(os.path.join(path, f"{file_prefix}/{file_prefix}_splithalf_{(len(df_t.columns))}D_{(boot_model.n_comp)}PC.csv"), index = False)
         
         print('dataframe saved')
 
     return split_df  
 
-def dir_proj(df=None, group=None, npc=None, rotation="varimax", folds=5, save=True, plot=True, display=False, shuffle=False, file_prefix=randint(10000,99999)):    
+def dir_proj(df=None, group=None, npc=None, rotation="varimax", folds=5, save=True, plot=True, display=False, shuffle=False, path = 'results', file_prefix=randint(10000,99999)):    
     '''
     Direct-Projection Reproducibility
     ---------------------------------
@@ -1076,8 +1080,8 @@ def dir_proj(df=None, group=None, npc=None, rotation="varimax", folds=5, save=Tr
         1) Loading similarity (with Tucker's Congruence Coefficient: Tucker, 1951; See also Lovik et al., 2020)
         2) Component-score similarity (with R-homologue: Mulholland et al., 2023; See also Everett, 1983)
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
 
         df: pd.Dataframe, default=None
             It should include only the columns to be decomposed and your grouping variable.
@@ -1106,11 +1110,14 @@ def dir_proj(df=None, group=None, npc=None, rotation="varimax", folds=5, save=Tr
         shuffle: bool, default=False
             Perform analysis on shuffled "garbage" data.
 
+        path: str, default='results'
+            The path to the output directory.
+
         file_prefix: str, default=randint(10000,99999)
             Provide name to distinguish saved files. By default will classify files with random 5-digit ID.
 
-    Returns:
-    --------
+    Returns
+    -------
         pd.DataFrame:
             The function at minimum returns a pandas dataframe with the results.
     
@@ -1141,7 +1148,7 @@ def dir_proj(df=None, group=None, npc=None, rotation="varimax", folds=5, save=Tr
     df = pd.DataFrame(dft,index=df.index,columns=df.columns)
 
     if save:
-        check_paths('results', file_prefix)
+        check_paths(path, file_prefix)
 
     dirproj_df = pd.DataFrame(columns=['n_comp', 'referent', 'comparator', 'rhm_x','rhm_sd','rhm_LCI','rhm_UCI','phi_x','phi_sd','phi_LCI','phi_UCI'])
 
@@ -1186,7 +1193,8 @@ def dir_proj(df=None, group=None, npc=None, rotation="varimax", folds=5, save=Tr
         stats_dict['phi_LCI'] = phi_ci[0]
         stats_dict['phi_UCI'] = phi_ci[1]
 
-        dirproj_df = dirproj_df.append(stats_dict, ignore_index = True)
+        newrow = pd.DataFrame(stats_dict, index = [0])
+        dirproj_df = pd.concat([dirproj_df, newrow], axis = 0)
 
         if plot:
 
@@ -1215,7 +1223,7 @@ def dir_proj(df=None, group=None, npc=None, rotation="varimax", folds=5, save=Tr
                     annot_kws={"fontsize": 35 / np.sqrt(len(dirproj_mtx))},
                     cmap = "flare")
         plt.suptitle('Mean Homologue Similarity', fontsize=16)
-        plt.savefig('results/' + str(file_prefix) + '/' + str(file_prefix) + '_heatmap' + str(len(df.columns)) + "D_" + str(boot_model.n_comp) + 'PC_rhm.png')
+        plt.savefig(os.path.join(path, f"{file_prefix}/{file_prefix}_heatmap{(len(df.columns))}D_{boot_model.n_comp}PC_rhm.png"))
         plt.show()
         plt.close()
 
@@ -1226,16 +1234,16 @@ def dir_proj(df=None, group=None, npc=None, rotation="varimax", folds=5, save=Tr
                     annot_kws={"size": 35 / np.sqrt(len(dirproj_phi))},
                     cmap = "flare")
         plt.suptitle('Mean Factor Congruence', fontsize=16)
-        plt.savefig('results/' + str(file_prefix) + '/' + str(file_prefix) + '_heatmap' + str(len(df.columns)) + "D_" + str(boot_model.n_comp) + 'PC_phi.png')
+        plt.savefig(os.path.join(path, f"{file_prefix}/{file_prefix}_heatmap{(len(df.columns))}D_{boot_model.n_comp}PC_phi.png"))
         plt.show()
         plt.close()
 
     if save:
-        dirproj_df.to_csv('results/' + str(file_prefix) + '/' + str(file_prefix) +'_dj' + str(len(df.columns)) + "D_" + str(boot_model.n_comp) + 'PC.csv', index = False)
+        dirproj_df.to_csv(os.path.join(path, f"{file_prefix}/{file_prefix}_dj{len(df.columns)}D_{boot_model.n_comp}PC.csv", index = False))
 
     return dirproj_df
 
-def omni_sample(df=None, group=None, npc=None, rotation="varimax", boot=1000, save=True, display=False, shuffle=False, file_prefix=randint(10000,99999)):
+def omni_sample(df=None, group=None, npc=None, rotation="varimax", boot=1000, save=True, display=False, shuffle=False, path = 'results', file_prefix=randint(10000,99999)):
     '''
     Omnibus-Sample Reproducibility
     ------------------------------
@@ -1249,8 +1257,8 @@ def omni_sample(df=None, group=None, npc=None, rotation="varimax", boot=1000, sa
         1) Loading similarity (with Tucker's Congruence Coefficient: Tucker, 1951; See also Lovik et al., 2020)
         2) Component-score similarity (with R-homologue: Mulholland et al., 2023; See also Everett, 1983)
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
 
         df: pd.Dataframe, default=None
             It should include only the columns to be decomposed and your grouping variable.
@@ -1276,11 +1284,14 @@ def omni_sample(df=None, group=None, npc=None, rotation="varimax", boot=1000, sa
         shuffle: bool, default=False
             Perform analysis on shuffled "garbage" data.
 
+        path: str, default='results'
+            The path to the output directory.
+
         file_prefix: str, default=randint(10000,99999)
             Provide name to distinguish saved files. By default will classify files with random 5-digit ID.
 
-    Returns:
-    --------
+    Returns
+    -------
         pd.DataFrame:
             The function at minimum returns a pandas dataframe with the results.
         
@@ -1297,7 +1308,7 @@ def omni_sample(df=None, group=None, npc=None, rotation="varimax", boot=1000, sa
     omsamp_df = pd.DataFrame(columns=['n_comp', group, 'rhm_x','rhm_sd','rhm_LCI','rhm_UCI','phi_x','phi_sd','phi_LCI','phi_UCI'])
 
     if save:
-        check_paths('results', file_prefix)
+        check_paths(path, file_prefix)
 
     def getstats(data):
         conf_int = norm.interval(0.95, np.median(data), scale = np.std(data))
@@ -1342,7 +1353,8 @@ def omni_sample(df=None, group=None, npc=None, rotation="varimax", boot=1000, sa
         stats_dict['phi_LCI'] = phi_ci[0]
         stats_dict['phi_UCI'] = phi_ci[1]
 
-        omsamp_df = omsamp_df.append(stats_dict, ignore_index = True)
+        newrow = pd.DataFrame(stats_dict, index = [0])
+        omsamp_df = pd.concat([omsamp_df, newrow], axis = 0)
 
         if display:
             print('Omnibus x ' + str(samples[i]) + ':')
@@ -1376,15 +1388,16 @@ def omni_sample(df=None, group=None, npc=None, rotation="varimax", boot=1000, sa
     stats_dict['phi_LCI'] = phi_ci[0]
     stats_dict['phi_UCI'] = phi_ci[1]
 
-    omsamp_df = omsamp_df.append(stats_dict, ignore_index = True)
+    newrow = pd.DataFrame(stats_dict, index = [0])
+    omsamp_df = pd.concat([omsamp_df, newrow], axis = 0)
 
     if save:
 
-        omsamp_df.to_csv('results/' + str(file_prefix) + '/' + str(file_prefix) + '_omsamp_' + str(len(df_t.columns)) + "D_" + str(boot_model.n_comp) + 'PC.csv', index = False)
+        omsamp_df.to_csv(os.path.join(path, f"{file_prefix}/{file_prefix}_omsamp_{len(df_t.columns)}D_{boot_model.n_comp}PC.csv", index = False))
 
     return omsamp_df
 
-def bypc(df=None, group=None, npc=None, rotation="varimax", folds=5, save=True, plot=True, display=False, shuffle = False, file_prefix=randint(10000,99999)):
+def bypc(df=None, group=None, npc=None, rotation="varimax", folds=5, save=True, plot=True, display=False, shuffle = False, path = 'results', file_prefix=randint(10000,99999)):
     '''
     Omnibus-Sample Reproducibility: By-Component
     ------------------------------
@@ -1399,8 +1412,8 @@ def bypc(df=None, group=None, npc=None, rotation="varimax", folds=5, save=True, 
         1) Loading similarity (with Tucker's Congruence Coefficient: Tucker, 1951; See also Lovik et al., 2020)
         2) Component-score similarity (with R-homologue: Mulholland et al., 2023; See also Everett, 1983)
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
 
         df: pd.Dataframe, default=None
             It should include only the columns to be decomposed and your grouping variable.
@@ -1429,11 +1442,14 @@ def bypc(df=None, group=None, npc=None, rotation="varimax", folds=5, save=True, 
         shuffle: bool, default=False
             Perform analysis on shuffled "garbage" data.
 
+        path: str, default='results'
+            The path to the output directory. 
+
         file_prefix: str, default=randint(10000,99999)
             Provide name to distinguish saved files. By default will classify files with random 5-digit ID.
 
-    Returns:
-    --------
+    Returns
+    -------
         pd.DataFrame:
             The function at minimum returns a pandas dataframe with the results.
         
@@ -1473,7 +1489,7 @@ def bypc(df=None, group=None, npc=None, rotation="varimax", folds=5, save=True, 
         return conf_int, mean, sd
     
     if save:
-        check_paths('results', file_prefix)
+        check_paths(path, file_prefix)
 
     stats_bypc = pd.DataFrame(columns=['n_comp', group, 'comp', 'rhm_x','rhm_sd','rhm_LCI','rhm_UCI','phi_x','phi_sd','phi_LCI','phi_UCI'])
 
@@ -1501,7 +1517,8 @@ def bypc(df=None, group=None, npc=None, rotation="varimax", folds=5, save=True, 
             stats_dict['phi_LCI'] = phi_ci[0]
             stats_dict['phi_UCI'] = phi_ci[1]
 
-            stats_bypc = stats_bypc.append(stats_dict, ignore_index=True)
+            newrow = pd.DataFrame(stats_dict, index = [0])
+            stats_bypc = pd.concat([stats_bypc, newrow], axis = 0)
 
             if display:
                 print(f"Component {i + 1}:")
@@ -1511,11 +1528,11 @@ def bypc(df=None, group=None, npc=None, rotation="varimax", folds=5, save=True, 
 
     if plot:
         model = basePCA(n_components=npc, rotation=rotation)
-        model.fit(maindict['omnibus'])
+        # model.fit(maindict['omnibus'])
         model.fit_transform(maindict['omnibus'])
-        model.save(path="results/" + str(file_prefix), pathprefix=str(file_prefix)+"_os")
+        model.save(path=os.path.join(path, f"{file_prefix}"), pathprefix=f"{file_prefix}_os")
 
     if save:
-        stats_bypc.to_csv('results/' + str(file_prefix) + '/' + str(file_prefix) + '_bypc_' + str(len(df_t.columns)) + 'D_' + str(boot_model.n_comp) + 'PC.csv', index = False)
+        stats_bypc.to_csv(os.path.join(path, f"{file_prefix}/{file_prefix}_bypc_{len(df_t.columns)}D_{boot_model.n_comp}PC.csv"), index = False)
 
     return stats_bypc

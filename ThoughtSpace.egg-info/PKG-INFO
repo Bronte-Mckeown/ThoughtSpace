@@ -4,3 +4,13 @@ Version: 0.0.1
 Summary: Package of functions to run and visualize PCA on ESQ data, and project between datasets.
 Author: Bronte Mckeown & Will Strawson
 Author-email: bronte.mckeown@gmail.com
+Requires-Dist: matplotlib>=3.2.0
+Requires-Dist: numpy>=1.16
+Requires-Dist: pandas>=1.1.4
+Requires-Dist: scipy>=1.6.2
+Requires-Dist: pathlib
+Requires-Dist: scikit-learn
+Requires-Dist: seaborn>=0.11.1
+Requires-Dist: adjustText
+Requires-Dist: wordcloud
+Requires-Dist: factor_analyzer
