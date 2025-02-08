@@ -3,6 +3,7 @@ setup.py
 ThoughtSpace/__init__.py
 ThoughtSpace/pca.py
 ThoughtSpace/plotting.py
+ThoughtSpace/rhom.py
 ThoughtSpace/utils.py
 ThoughtSpace.egg-info/PKG-INFO
 ThoughtSpace.egg-info/SOURCES.txt
