@@ -8,7 +8,7 @@ splithalf_df = df.iloc[:, 2:11]
 
 split_results = splithalf(df = splithalf_df,
                           npc = 4,
-                          rotation = "promax",
+                          method = "promax",
                           boot = 1000,
                           file_prefix = "example_splithalf",
                           save = False)
@@ -20,7 +20,7 @@ dirproj_df['group'] = df['grouping variable']
 dirproj_results = dir_proj(df = dirproj_df,
                            group = "group",
                            npc = 4,
-                           rotation = "varimax",
+                           method = "varimax",
                            folds = 5,
                            file_prefix = "example_directproject")
 
@@ -28,7 +28,7 @@ dirproj_results = dir_proj(df = dirproj_df,
 omsamp_results = omni_sample(df = dirproj_df,
                              group = 'group',
                              npc = 4,
-                             rotation = "varimax",
+                             method = "varimax",
                              boot = 1000,
                              file_prefix = "example_omsamp")
 
@@ -36,6 +36,6 @@ omsamp_results = omni_sample(df = dirproj_df,
 bypc_results = bypc(df = df,
                     group = 'group',
                     npc = 4,
-                    rotation = "varimax",
+                    method = "varimax",
                     file_prefix = "example_byPC")
 
